@@ -53,11 +53,28 @@ export default function UsersPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterRisk, setFilterRisk] = useState("all");
   const [showDialog, setShowDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showInactivateDialog, setShowInactivateDialog] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [inactivatingUser, setInactivatingUser] = useState(null);
+  const [newManagerId, setNewManagerId] = useState("");
+  const [filterRole, setFilterRole] = useState("all");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     manager_id: "",
     department: "",
     position: "",
+    admission_date: "",
+    status: "active"
+  });
+  const [createFormData, setCreateFormData] = useState({
+    full_name: "",
+    email: "",
+    role: "user",
+    department: "",
+    position: "",
+    manager_id: "",
     admission_date: "",
     status: "active"
   });
@@ -70,7 +87,11 @@ export default function UsersPage() {
     try {
       const allUsers = await base44.entities.User.list();
       setUsers(allUsers);
-      setManagers(allUsers.filter(u => u.role === 'admin'));
+      // Gestores são users com subordinados OU admin
+      const potentialManagers = allUsers.filter(u => 
+        u.role === 'admin' || allUsers.some(subordinate => subordinate.manager_id === u.id)
+      );
+      setManagers(potentialManagers);
     } catch (e) {
       console.error(e);
     } finally {
@@ -91,6 +112,8 @@ export default function UsersPage() {
   };
 
   const handleSave = async () => {
+    setSaving(true);
+    setError("");
     try {
       await base44.entities.User.update(editingUser.id, formData);
       await loadUsers();
@@ -98,6 +121,109 @@ export default function UsersPage() {
       setEditingUser(null);
     } catch (e) {
       console.error(e);
+      setError("Erro ao salvar usuário");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCreate = async () => {
+    setSaving(true);
+    setError("");
+
+    // Validações
+    if (!createFormData.full_name || !createFormData.email) {
+      setError("Nome e e-mail são obrigatórios");
+      setSaving(false);
+      return;
+    }
+
+    // Verificar email duplicado
+    const emailExists = users.some(u => u.email.toLowerCase() === createFormData.email.toLowerCase());
+    if (emailExists) {
+      setError("Este e-mail já está cadastrado no sistema");
+      setSaving(false);
+      return;
+    }
+
+    try {
+      // Convidar usuário (Base44 cria automaticamente)
+      await base44.users.inviteUser(createFormData.email, createFormData.role || "user");
+
+      // Atualizar dados complementares
+      const allUsers = await base44.entities.User.list();
+      const newUser = allUsers.find(u => u.email.toLowerCase() === createFormData.email.toLowerCase());
+      
+      if (newUser) {
+        await base44.entities.User.update(newUser.id, {
+          manager_id: createFormData.manager_id || null,
+          department: createFormData.department || null,
+          position: createFormData.position || null,
+          admission_date: createFormData.admission_date || null,
+          status: createFormData.status || "active"
+        });
+      }
+
+      await loadUsers();
+      setShowCreateDialog(false);
+      setCreateFormData({
+        full_name: "",
+        email: "",
+        role: "user",
+        department: "",
+        position: "",
+        manager_id: "",
+        admission_date: "",
+        status: "active"
+      });
+    } catch (e) {
+      console.error(e);
+      setError(e.message || "Erro ao criar usuário");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInactivateUser = (user) => {
+    // Verificar se há subordinados
+    const subordinates = users.filter(u => u.manager_id === user.id && u.status === 'active');
+    
+    if (subordinates.length > 0) {
+      setInactivatingUser(user);
+      setShowInactivateDialog(true);
+    } else {
+      // Inativar diretamente
+      confirmInactivation(user.id, null);
+    }
+  };
+
+  const confirmInactivation = async (userId, newManagerId) => {
+    setSaving(true);
+    try {
+      // Transferir subordinados se necessário
+      if (newManagerId) {
+        const subordinates = users.filter(u => u.manager_id === userId && u.status === 'active');
+        for (const sub of subordinates) {
+          await base44.entities.User.update(sub.id, {
+            manager_id: newManagerId
+          });
+        }
+      }
+
+      // Inativar usuário (soft delete)
+      await base44.entities.User.update(userId, {
+        status: "inactive"
+      });
+
+      await loadUsers();
+      setShowInactivateDialog(false);
+      setInactivatingUser(null);
+      setNewManagerId("");
+    } catch (e) {
+      console.error(e);
+      setError("Erro ao inativar usuário");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -112,6 +238,13 @@ export default function UsersPage() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  const getRoleLabel = (role) => {
+    if (role === 'admin') return 'Administrador';
+    // Verificar se é gestor (tem subordinados)
+    const hasSubordinates = users.some(u => u.manager_id === users.find(usr => usr.role === role)?.id);
+    return hasSubordinates ? 'Gestor' : 'Colaborador';
+  };
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -119,7 +252,13 @@ export default function UsersPage() {
     const matchesRisk = filterRisk === "all" || 
                        (filterRisk === "at_risk" && isAtRisk(user)) ||
                        (filterRisk === "compliant" && !isAtRisk(user));
-    return matchesSearch && matchesStatus && matchesRisk;
+    
+    const matchesRole = filterRole === "all" || 
+                       (filterRole === "admin" && user.role === 'admin') ||
+                       (filterRole === "manager" && users.some(u => u.manager_id === user.id)) ||
+                       (filterRole === "employee" && user.role !== 'admin' && !users.some(u => u.manager_id === user.id));
+    
+    return matchesSearch && matchesStatus && matchesRisk && matchesRole;
   });
 
   if (loading) {
@@ -135,9 +274,17 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Colaboradores</h1>
-          <p className="text-slate-500">Gerencie os dados complementares dos colaboradores</p>
+          <h1 className="text-2xl font-bold text-slate-900">Gestão de Usuários</h1>
+          <p className="text-slate-500">Cadastre gestores, colaboradores e gerencie acessos</p>
         </div>
+        <Button 
+          onClick={() => setShowCreateDialog(true)}
+          className="font-semibold shadow-md"
+          style={{background: '#F8B137', color: '#14141E'}}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Novo Usuário
+        </Button>
       </div>
 
       {/* Stats */}
@@ -217,6 +364,17 @@ export default function UsersPage() {
                 <SelectItem value="inactive">Inativos</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={filterRole} onValueChange={setFilterRole}>
+              <SelectTrigger className="w-full sm:w-40">
+                <SelectValue placeholder="Perfil" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Perfis</SelectItem>
+                <SelectItem value="admin">Administradores</SelectItem>
+                <SelectItem value="manager">Gestores</SelectItem>
+                <SelectItem value="employee">Colaboradores</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={filterRisk} onValueChange={setFilterRisk}>
               <SelectTrigger className="w-full sm:w-40">
                 <SelectValue placeholder="Compliance" />
@@ -238,8 +396,9 @@ export default function UsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100">
-                  <th className="text-left p-4 font-medium text-slate-600">Colaborador</th>
-                  <th className="text-left p-4 font-medium text-slate-600 hidden md:table-cell">Cargo</th>
+                  <th className="text-left p-4 font-medium text-slate-600">Usuário</th>
+                  <th className="text-left p-4 font-medium text-slate-600 hidden md:table-cell">Perfil</th>
+                  <th className="text-left p-4 font-medium text-slate-600 hidden md:table-cell">Cargo/Dept</th>
                   <th className="text-left p-4 font-medium text-slate-600 hidden lg:table-cell">Gestor</th>
                   <th className="text-left p-4 font-medium text-slate-600 hidden sm:table-cell">Último Feedback</th>
                   <th className="text-left p-4 font-medium text-slate-600">Status</th>
@@ -250,6 +409,7 @@ export default function UsersPage() {
                 {filteredUsers.map((user) => {
                   const atRisk = isAtRisk(user);
                   const manager = managers.find(m => m.id === user.manager_id);
+                  const isManager = users.some(u => u.manager_id === user.id);
                   const daysSinceLastFeedback = user.last_feedback_date
                     ? differenceInDays(new Date(), new Date(user.last_feedback_date))
                     : null;
@@ -259,7 +419,10 @@ export default function UsersPage() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10">
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold">
+                            <AvatarFallback 
+                              className="text-white text-sm font-semibold"
+                              style={{background: user.role === 'admin' ? '#14141E' : '#F8B137'}}
+                            >
                               {getInitials(user.full_name)}
                             </AvatarFallback>
                           </Avatar>
@@ -268,6 +431,20 @@ export default function UsersPage() {
                             <p className="text-sm text-slate-500">{user.email}</p>
                           </div>
                         </div>
+                      </td>
+                      <td className="p-4 hidden md:table-cell">
+                        <Badge 
+                          variant="outline"
+                          className={
+                            user.role === 'admin' 
+                              ? 'bg-slate-100 text-slate-700 border-slate-200'
+                              : isManager
+                              ? 'bg-purple-50 text-purple-700 border-purple-200'
+                              : 'bg-blue-50 text-blue-700 border-blue-200'
+                          }
+                        >
+                          {user.role === 'admin' ? 'Admin' : isManager ? 'Gestor' : 'Colaborador'}
+                        </Badge>
                       </td>
                       <td className="p-4 hidden md:table-cell">
                         <div>
@@ -320,6 +497,15 @@ export default function UsersPage() {
                               <Pencil className="w-4 h-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
+                            {user.status === 'active' && (
+                              <DropdownMenuItem 
+                                onClick={() => handleInactivateUser(user)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Inativar
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
@@ -415,6 +601,190 @@ export default function UsersPage() {
             </Button>
             <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
               Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create User Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Cadastrar Novo Usuário</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Nome Completo *</Label>
+              <Input
+                value={createFormData.full_name}
+                onChange={(e) => setCreateFormData({...createFormData, full_name: e.target.value})}
+                placeholder="Nome completo do usuário"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>E-mail Corporativo *</Label>
+              <Input
+                type="email"
+                value={createFormData.email}
+                onChange={(e) => setCreateFormData({...createFormData, email: e.target.value.toLowerCase()})}
+                placeholder="email@empresa.com"
+              />
+              <p className="text-xs text-slate-500">
+                O usuário receberá um convite por e-mail para criar a senha
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Perfil *</Label>
+              <Select 
+                value={createFormData.role} 
+                onValueChange={(value) => setCreateFormData({...createFormData, role: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                  <SelectItem value="user">Gestor/Colaborador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Gestor Imediato</Label>
+              <Select 
+                value={createFormData.manager_id} 
+                onValueChange={(value) => setCreateFormData({...createFormData, manager_id: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o gestor (opcional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Sem gestor</SelectItem>
+                  {managers.map(manager => (
+                    <SelectItem key={manager.id} value={manager.id}>
+                      {manager.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Departamento</Label>
+              <Input
+                value={createFormData.department}
+                onChange={(e) => setCreateFormData({...createFormData, department: e.target.value})}
+                placeholder="Ex: Tecnologia, RH, Comercial..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Cargo</Label>
+              <Input
+                value={createFormData.position}
+                onChange={(e) => setCreateFormData({...createFormData, position: e.target.value})}
+                placeholder="Ex: Analista, Coordenador, Gerente..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Data de Admissão</Label>
+              <Input
+                type="date"
+                value={createFormData.admission_date}
+                onChange={(e) => setCreateFormData({...createFormData, admission_date: e.target.value})}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowCreateDialog(false);
+                setError("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreate}
+              disabled={saving || !createFormData.full_name || !createFormData.email}
+              style={{background: '#F8B137', color: '#14141E'}}
+            >
+              {saving ? "Cadastrando..." : "Cadastrar Usuário"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inactivate User Dialog */}
+      <Dialog open={showInactivateDialog} onOpenChange={setShowInactivateDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="w-5 h-5" />
+              Inativar Usuário
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-slate-700">
+              O usuário <strong>{inactivatingUser?.full_name}</strong> possui{' '}
+              <strong>{users.filter(u => u.manager_id === inactivatingUser?.id && u.status === 'active').length}</strong>{' '}
+              colaborador(es) vinculado(s).
+            </p>
+            <p className="text-sm text-slate-600">
+              Para prosseguir, você deve transferir estes colaboradores para outro gestor.
+            </p>
+
+            <div className="space-y-2">
+              <Label>Novo Gestor *</Label>
+              <Select value={newManagerId} onValueChange={setNewManagerId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o novo gestor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {managers
+                    .filter(m => m.id !== inactivatingUser?.id && m.status === 'active')
+                    .map(manager => (
+                      <SelectItem key={manager.id} value={manager.id}>
+                        {manager.full_name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-xs text-amber-800">
+                ⚠️ Esta ação não pode ser desfeita. O usuário será inativado e todos os seus subordinados serão transferidos.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowInactivateDialog(false);
+                setInactivatingUser(null);
+                setNewManagerId("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => confirmInactivation(inactivatingUser.id, newManagerId)}
+              disabled={saving || !newManagerId}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {saving ? "Inativando..." : "Confirmar Inativação"}
             </Button>
           </DialogFooter>
         </DialogContent>

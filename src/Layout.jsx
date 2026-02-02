@@ -88,16 +88,28 @@ export default function Layout({ children, currentPageName }) {
       show: true 
     },
     { 
+      name: "Empresas", 
+      href: createPageUrl("Companies"), 
+      icon: Shield,
+      show: isAdmin 
+    },
+    { 
+      name: "Gestores", 
+      href: createPageUrl("Managers"), 
+      icon: Shield,
+      show: isAdmin 
+    },
+    { 
+      name: "Colaboradores", 
+      href: createPageUrl("Employees"), 
+      icon: Users,
+      show: isAdmin 
+    },
+    { 
       name: "Minha Equipe", 
       href: createPageUrl("MyTeam"), 
       icon: Users,
       show: isManager 
-    },
-    { 
-      name: "Colaboradores", 
-      href: createPageUrl("Users"), 
-      icon: Users,
-      show: isAdmin 
     },
     { 
       name: "Feedbacks", 
@@ -246,8 +258,11 @@ export default function Layout({ children, currentPageName }) {
             <div className="hidden lg:block">
               <h2 className="text-lg font-semibold text-slate-900">
                 {currentPageName === 'Dashboard' && 'Visão Geral'}
+                {currentPageName === 'Companies' && 'Empresas'}
+                {currentPageName === 'Managers' && 'Gestores'}
+                {currentPageName === 'Employees' && 'Colaboradores'}
                 {currentPageName === 'MyTeam' && 'Minha Equipe'}
-                {currentPageName === 'Users' && 'Gestão de Colaboradores'}
+                {currentPageName === 'Users' && 'Gestão de Usuários'}
                 {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
                 {currentPageName === 'Validation' && 'Validação de Feedbacks'}
                 {currentPageName === 'Contestations' && 'Contestações'}

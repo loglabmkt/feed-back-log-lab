@@ -55,6 +55,9 @@ import Reports from './pages/Reports';
 import Users from './pages/Users';
 import Validation from './pages/Validation';
 import MyTeam from './pages/MyTeam';
+import Companies from './pages/Companies';
+import Employees from './pages/Employees';
+import Managers from './pages/Managers';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +70,9 @@ export const PAGES = {
     "Users": Users,
     "Validation": Validation,
     "MyTeam": MyTeam,
+    "Companies": Companies,
+    "Employees": Employees,
+    "Managers": Managers,
 }
 
 export const pagesConfig = {

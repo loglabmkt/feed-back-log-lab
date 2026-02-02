@@ -1,3 +1,4 @@
+css
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap');
 
 @tailwind base;
@@ -124,17 +125,13 @@
   animation: slideIn 0.3s ease-out;
 }
 
-/* Gradientes Customizados */
-.gradient-primary {
-  background: linear-gradient(135deg, #F8B137 0%, #e6a030 100%);
+/* Cores Sólidas */
+.bg-primary-solid {
+  background: #F8B137;
 }
 
-.gradient-secondary {
-  background: linear-gradient(135deg, #14141E 0%, #2a2a3e 100%);
-}
-
-.gradient-accent {
-  background: linear-gradient(135deg, #F8B137 0%, #14141E 100%);
+.bg-secondary-solid {
+  background: #14141E;
 }
 
 /* Card com Brilho */

@@ -141,7 +141,7 @@ export default function Layout({ children, currentPageName }) {
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg" style={{boxShadow: '0 4px 14px rgba(248, 177, 55, 0.3)'}}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{background: '#F8B137', boxShadow: '0 4px 14px rgba(248, 177, 55, 0.3)'}}>
                 <Shield className="w-5 h-5" style={{color: '#14141E'}} />
               </div>
               <div>
@@ -195,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="p-4 border-t border-slate-100">
             <div className="flex items-center gap-3 p-3 rounded-xl" style={{background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.1) 0%, rgba(248, 177, 55, 0.05) 100%)'}}>
               <Avatar className="h-10 w-10 border-2 shadow-sm" style={{borderColor: '#F8B137'}}>
-                <AvatarFallback className="text-white text-sm font-bold" style={{background: 'linear-gradient(135deg, #F8B137 0%, #e6a030 100%)'}}>
+                <AvatarFallback className="text-white text-sm font-bold" style={{background: '#F8B137'}}>
                   {getInitials(user?.full_name)}
                 </AvatarFallback>
               </Avatar>
@@ -262,7 +262,7 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-white text-xs font-bold" style={{background: 'linear-gradient(135deg, #F8B137 0%, #e6a030 100%)'}}>
+                      <AvatarFallback className="text-white text-xs font-bold" style={{background: '#F8B137'}}>
                         {getInitials(user?.full_name)}
                       </AvatarFallback>
                     </Avatar>

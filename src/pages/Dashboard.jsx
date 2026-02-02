@@ -125,11 +125,11 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="rounded-2xl p-8 text-white gradient-accent shadow-lg card-glow">
-        <h1 className="text-3xl font-bold mb-2" style={{color: '#ffffff'}}>
+      <div className="rounded-2xl p-8 text-white shadow-lg card-glow" style={{background: '#F8B137'}}>
+        <h1 className="text-3xl font-bold mb-2" style={{color: '#14141E'}}>
           Olá, {user?.full_name?.split(' ')[0]}! 👋
         </h1>
-        <p className="max-w-2xl" style={{color: 'rgba(255, 255, 255, 0.9)'}}>
+        <p className="max-w-2xl" style={{color: '#14141E', opacity: 0.9}}>
           {isAdmin 
             ? "Acompanhe a conformidade dos rituais de gestão de pessoas da sua organização."
             : "Acompanhe seus feedbacks e mantenha suas validações em dia."

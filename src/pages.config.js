@@ -52,6 +52,7 @@ import Users from './pages/Users';
 import Feedbacks from './pages/Feedbacks';
 import Validation from './pages/Validation';
 import Contestations from './pages/Contestations';
+import Reports from './pages/Reports';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +62,7 @@ export const PAGES = {
     "Feedbacks": Feedbacks,
     "Validation": Validation,
     "Contestations": Contestations,
+    "Reports": Reports,
 }
 
 export const pagesConfig = {

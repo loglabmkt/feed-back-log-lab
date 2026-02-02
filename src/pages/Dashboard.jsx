@@ -50,10 +50,20 @@ export default function Dashboard() {
         base44.entities.FeedbackRecord.list('-created_date', 100)
       ]);
 
-      const activeUsers = users.filter(u => u.status === 'active');
-      const pendingFeedbacks = feedbacks.filter(f => f.validation_status === 'pending');
-      const acceptedFeedbacks = feedbacks.filter(f => f.validation_status === 'accepted');
-      const contestedFeedbacks = feedbacks.filter(f => f.validation_status === 'contested');
+      const isManager = currentUser.role !== 'admin';
+
+      // Filtrar dados baseado no perfil
+      const activeUsers = isManager 
+        ? users.filter(u => u.status === 'active' && u.manager_id === currentUser.id)
+        : users.filter(u => u.status === 'active');
+
+      const relevantFeedbacks = isManager
+        ? feedbacks.filter(f => f.manager_id === currentUser.id)
+        : feedbacks;
+
+      const pendingFeedbacks = relevantFeedbacks.filter(f => f.validation_status === 'pending');
+      const acceptedFeedbacks = relevantFeedbacks.filter(f => f.validation_status === 'accepted');
+      const contestedFeedbacks = relevantFeedbacks.filter(f => f.validation_status === 'contested');
       
       // Calculate at-risk users (>90 days without feedback)
       const today = new Date();
@@ -75,7 +85,7 @@ export default function Dashboard() {
 
       setStats({
         totalUsers: activeUsers.length,
-        totalFeedbacks: feedbacks.length,
+        totalFeedbacks: relevantFeedbacks.length,
         pendingValidations: pendingFeedbacks.length,
         atRiskCount: usersAtRisk.length,
         acceptedCount: acceptedFeedbacks.length,
@@ -83,7 +93,7 @@ export default function Dashboard() {
         complianceRate
       });
 
-      setRecentFeedbacks(feedbacks.slice(0, 5));
+      setRecentFeedbacks(relevantFeedbacks.slice(0, 5));
       setAtRiskUsers(usersAtRisk.slice(0, 5));
     } catch (e) {
       console.error(e);
@@ -93,6 +103,7 @@ export default function Dashboard() {
   };
 
   const isAdmin = user?.role === 'admin';
+  const isManager = user?.role !== 'admin';
 
   const getStatusBadge = (status) => {
     const styles = {
@@ -132,19 +143,21 @@ export default function Dashboard() {
         <p className="max-w-2xl" style={{color: '#14141E', opacity: 0.9}}>
           {isAdmin 
             ? "Acompanhe a conformidade dos rituais de gestão de pessoas da sua organização."
+            : isManager
+            ? "Gerencie sua equipe e acompanhe o compliance dos seus liderados."
             : "Acompanhe seus feedbacks e mantenha suas validações em dia."
           }
         </p>
       </div>
 
       {/* Stats Grid */}
-      {isAdmin && (
+      {(isAdmin || isManager) && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500 font-medium">Colaboradores Ativos</p>
+                  <p className="text-sm text-slate-500 font-medium">{isManager ? 'Minha Equipe' : 'Colaboradores Ativos'}</p>
                   <p className="text-3xl font-bold text-slate-900 mt-1">{stats.totalUsers}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -200,7 +213,7 @@ export default function Dashboard() {
 
       {/* Compliance Rate & Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {isAdmin && (
+        {(isAdmin || isManager) && (
           <Card className="border-0 shadow-sm lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
@@ -238,7 +251,7 @@ export default function Dashboard() {
         )}
 
         {/* Recent Feedbacks */}
-        <Card className={`border-0 shadow-sm ${isAdmin ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
+        <Card className={`border-0 shadow-sm ${(isAdmin || isManager) ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-blue-600" />
@@ -284,15 +297,15 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* At Risk Users (Admin only) */}
-      {isAdmin && stats.atRiskCount > 0 && (
+      {/* At Risk Users */}
+      {(isAdmin || isManager) && stats.atRiskCount > 0 && (
         <Card className="border-0 shadow-sm border-l-4 border-l-red-500">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg font-semibold flex items-center gap-2 text-red-700">
               <AlertTriangle className="w-5 h-5" />
               Colaboradores em Risco de Compliance
             </CardTitle>
-            <Link to={createPageUrl("Users")}>
+            <Link to={isManager ? createPageUrl("MyTeam") : createPageUrl("Users")}>
               <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
                 Ver todos
               </Button>
@@ -337,7 +350,7 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {isAdmin && (
+        {(isAdmin || isManager) && (
           <Link to={createPageUrl("Feedbacks")}>
             <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer group">
               <CardContent className="p-6 flex items-center gap-4">
@@ -347,6 +360,23 @@ export default function Dashboard() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Registrar Feedback</h3>
                   <p className="text-sm text-slate-500">Adicionar novo feedback ou 1:1</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-slate-400 ml-auto group-hover:translate-x-1 transition-transform" />
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+        
+        {isManager && (
+          <Link to={createPageUrl("MyTeam")}>
+            <Card className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer group">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                  <Users className="w-7 h-7 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900">Minha Equipe</h3>
+                  <p className="text-sm text-slate-500">Visualizar e gerenciar liderados</p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-slate-400 ml-auto group-hover:translate-x-1 transition-transform" />
               </CardContent>

@@ -67,6 +67,11 @@ export default function ValidationPage() {
   const handleAccept = async () => {
     if (!selectedFeedback) return;
     
+    // Verificar se o feedback já foi aceito (imutabilidade)
+    if (selectedFeedback.validation_status === 'accepted') {
+      return;
+    }
+    
     setProcessing(true);
     try {
       await base44.entities.FeedbackRecord.update(selectedFeedback.id, {
@@ -85,7 +90,12 @@ export default function ValidationPage() {
   };
 
   const handleContest = async () => {
-    if (!selectedFeedback || !contestReason.trim()) return;
+    if (!selectedFeedback || !contestReason.trim() || contestReason.trim().length < 50) return;
+    
+    // Verificar se o feedback já foi aceito (imutabilidade)
+    if (selectedFeedback.validation_status === 'accepted') {
+      return;
+    }
     
     setProcessing(true);
     try {
@@ -152,9 +162,9 @@ export default function ValidationPage() {
       evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200"
     };
     const labels = {
-      feedback: "Feedback",
+      feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      evaluation: "Avaliação"
+      evaluation: "Avaliação de Experiência"
     };
     return (
       <Badge variant="outline" className={styles[type]}>
@@ -474,13 +484,14 @@ export default function ValidationPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4">
-            <Textarea
-              value={contestReason}
-              onChange={(e) => setContestReason(e.target.value)}
-              placeholder="Descreva detalhadamente o motivo da contestação..."
-              className="min-h-32"
-            />
+          <div className="py-4 space-y-2">
+          <Textarea
+            value={contestReason}
+            onChange={(e) => setContestReason(e.target.value)}
+            placeholder="Descreva detalhadamente o motivo da contestação... (mínimo 50 caracteres)"
+            className="min-h-32"
+          />
+          <p className="text-xs text-slate-500">{contestReason.length}/50 caracteres mínimos</p>
           </div>
 
           <DialogFooter>
@@ -493,7 +504,7 @@ export default function ValidationPage() {
             <Button 
               onClick={handleContest}
               className="bg-red-600 hover:bg-red-700"
-              disabled={processing || !contestReason.trim()}
+              disabled={processing || contestReason.trim().length < 50}
             >
               {processing ? "Enviando..." : "Enviar Contestação"}
             </Button>

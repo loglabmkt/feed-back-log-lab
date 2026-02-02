@@ -53,6 +53,7 @@ import Feedbacks from './pages/Feedbacks';
 import Reports from './pages/Reports';
 import Users from './pages/Users';
 import Validation from './pages/Validation';
+import FeedbackPublicAccess from './pages/FeedbackPublicAccess';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Reports": Reports,
     "Users": Users,
     "Validation": Validation,
+    "FeedbackPublicAccess": FeedbackPublicAccess,
 }
 
 export const pagesConfig = {

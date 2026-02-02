@@ -129,9 +129,26 @@ export default function FeedbacksPage() {
       return;
     }
 
+    // Validar caracteres mínimos
+    if (formData.strengths.trim().length < 50) {
+      setDateError("Pontos Fortes deve ter no mínimo 50 caracteres.");
+      return;
+    }
+    if (formData.improvements.trim().length < 50) {
+      setDateError("Pontos de Melhoria deve ter no mínimo 50 caracteres.");
+      return;
+    }
+
+    const employee = users.find(u => u.id === formData.employee_id);
+    
+    // Validar hierarquia - gestor só pode dar feedback para sua equipe
+    if (currentUser.role !== 'admin' && employee.manager_id !== currentUser.id) {
+      setDateError("Você só pode registrar feedbacks para colaboradores da sua equipe.");
+      return;
+    }
+
     setSaving(true);
     try {
-      const employee = users.find(u => u.id === formData.employee_id);
       const validationDeadline = format(addDays(new Date(), 10), "yyyy-MM-dd");
 
       await base44.entities.FeedbackRecord.create({
@@ -209,9 +226,9 @@ export default function FeedbacksPage() {
       evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200"
     };
     const labels = {
-      feedback: "Feedback",
+      feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      evaluation: "Avaliação"
+      evaluation: "Avaliação de Experiência"
     };
     return (
       <Badge variant="outline" className={styles[type]}>
@@ -276,9 +293,9 @@ export default function FeedbacksPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os Tipos</SelectItem>
-                <SelectItem value="feedback">Feedback</SelectItem>
+                <SelectItem value="feedback">Feedback Trimestral</SelectItem>
                 <SelectItem value="one_on_one">1:1</SelectItem>
-                <SelectItem value="evaluation">Avaliação</SelectItem>
+                <SelectItem value="evaluation">Avaliação de Experiência</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -383,11 +400,13 @@ export default function FeedbacksPage() {
                     <SelectValue placeholder="Selecione o colaborador" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.filter(u => u.id !== currentUser?.id).map(user => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.full_name}
-                      </SelectItem>
-                    ))}
+                    {users
+                      .filter(u => u.id !== currentUser?.id && (currentUser?.role === 'admin' || u.manager_id === currentUser?.id))
+                      .map(user => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.full_name} {user.position ? `- ${user.position}` : ''}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -402,9 +421,9 @@ export default function FeedbacksPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="feedback">Feedback</SelectItem>
+                    <SelectItem value="feedback">Feedback Trimestral</SelectItem>
                     <SelectItem value="one_on_one">1:1</SelectItem>
-                    <SelectItem value="evaluation">Avaliação</SelectItem>
+                    <SelectItem value="evaluation">Avaliação de Experiência</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -427,27 +446,29 @@ export default function FeedbacksPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Pontos Fortes *</Label>
+              <Label>Pontos Fortes * (mínimo 50 caracteres)</Label>
               <Textarea
                 value={formData.strengths}
                 onChange={(e) => setFormData({...formData, strengths: e.target.value})}
                 placeholder="Descreva os pontos fortes identificados..."
                 className="min-h-24"
               />
+              <p className="text-xs text-slate-500">{formData.strengths.length}/50 caracteres</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Pontos de Melhoria *</Label>
+              <Label>Pontos de Melhoria * (mínimo 50 caracteres)</Label>
               <Textarea
                 value={formData.improvements}
                 onChange={(e) => setFormData({...formData, improvements: e.target.value})}
                 placeholder="Descreva os pontos de melhoria identificados..."
                 className="min-h-24"
               />
+              <p className="text-xs text-slate-500">{formData.improvements.length}/50 caracteres</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Plano de Ação</Label>
+              <Label>Plano de Ação (PDI)</Label>
               <Textarea
                 value={formData.action_plan}
                 onChange={(e) => setFormData({...formData, action_plan: e.target.value})}
@@ -476,7 +497,7 @@ export default function FeedbacksPage() {
             <Button 
               onClick={handleCreateFeedback}
               className="bg-blue-600 hover:bg-blue-700"
-              disabled={saving || dateError || !formData.employee_id || !formData.strengths || !formData.improvements}
+              disabled={saving || dateError || !formData.employee_id || formData.strengths.trim().length < 50 || formData.improvements.trim().length < 50}
             >
               {saving ? "Salvando..." : "Registrar Feedback"}
             </Button>

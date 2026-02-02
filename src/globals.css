@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cores Primárias */
+    --primary: 33 73 91%; /* #F8B137 */
+    --primary-foreground: 222 47 11%; /* #14141E */
+    
+    /* Cores Secundárias */
+    --secondary: 222 47 11%; /* #14141E */
+    --secondary-foreground: 0 0 98%;
+    
+    /* Cores de Fundo */
+    --background: 0 0 100%;
+    --foreground: 222 47 11%;
+    
+    /* Cores de Card */
+    --card: 0 0 100%;
+    --card-foreground: 222 47 11%;
+    
+    /* Cores de Popover */
+    --popover: 0 0 100%;
+    --popover-foreground: 222 47 11%;
+    
+    /* Cores de Borda */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 33 73 91%;
+    
+    /* Cores de Estado */
+    --success: 142 76% 36%;
+    --warning: 48 96% 53%;
+    --error: 0 84% 60%;
+    --info: 199 89% 48%;
+    
+    /* Cores Neutras */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 33 73 91%;
+    --accent-foreground: 222 47 11%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0 98%;
+    
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Titillium Web', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F8B137;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e6a030;
+}
+
+/* Animações Customizadas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Gradientes Customizados */
+.gradient-primary {
+  background: linear-gradient(135deg, #F8B137 0%, #e6a030 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, #14141E 0%, #2a2a3e 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #F8B137 0%, #14141E 100%);
+}
+
+/* Card com Brilho */
+.card-glow {
+  box-shadow: 0 4px 20px rgba(248, 177, 55, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card-glow:hover {
+  box-shadow: 0 8px 30px rgba(248, 177, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Botão Primary Customizado */
+.btn-primary {
+  background: #F8B137;
+  color: #14141E;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #e6a030;
+  transform: scale(1.02);
+}
+
+/* Badge Customizado */
+.badge-primary {
+  background: rgba(248, 177, 55, 0.1);
+  color: #F8B137;
+  border: 1px solid rgba(248, 177, 55, 0.3);
+}
+
+/* Focus Ring Customizado */
+*:focus-visible {
+  outline: 2px solid #F8B137;
+  outline-offset: 2px;
+}

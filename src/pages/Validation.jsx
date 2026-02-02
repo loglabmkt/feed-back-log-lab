@@ -448,7 +448,7 @@ export default function ValidationPage() {
                 </Button>
                 <Button 
                   onClick={handleAccept}
-                  className="bg-emerald-600 hover:bg-emerald-700"
+                  className="btn-primary shadow-md font-semibold"
                   disabled={processing}
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />

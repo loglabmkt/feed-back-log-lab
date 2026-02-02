@@ -17,9 +17,9 @@ export default function KPICards({ stats, loading }) {
       value: `${stats.complianceRate}%`,
       subtitle: "colaboradores em dia",
       icon: TrendingUp,
-      bgColor: "from-blue-50 to-blue-100",
-      iconBg: "bg-blue-200/50",
-      iconColor: "text-blue-700"
+      bgColor: "from-amber-50 to-orange-50",
+      iconBg: "bg-[#F8B137]/20",
+      iconColor: "text-[#F8B137]"
     },
     {
       title: "Total de Feedbacks",

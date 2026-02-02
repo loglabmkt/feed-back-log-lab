@@ -226,7 +226,7 @@ export default function ReportsPage() {
           </Button>
           <Button 
             onClick={handleExport}
-            className="bg-emerald-600 hover:bg-emerald-700 gap-2"
+            className="btn-primary shadow-md font-semibold gap-2"
             disabled={exporting}
           >
             <Download className="w-4 h-4" />

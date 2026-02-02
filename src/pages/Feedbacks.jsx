@@ -249,7 +249,7 @@ export default function FeedbacksPage() {
         {isAdmin && (
           <Button 
             onClick={() => setShowCreateDialog(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="btn-primary shadow-md font-semibold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Novo Feedback

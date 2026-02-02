@@ -140,12 +140,12 @@ export default function Layout({ children, currentPageName }) {
           {/* Logo */}
           <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-                <Shield className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg" style={{boxShadow: '0 4px 14px rgba(248, 177, 55, 0.3)'}}>
+                <Shield className="w-5 h-5" style={{color: '#14141E'}} />
               </div>
               <div>
-                <h1 className="font-bold text-slate-900 tracking-tight">Compliance</h1>
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider">Gestão de Pessoas</p>
+                <h1 className="font-bold tracking-tight" style={{color: '#14141E'}}>Compliance RH</h1>
+                <p className="text-[10px] uppercase tracking-wider" style={{color: '#F8B137'}}>Gestão de Pessoas</p>
               </div>
             </div>
             <button 
@@ -166,23 +166,24 @@ export default function Layout({ children, currentPageName }) {
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold
                     transition-all duration-200 relative
                     ${isActive 
-                      ? 'bg-blue-50 text-blue-700' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'text-slate-900' 
+                      : 'text-slate-600 hover:text-slate-900'
                     }
                   `}
+                  style={isActive ? {
+                    background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.15) 0%, rgba(248, 177, 55, 0.05) 100%)',
+                    borderLeft: '3px solid #F8B137'
+                  } : {}}
                 >
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                  <item.icon className={`w-5 h-5 ${isActive ? 'text-[#F8B137]' : 'text-slate-400'}`} />
                   {item.name}
                   {item.badge && (
-                    <Badge className="ml-auto bg-red-500 text-white text-xs px-2">
+                    <Badge className="ml-auto text-white text-xs px-2" style={{background: '#F8B137'}}>
                       {item.badge}
                     </Badge>
-                  )}
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-600 rounded-r-full" />
                   )}
                 </Link>
               );
@@ -191,9 +192,9 @@ export default function Layout({ children, currentPageName }) {
 
           {/* User section */}
           <div className="p-4 border-t border-slate-100">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-              <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold">
+            <div className="flex items-center gap-3 p-3 rounded-xl" style={{background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.1) 0%, rgba(248, 177, 55, 0.05) 100%)'}}>
+              <Avatar className="h-10 w-10 border-2 shadow-sm" style={{borderColor: '#F8B137'}}>
+                <AvatarFallback className="text-white text-sm font-bold" style={{background: 'linear-gradient(135deg, #F8B137 0%, #e6a030 100%)'}}>
                   {getInitials(user?.full_name)}
                 </AvatarFallback>
               </Avatar>
@@ -209,7 +210,10 @@ export default function Layout({ children, currentPageName }) {
                 variant="ghost" 
                 size="icon" 
                 onClick={handleLogout}
-                className="text-slate-400 hover:text-red-600 hover:bg-red-50"
+                className="text-slate-400 hover:bg-red-50"
+                style={{color: '#14141E'}}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#14141E'}
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -221,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Main content */}
       <div className="lg:pl-72">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+        <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-lg border-b" style={{borderColor: 'rgba(248, 177, 55, 0.1)'}}>
           <div className="flex items-center justify-between h-full px-4 lg:px-8">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -245,8 +249,8 @@ export default function Layout({ children, currentPageName }) {
               {pendingCount > 0 && !isAdmin && (
                 <Link to={createPageUrl("Validation")}>
                   <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="w-5 h-5 text-slate-600" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    <Bell className="w-5 h-5" style={{color: '#14141E'}} />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold" style={{background: '#F8B137'}}>
                       {pendingCount}
                     </span>
                   </Button>
@@ -257,7 +261,7 @@ export default function Layout({ children, currentPageName }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-semibold">
+                      <AvatarFallback className="text-white text-xs font-bold" style={{background: 'linear-gradient(135deg, #F8B137 0%, #e6a030 100%)'}}>
                         {getInitials(user?.full_name)}
                       </AvatarFallback>
                     </Avatar>

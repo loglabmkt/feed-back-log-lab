@@ -78,12 +78,20 @@ export default function Layout({ children, currentPageName }) {
 
   const isAdmin = user?.role === 'admin';
 
+  const isManager = user?.role !== 'admin' && user?.manager_id !== user?.id;
+
   const navigation = [
     { 
       name: "Dashboard", 
       href: createPageUrl("Dashboard"), 
       icon: LayoutDashboard,
       show: true 
+    },
+    { 
+      name: "Minha Equipe", 
+      href: createPageUrl("MyTeam"), 
+      icon: Users,
+      show: isManager 
     },
     { 
       name: "Colaboradores", 
@@ -238,6 +246,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="hidden lg:block">
               <h2 className="text-lg font-semibold text-slate-900">
                 {currentPageName === 'Dashboard' && 'Visão Geral'}
+                {currentPageName === 'MyTeam' && 'Minha Equipe'}
                 {currentPageName === 'Users' && 'Gestão de Colaboradores'}
                 {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
                 {currentPageName === 'Validation' && 'Validação de Feedbacks'}

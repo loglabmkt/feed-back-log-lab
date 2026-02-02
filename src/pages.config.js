@@ -49,22 +49,24 @@
  */
 import Contestations from './pages/Contestations';
 import Dashboard from './pages/Dashboard';
+import FeedbackPublicAccess from './pages/FeedbackPublicAccess';
 import Feedbacks from './pages/Feedbacks';
 import Reports from './pages/Reports';
 import Users from './pages/Users';
 import Validation from './pages/Validation';
-import FeedbackPublicAccess from './pages/FeedbackPublicAccess';
+import MyTeam from './pages/MyTeam';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Contestations": Contestations,
     "Dashboard": Dashboard,
+    "FeedbackPublicAccess": FeedbackPublicAccess,
     "Feedbacks": Feedbacks,
     "Reports": Reports,
     "Users": Users,
     "Validation": Validation,
-    "FeedbackPublicAccess": FeedbackPublicAccess,
+    "MyTeam": MyTeam,
 }
 
 export const pagesConfig = {

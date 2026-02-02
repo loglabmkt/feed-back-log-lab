@@ -82,32 +82,32 @@ export default function Layout({ children, currentPageName }) {
 
   const navigation = [
     { 
-      name: "Dashboard", 
-      href: createPageUrl("Dashboard"), 
+      name: "Painel", 
+      href: createPageUrl("Painel"), 
       icon: LayoutDashboard,
       show: true 
     },
     { 
       name: "Empresas", 
-      href: createPageUrl("Companies"), 
+      href: createPageUrl("Empresas"), 
       icon: Shield,
       show: isAdmin 
     },
     { 
       name: "Gestores", 
-      href: createPageUrl("Managers"), 
+      href: createPageUrl("Gestores"), 
       icon: Shield,
       show: isAdmin 
     },
     { 
       name: "Colaboradores", 
-      href: createPageUrl("Employees"), 
+      href: createPageUrl("Colaboradores"), 
       icon: Users,
       show: isAdmin 
     },
     { 
       name: "Minha Equipe", 
-      href: createPageUrl("MyTeam"), 
+      href: createPageUrl("MinhaEquipe"), 
       icon: Users,
       show: isManager 
     },
@@ -119,20 +119,20 @@ export default function Layout({ children, currentPageName }) {
     },
     { 
       name: "Validação", 
-      href: createPageUrl("Validation"), 
+      href: createPageUrl("Validacao"), 
       icon: CheckCircle,
       show: !isAdmin,
       badge: pendingCount > 0 ? pendingCount : null
     },
     { 
       name: "Contestações", 
-      href: createPageUrl("Contestations"), 
+      href: createPageUrl("Contestacoes"), 
       icon: AlertTriangle,
       show: isAdmin 
     },
     { 
       name: "Relatórios", 
-      href: createPageUrl("Reports"), 
+      href: createPageUrl("Relatorios"), 
       icon: BarChart3,
       show: isAdmin 
     },
@@ -257,16 +257,17 @@ export default function Layout({ children, currentPageName }) {
 
             <div className="hidden lg:block">
               <h2 className="text-lg font-semibold text-slate-900">
-                {currentPageName === 'Dashboard' && 'Visão Geral'}
-                {currentPageName === 'Companies' && 'Empresas'}
-                {currentPageName === 'Managers' && 'Gestores'}
-                {currentPageName === 'Employees' && 'Colaboradores'}
-                {currentPageName === 'MyTeam' && 'Minha Equipe'}
-                {currentPageName === 'Users' && 'Gestão de Usuários'}
+                {currentPageName === 'Painel' && 'Visão Geral'}
+                {currentPageName === 'Empresas' && 'Empresas'}
+                {currentPageName === 'Gestores' && 'Gestores'}
+                {currentPageName === 'Colaboradores' && 'Colaboradores'}
+                {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
+                {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
                 {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
-                {currentPageName === 'Validation' && 'Validação de Feedbacks'}
-                {currentPageName === 'Contestations' && 'Contestações'}
-                {currentPageName === 'Reports' && 'Relatórios & BI'}
+                {currentPageName === 'Validacao' && 'Validação de Feedbacks'}
+                {currentPageName === 'Contestacoes' && 'Contestações'}
+                {currentPageName === 'Relatorios' && 'Relatórios & BI'}
+                {currentPageName === 'AcessoPublicoFeedback' && 'Acesso Público'}
               </h2>
             </div>
 

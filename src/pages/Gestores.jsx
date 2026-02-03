@@ -46,19 +46,14 @@ export default function Gestores() {
 
   const loadData = async () => {
     try {
-      const [users, companiesData] = await Promise.all([
-        base44.entities.User.list(),
+      const [gestores, colaboradores, companiesData] = await Promise.all([
+        base44.entities.Gestor.list(),
+        base44.entities.Colaborador.list(),
         base44.entities.Company.list()
       ]);
 
-      setAllUsers(users);
-      
-      // Gestores são users que têm subordinados OU são admin
-      const managerUsers = users.filter(u => 
-        u.role === 'admin' || users.some(emp => emp.manager_id === u.id)
-      );
-      
-      setManagers(managerUsers);
+      setAllUsers(colaboradores);
+      setManagers(gestores);
       setCompanies(companiesData);
     } catch (e) {
       console.error(e);
@@ -112,26 +107,28 @@ export default function Gestores() {
 
     try {
       if (editingManager) {
-        await base44.entities.User.update(editingManager.id, formData);
+        await base44.entities.Gestor.update(editingManager.id, {
+          full_name: formData.full_name,
+          email: formData.email,
+          company_id: formData.company_id || null,
+          department: formData.department || null
+        });
       } else {
-        const emailExists = allUsers.some(u => u.email.toLowerCase() === formData.email.toLowerCase());
+        const emailExists = managers.some(m => m.email.toLowerCase() === formData.email.toLowerCase());
         if (emailExists) {
           setError("Email já cadastrado");
           setSaving(false);
           return;
         }
 
-        await base44.users.inviteUser(formData.email, formData.role);
-        
-        const updatedUsers = await base44.entities.User.list();
-        const newUser = updatedUsers.find(u => u.email.toLowerCase() === formData.email.toLowerCase());
-        
-        if (newUser) {
-          await base44.entities.User.update(newUser.id, {
-            company_id: formData.company_id || null,
-            department: formData.department || null
-          });
-        }
+        await base44.entities.Gestor.create({
+          full_name: formData.full_name,
+          email: formData.email,
+          company_id: formData.company_id || null,
+          department: formData.department || null,
+          is_admin: formData.role === 'admin',
+          status: "active"
+        });
       }
 
       await loadData();
@@ -201,7 +198,7 @@ export default function Gestores() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-slate-900">{manager.full_name}</h3>
-                        {manager.role === 'admin' && (
+                        {manager.is_admin && (
                           <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             Admin
                           </Badge>
@@ -261,7 +258,6 @@ export default function Gestores() {
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                 placeholder="Nome do gestor"
-                disabled={!!editingManager}
               />
             </div>
 
@@ -272,13 +268,7 @@ export default function Gestores() {
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase()})}
                 placeholder="email@empresa.com"
-                disabled={!!editingManager}
               />
-              {!editingManager && (
-                <p className="text-xs text-slate-500">
-                  Uma senha temporária será enviada por email
-                </p>
-              )}
             </div>
 
             <div className="space-y-2">

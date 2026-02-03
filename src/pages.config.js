@@ -61,6 +61,7 @@ import PreencherFeedback from './pages/PreencherFeedback';
 import RevisarFeedback from './pages/RevisarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
 import ValidarFeedback from './pages/ValidarFeedback';
+import EditarFeedback from './pages/EditarFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "RevisarFeedback": RevisarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
     "ValidarFeedback": ValidarFeedback,
+    "EditarFeedback": EditarFeedback,
 }
 
 export const pagesConfig = {

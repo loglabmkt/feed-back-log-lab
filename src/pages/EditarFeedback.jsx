@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -16,19 +16,52 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export default function CriarFeedback() {
+export default function EditarFeedback() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   
   const [formData, setFormData] = useState({
     title: "",
     feedback_type: "feedback",
-    checklist_questions: [
-      { id: "1", question: "O gestor realizou a reunião presencial/online?", required: true },
-      { id: "2", question: "O plano de ação foi discutido e acordado?", required: true }
-    ]
+    checklist_questions: []
   });
+
+  useEffect(() => {
+    loadTemplate();
+  }, []);
+
+  const loadTemplate = async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const templateId = params.get('id');
+      
+      if (!templateId) {
+        navigate(createPageUrl("Feedbacks"));
+        return;
+      }
+
+      const templates = await base44.entities.FeedbackTemplate.filter({ id: templateId });
+      
+      if (!templates || templates.length === 0) {
+        navigate(createPageUrl("Feedbacks"));
+        return;
+      }
+
+      const template = templates[0];
+      setFormData({
+        title: template.title,
+        feedback_type: template.feedback_type,
+        checklist_questions: template.checklist_questions || []
+      });
+    } catch (e) {
+      console.error(e);
+      setError("Erro ao carregar feedback");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addQuestion = () => {
     const newId = String(formData.checklist_questions.length + 1);
@@ -79,23 +112,30 @@ export default function CriarFeedback() {
 
     setSaving(true);
     try {
-      const currentUser = await base44.auth.me();
+      const params = new URLSearchParams(window.location.search);
+      const templateId = params.get('id');
 
-      await base44.entities.FeedbackTemplate.create({
+      await base44.entities.FeedbackTemplate.update(templateId, {
         title: formData.title,
         feedback_type: formData.feedback_type,
-        checklist_questions: formData.checklist_questions,
-        is_active: false,
-        created_by_admin: currentUser.id
+        checklist_questions: formData.checklist_questions
       });
 
       navigate(createPageUrl("Feedbacks"));
     } catch (e) {
-      setError(e.message || "Erro ao criar feedback");
+      setError(e.message || "Erro ao atualizar feedback");
     } finally {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -108,8 +148,8 @@ export default function CriarFeedback() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
-        <h1 className="text-2xl font-bold text-slate-900">Criar Novo Feedback</h1>
-        <p className="text-slate-500">Defina o título, tipo e configure o checklist de validação</p>
+        <h1 className="text-2xl font-bold text-slate-900">Editar Feedback</h1>
+        <p className="text-slate-500">Atualize as informações do feedback</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -210,7 +250,7 @@ export default function CriarFeedback() {
             style={{background: '#F8B137', color: '#14141E'}}
             className="font-semibold"
           >
-            {saving ? "Criando..." : "Criar Feedback"}
+            {saving ? "Salvando..." : "Salvar Alterações"}
           </Button>
         </div>
       </form>

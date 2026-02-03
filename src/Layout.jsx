@@ -35,13 +35,16 @@ export default function Layout({ children, currentPageName }) {
     '/gestorlogin',
     '/gestorcadastro', 
     '/colaborador',
-    '/gestor',
     '/painelgestor'
   ];
   
-  const isPublicPage = publicPages.some(page => 
-    location.pathname.toLowerCase().includes(page.toLowerCase())
-  );
+  // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)
+  const isPublicPage = publicPages.some(page => {
+    const pathname = location.pathname.toLowerCase();
+    const pageLower = page.toLowerCase();
+    // Verifica se é exatamente a página ou se começa com a página + querystring
+    return pathname === pageLower || pathname.startsWith(pageLower + '?');
+  });
 
   // Páginas que requerem autenticação Base44 (Admin)
   const adminPages = [
@@ -52,6 +55,7 @@ export default function Layout({ children, currentPageName }) {
     '/feedbacks',
     '/relatorios',
     '/usuarios',
+    '/minhaequipe',
     '/criarfeedback',
     '/editarfeedback',
     '/preencherfeedback',
@@ -59,9 +63,12 @@ export default function Layout({ children, currentPageName }) {
     '/visualizarfeedback'
   ];
 
-  const isAdminPage = adminPages.some(page => 
-    location.pathname.toLowerCase().includes(page.toLowerCase())
-  );
+  const isAdminPage = adminPages.some(page => {
+    const pathname = location.pathname.toLowerCase();
+    const pageLower = page.toLowerCase();
+    // Verifica se é exatamente a página ou se começa com a página + querystring
+    return pathname === pageLower || pathname.startsWith(pageLower + '?');
+  });
 
   useEffect(() => {
     if (!isPublicPage) {

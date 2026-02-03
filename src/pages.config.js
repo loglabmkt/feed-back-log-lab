@@ -48,39 +48,39 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
-import Companies from './pages/Companies';
+import CriarFeedback from './pages/CriarFeedback';
+import EditarFeedback from './pages/EditarFeedback';
 import Employees from './pages/Employees';
 import Feedbacks from './pages/Feedbacks';
-import Managers from './pages/Managers';
 import MinhaEquipe from './pages/MinhaEquipe';
 import Painel from './pages/Painel';
-import Relatorios from './pages/Relatorios';
-import Usuarios from './pages/Usuarios';
-import CriarFeedback from './pages/CriarFeedback';
 import PreencherFeedback from './pages/PreencherFeedback';
+import Relatorios from './pages/Relatorios';
 import RevisarFeedback from './pages/RevisarFeedback';
-import VisualizarFeedback from './pages/VisualizarFeedback';
+import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
-import EditarFeedback from './pages/EditarFeedback';
+import VisualizarFeedback from './pages/VisualizarFeedback';
+import Empresas from './pages/Empresas';
+import Gestores from './pages/Gestores';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
-    "Companies": Companies,
+    "CriarFeedback": CriarFeedback,
+    "EditarFeedback": EditarFeedback,
     "Employees": Employees,
     "Feedbacks": Feedbacks,
-    "Managers": Managers,
     "MinhaEquipe": MinhaEquipe,
     "Painel": Painel,
-    "Relatorios": Relatorios,
-    "Usuarios": Usuarios,
-    "CriarFeedback": CriarFeedback,
     "PreencherFeedback": PreencherFeedback,
+    "Relatorios": Relatorios,
     "RevisarFeedback": RevisarFeedback,
-    "VisualizarFeedback": VisualizarFeedback,
+    "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
-    "EditarFeedback": EditarFeedback,
+    "VisualizarFeedback": VisualizarFeedback,
+    "Empresas": Empresas,
+    "Gestores": Gestores,
 }
 
 export const pagesConfig = {

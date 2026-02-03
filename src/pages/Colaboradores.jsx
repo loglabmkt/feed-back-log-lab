@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function EmployeesPage() {
+export default function Colaboradores() {
   const [employees, setEmployees] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [managers, setManagers] = useState([]);

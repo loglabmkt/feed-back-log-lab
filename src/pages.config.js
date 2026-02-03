@@ -50,7 +50,6 @@
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
 import CriarFeedback from './pages/CriarFeedback';
 import EditarFeedback from './pages/EditarFeedback';
-import Employees from './pages/Employees';
 import Feedbacks from './pages/Feedbacks';
 import MinhaEquipe from './pages/MinhaEquipe';
 import Painel from './pages/Painel';
@@ -62,6 +61,7 @@ import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
 import Empresas from './pages/Empresas';
 import Gestores from './pages/Gestores';
+import Colaboradores from './pages/Colaboradores';
 import __Layout from './Layout.jsx';
 
 
@@ -69,7 +69,6 @@ export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
     "CriarFeedback": CriarFeedback,
     "EditarFeedback": EditarFeedback,
-    "Employees": Employees,
     "Feedbacks": Feedbacks,
     "MinhaEquipe": MinhaEquipe,
     "Painel": Painel,
@@ -81,6 +80,7 @@ export const PAGES = {
     "VisualizarFeedback": VisualizarFeedback,
     "Empresas": Empresas,
     "Gestores": Gestores,
+    "Colaboradores": Colaboradores,
 }
 
 export const pagesConfig = {

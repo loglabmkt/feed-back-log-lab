@@ -7,11 +7,9 @@ import {
   Pencil,
   Trash2,
   Power,
-  PowerOff,
-  Eye,
-  CheckCircle2
+  PowerOff
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +30,6 @@ import {
 export default function Feedbacks() {
   const [currentUser, setCurrentUser] = useState(null);
   const [templates, setTemplates] = useState([]);
-  const [feedbackRecords, setFeedbackRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState(null);
@@ -49,11 +46,6 @@ export default function Feedbacks() {
 
       const allTemplates = await base44.entities.FeedbackTemplate.list('-created_date', 100);
       setTemplates(allTemplates);
-
-      const allRecords = await base44.entities.FeedbackRecord.filter({
-        workflow_status: 'EM_REVISAO_ADMIN'
-      });
-      setFeedbackRecords(allRecords);
     } catch (e) {
       console.error(e);
     } finally {
@@ -120,7 +112,7 @@ export default function Feedbacks() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Feedbacks</h1>
@@ -137,78 +129,6 @@ export default function Feedbacks() {
           </Link>
         )}
       </div>
-
-      {/* Respostas dos Gestores - Admin Only */}
-      {isAdmin && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5" style={{color: '#F8B137'}} />
-            <h2 className="text-xl font-bold text-slate-900">Respostas dos Gestores</h2>
-            <Badge className="ml-2" style={{background: '#F8B137', color: '#14141E'}}>
-              {feedbackRecords.length}
-            </Badge>
-          </div>
-
-          {feedbackRecords.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="py-8 text-center text-slate-500">
-                Nenhuma resposta aguardando revisão
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {feedbackRecords.map((record) => (
-                <Card key={record.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-slate-900">
-                            {record.employee_name}
-                          </h3>
-                          <Badge className="bg-amber-100 text-amber-700">
-                            Em Revisão
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-slate-500 mb-1">
-                          <span className="font-medium">Template:</span> {record.template_title}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          <span className="font-medium">Gestor:</span> {record.manager_name}
-                        </p>
-                        <p className="text-xs text-slate-400 mt-2">
-                          Enviado em: {new Date(record.created_date).toLocaleDateString('pt-BR', { 
-                            day: '2-digit', 
-                            month: '2-digit', 
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                      </div>
-                      <Link to={createPageUrl("RevisarFeedback") + `?id=${record.id}`}>
-                        <Button style={{background: '#F8B137', color: '#14141E'}}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          Revisar
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Templates - Linha divisória */}
-      {isAdmin && (
-        <div className="border-t border-slate-200 my-8" />
-      )}
-
-      {/* Templates Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-slate-900">Templates de Feedback</h2>
 
         {isAdmin && (
           <Card className="border-0 shadow-sm">
@@ -296,7 +216,6 @@ export default function Feedbacks() {
             </Card>
           ))
         )}
-        </div>
       </div>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

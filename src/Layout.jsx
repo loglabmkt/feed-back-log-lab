@@ -159,6 +159,12 @@ export default function Layout({ children, currentPageName }) {
       show: true 
     },
     { 
+      name: "Respostas", 
+      href: createPageUrl("Respostas"), 
+      icon: MessageSquare,
+      show: isAdmin 
+    },
+    { 
       name: "Relatórios", 
       href: createPageUrl("Relatorios"), 
       icon: BarChart3,
@@ -297,6 +303,7 @@ export default function Layout({ children, currentPageName }) {
                 {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
                 {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
                 {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
+                {currentPageName === 'Respostas' && 'Respostas dos Gestores'}
                 {currentPageName === 'Relatorios' && 'Relatórios & BI'}
                 {currentPageName === 'CriarFeedback' && 'Criar Feedback'}
                 {currentPageName === 'PreencherFeedback' && 'Preencher Feedback'}

@@ -47,32 +47,32 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Feedbacks from './pages/Feedbacks';
-import Companies from './pages/Companies';
-import Employees from './pages/Employees';
-import Managers from './pages/Managers';
-import Painel from './pages/Painel';
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
+import Companies from './pages/Companies';
+import Contestacoes from './pages/Contestacoes';
+import Employees from './pages/Employees';
+import Feedbacks from './pages/Feedbacks';
+import Managers from './pages/Managers';
 import MinhaEquipe from './pages/MinhaEquipe';
+import Painel from './pages/Painel';
+import Relatorios from './pages/Relatorios';
 import Usuarios from './pages/Usuarios';
 import Validacao from './pages/Validacao';
-import Contestacoes from './pages/Contestacoes';
-import Relatorios from './pages/Relatorios';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Feedbacks": Feedbacks,
-    "Companies": Companies,
-    "Employees": Employees,
-    "Managers": Managers,
-    "Painel": Painel,
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
+    "Companies": Companies,
+    "Contestacoes": Contestacoes,
+    "Employees": Employees,
+    "Feedbacks": Feedbacks,
+    "Managers": Managers,
     "MinhaEquipe": MinhaEquipe,
+    "Painel": Painel,
+    "Relatorios": Relatorios,
     "Usuarios": Usuarios,
     "Validacao": Validacao,
-    "Contestacoes": Contestacoes,
-    "Relatorios": Relatorios,
 }
 
 export const pagesConfig = {

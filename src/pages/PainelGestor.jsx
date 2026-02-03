@@ -29,7 +29,7 @@ export default function PainelGestor() {
   const checkAuth = () => {
     const session = localStorage.getItem('gestor_session');
     if (!session) {
-      window.location.href = '/gestor/login';
+      window.location.href = '/gestorlogin';
       return;
     }
     setGestor(JSON.parse(session));
@@ -55,7 +55,7 @@ export default function PainelGestor() {
 
   const handleLogout = () => {
     localStorage.removeItem('gestor_session');
-    window.location.href = '/gestor/login';
+    window.location.href = '/gestorlogin';
   };
 
   const getInitials = (name) => {
@@ -116,7 +116,7 @@ export default function PainelGestor() {
           <div className="flex-1 p-4">
             <nav className="space-y-1">
               <a
-                href="/gestor"
+                href="/painelgestor"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold"
                 style={{
                   background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.15) 0%, rgba(248, 177, 55, 0.05) 100%)',
@@ -128,7 +128,7 @@ export default function PainelGestor() {
                 Dashboard
               </a>
               <a
-                href="/gestor/feedbacks"
+                href="/painelgestor"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900"
               >
                 <MessageSquare className="w-5 h-5 text-slate-400" />

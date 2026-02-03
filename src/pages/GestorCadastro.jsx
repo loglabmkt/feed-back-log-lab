@@ -66,7 +66,7 @@ export default function GestorCadastro() {
         full_name: gestorData.full_name
       }));
 
-      window.location.href = '/gestor';
+      window.location.href = '/painelgestor';
     } catch (err) {
       setError("Erro ao criar senha. Tente novamente.");
     } finally {
@@ -126,7 +126,7 @@ export default function GestorCadastro() {
               </Button>
 
               <div className="text-center">
-                <a href="/gestor/login" className="text-sm text-slate-500 hover:underline">
+                <a href="/gestorlogin" className="text-sm text-slate-500 hover:underline">
                   Já tem cadastro? Fazer login
                 </a>
               </div>

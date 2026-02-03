@@ -27,7 +27,7 @@ export default function GestorLogin() {
 
       if (response.data.success) {
         localStorage.setItem('gestor_session', JSON.stringify(response.data.gestor));
-        window.location.href = '/gestor';
+        window.location.href = '/painelgestor';
       } else {
         setError(response.data.message || "Email ou senha incorretos");
       }
@@ -109,7 +109,7 @@ export default function GestorLogin() {
             </Button>
 
             <div className="text-center space-y-2">
-              <a href="/gestor/cadastro" className="text-sm text-slate-500 hover:underline block">
+              <a href="/gestorcadastro" className="text-sm text-slate-500 hover:underline block">
                 Primeiro acesso? Cadastre-se aqui
               </a>
             </div>

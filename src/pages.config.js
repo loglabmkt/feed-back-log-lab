@@ -48,45 +48,47 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
+import Colaboradores from './pages/Colaboradores';
 import CriarFeedback from './pages/CriarFeedback';
 import EditarFeedback from './pages/EditarFeedback';
+import Empresas from './pages/Empresas';
 import Feedbacks from './pages/Feedbacks';
+import GestorCadastro from './pages/GestorCadastro';
+import GestorLogin from './pages/GestorLogin';
+import Gestores from './pages/Gestores';
 import MinhaEquipe from './pages/MinhaEquipe';
 import Painel from './pages/Painel';
+import PainelGestor from './pages/PainelGestor';
 import PreencherFeedback from './pages/PreencherFeedback';
 import Relatorios from './pages/Relatorios';
 import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import Empresas from './pages/Empresas';
-import Gestores from './pages/Gestores';
-import Colaboradores from './pages/Colaboradores';
-import GestorCadastro from './pages/GestorCadastro';
-import GestorLogin from './pages/GestorLogin';
-import PainelGestor from './pages/PainelGestor';
+import Colaborador from './pages/Colaborador';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
+    "Colaboradores": Colaboradores,
     "CriarFeedback": CriarFeedback,
     "EditarFeedback": EditarFeedback,
+    "Empresas": Empresas,
     "Feedbacks": Feedbacks,
+    "GestorCadastro": GestorCadastro,
+    "GestorLogin": GestorLogin,
+    "Gestores": Gestores,
     "MinhaEquipe": MinhaEquipe,
     "Painel": Painel,
+    "PainelGestor": PainelGestor,
     "PreencherFeedback": PreencherFeedback,
     "Relatorios": Relatorios,
     "RevisarFeedback": RevisarFeedback,
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "Empresas": Empresas,
-    "Gestores": Gestores,
-    "Colaboradores": Colaboradores,
-    "GestorCadastro": GestorCadastro,
-    "GestorLogin": GestorLogin,
-    "PainelGestor": PainelGestor,
+    "Colaborador": Colaborador,
 }
 
 export const pagesConfig = {

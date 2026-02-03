@@ -34,7 +34,7 @@ export default function Layout({ children, currentPageName }) {
   const publicPages = [
     '/gestorlogin',
     '/gestorcadastro', 
-    '/acessopublicofeedback',
+    '/colaborador',
     '/gestor',
     '/painelgestor'
   ];
@@ -43,11 +43,53 @@ export default function Layout({ children, currentPageName }) {
     location.pathname.toLowerCase().includes(page.toLowerCase())
   );
 
+  // Páginas que requerem autenticação Base44 (Admin)
+  const adminPages = [
+    '/painel',
+    '/empresas',
+    '/gestores',
+    '/colaboradores',
+    '/feedbacks',
+    '/relatorios',
+    '/usuarios',
+    '/criarfeedback',
+    '/editarfeedback',
+    '/preencherfeedback',
+    '/revisarfeedback',
+    '/visualizarfeedback'
+  ];
+
+  const isAdminPage = adminPages.some(page => 
+    location.pathname.toLowerCase().includes(page.toLowerCase())
+  );
+
   useEffect(() => {
     if (!isPublicPage) {
       loadUser();
     }
   }, [isPublicPage]);
+
+  useEffect(() => {
+    // Se for página admin e não estiver autenticado, redirecionar para login Base44
+    const checkAdminAuth = async () => {
+      if (isAdminPage && !user) {
+        try {
+          const userData = await base44.auth.me();
+          if (!userData) {
+            base44.auth.redirectToLogin(window.location.pathname);
+          } else {
+            setUser(userData);
+          }
+        } catch (e) {
+          base44.auth.redirectToLogin(window.location.pathname);
+        }
+      }
+    };
+    
+    if (!isPublicPage) {
+      checkAdminAuth();
+    }
+  }, [isAdminPage, user, isPublicPage]);
 
   const loadUser = async () => {
     try {

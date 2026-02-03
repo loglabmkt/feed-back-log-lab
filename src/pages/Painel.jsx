@@ -40,6 +40,13 @@ export default function Painel() {
   const loadData = async () => {
     try {
       const currentUser = await base44.auth.me();
+      
+      // Verificar se o usuário está autenticado via Base44
+      if (!currentUser) {
+        base44.auth.redirectToLogin('/painel');
+        return;
+      }
+      
       setUser(currentUser);
 
       const [feedbacks, users] = await Promise.all([
@@ -65,6 +72,8 @@ export default function Painel() {
       setRecentFeedbacks(myFeedbacks.slice(0, 5));
     } catch (e) {
       console.error(e);
+      // Se houver erro na autenticação, redirecionar para login
+      base44.auth.redirectToLogin('/painel');
     } finally {
       setLoading(false);
     }

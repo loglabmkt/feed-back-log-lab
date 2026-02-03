@@ -48,12 +48,14 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
+import Colaborador from './pages/Colaborador';
 import Colaboradores from './pages/Colaboradores';
 import CriarFeedback from './pages/CriarFeedback';
 import EditarFeedback from './pages/EditarFeedback';
 import Empresas from './pages/Empresas';
 import Feedbacks from './pages/Feedbacks';
 import GestorCadastro from './pages/GestorCadastro';
+import GestorFeedbacks from './pages/GestorFeedbacks';
 import GestorLogin from './pages/GestorLogin';
 import Gestores from './pages/Gestores';
 import MinhaEquipe from './pages/MinhaEquipe';
@@ -65,19 +67,19 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import Colaborador from './pages/Colaborador';
-import GestorFeedbacks from './pages/GestorFeedbacks';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
+    "Colaborador": Colaborador,
     "Colaboradores": Colaboradores,
     "CriarFeedback": CriarFeedback,
     "EditarFeedback": EditarFeedback,
     "Empresas": Empresas,
     "Feedbacks": Feedbacks,
     "GestorCadastro": GestorCadastro,
+    "GestorFeedbacks": GestorFeedbacks,
     "GestorLogin": GestorLogin,
     "Gestores": Gestores,
     "MinhaEquipe": MinhaEquipe,
@@ -89,8 +91,6 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "Colaborador": Colaborador,
-    "GestorFeedbacks": GestorFeedbacks,
 }
 
 export const pagesConfig = {

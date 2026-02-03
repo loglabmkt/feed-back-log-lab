@@ -35,7 +35,8 @@ export default function Layout({ children, currentPageName }) {
     '/gestorlogin',
     '/gestorcadastro', 
     '/colaborador',
-    '/painelgestor'
+    '/painelgestor',
+    '/gestorfeedbacks'
   ];
   
   // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)

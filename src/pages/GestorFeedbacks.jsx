@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { 
-  MessageSquare, 
-  Plus,
-  Clock,
-  CheckCircle2,
-  ArrowLeft,
-  FileText
-} from "lucide-react";
+import { Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import GestorLayout from "@/components/GestorLayout";
 
 export default function GestorFeedbacks() {
   const [gestor, setGestor] = useState(null);
@@ -139,23 +133,13 @@ export default function GestorFeedbacks() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => window.location.href = '/painelgestor'}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Dashboard
-          </Button>
-          
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
-            Meus Feedbacks
-          </h1>
-          <p className="text-slate-500">Crie e gerencie feedbacks para sua equipe</p>
-        </div>
+    <GestorLayout currentPage="feedbacks" gestor={gestor}>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          Meus Feedbacks
+        </h1>
+        <p className="text-slate-500">Crie e gerencie feedbacks para sua equipe</p>
+      </div>
 
         {/* Templates Ativos */}
         <div className="mb-8">
@@ -198,48 +182,47 @@ export default function GestorFeedbacks() {
           )}
         </div>
 
-        {/* Meus Feedbacks */}
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Feedbacks Criados</h2>
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-6">
-              {myFeedbacks.length === 0 ? (
-                <div className="text-center py-8 text-slate-500">
-                  Nenhum feedback criado ainda
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {myFeedbacks.map((feedback) => (
-                    <div key={feedback.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                      <div className="flex-1">
-                        <p className="font-medium text-slate-900">{feedback.employee_name}</p>
-                        <p className="text-sm text-slate-500">{feedback.template_title}</p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <Badge
-                        className={
-                          feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'bg-blue-100 text-blue-700' :
-                          feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'bg-amber-100 text-amber-700' :
-                          feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'bg-purple-100 text-purple-700' :
-                          feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'bg-orange-100 text-orange-700' :
-                          'bg-green-100 text-green-700'
-                        }
-                      >
-                        {feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'Rascunho' :
-                         feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Em Revisão' :
-                         feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'Aprovado' :
-                         feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'Aguardando Assinatura' :
-                         'Concluído'}
-                      </Badge>
+      {/* Meus Feedbacks */}
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Feedbacks Criados</h2>
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            {myFeedbacks.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                Nenhum feedback criado ainda
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myFeedbacks.map((feedback) => (
+                  <div key={feedback.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
+                    <div className="flex-1">
+                      <p className="font-medium text-slate-900">{feedback.employee_name}</p>
+                      <p className="text-sm text-slate-500">{feedback.template_title}</p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
+                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                    <Badge
+                      className={
+                        feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'bg-blue-100 text-blue-700' :
+                        feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'bg-amber-100 text-amber-700' :
+                        feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'bg-purple-100 text-purple-700' :
+                        feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'bg-orange-100 text-orange-700' :
+                        'bg-green-100 text-green-700'
+                      }
+                    >
+                      {feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'Rascunho' :
+                       feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Em Revisão' :
+                       feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'Aprovado' :
+                       feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'Aguardando Assinatura' :
+                       'Concluído'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Dialog para criar feedback */}
@@ -333,6 +316,6 @@ export default function GestorFeedbacks() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </GestorLayout>
   );
 }

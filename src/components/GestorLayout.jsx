@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -8,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { createPageUrl } from "../utils";
 
 export default function GestorLayout({ children, currentPage = 'dashboard', gestor }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -60,8 +62,8 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
 
           <div className="flex-1 p-4">
             <nav className="space-y-1">
-              <a
-                href="/painelgestor"
+              <Link
+                to={createPageUrl("PainelGestor")}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   currentPage === 'dashboard'
                     ? 'text-slate-900'
@@ -74,9 +76,9 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
               >
                 <LayoutDashboard className={`w-5 h-5 ${currentPage === 'dashboard' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
                 Dashboard
-              </a>
-              <a
-                href="/gestorfeedbacks"
+              </Link>
+              <Link
+                to={createPageUrl("GestorFeedbacks")}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   currentPage === 'feedbacks'
                     ? 'text-slate-900'
@@ -89,7 +91,7 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
               >
                 <MessageSquare className={`w-5 h-5 ${currentPage === 'feedbacks' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
                 Meus Feedbacks
-              </a>
+              </Link>
             </nav>
           </div>
 

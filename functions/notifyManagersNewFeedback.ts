@@ -26,8 +26,25 @@ Deno.serve(async (req) => {
             return Response.json({ message: 'Nenhum gestor ativo encontrado' });
         }
 
-        // Enviar email para cada gestor
-        const emailPromises = gestores.map(gestor => 
+        // Buscar todos os usuários Base44 para verificar quais emails são válidos
+        const users = await base44.asServiceRole.entities.User.list();
+        const validEmails = new Set(users.map(u => u.email.toLowerCase()));
+
+        // Filtrar apenas gestores que também são usuários Base44
+        const validGestores = gestores.filter(gestor => 
+            validEmails.has(gestor.email.toLowerCase())
+        );
+
+        if (validGestores.length === 0) {
+            return Response.json({ 
+                message: 'Nenhum gestor com email registrado no sistema Base44 encontrado',
+                total_gestores: gestores.length,
+                gestores_sem_acesso: gestores.map(g => g.email)
+            });
+        }
+
+        // Enviar email para cada gestor válido
+        const emailPromises = validGestores.map(gestor => 
             base44.asServiceRole.integrations.Core.SendEmail({
                 from_name: 'Compliance RH',
                 to: gestor.email,
@@ -68,10 +85,13 @@ Deno.serve(async (req) => {
 
         await Promise.all(emailPromises);
 
+        const gestoresIgnorados = gestores.filter(g => !validEmails.has(g.email.toLowerCase()));
+
         return Response.json({ 
             success: true, 
-            message: `Email enviado para ${gestores.length} gestor(es)`,
-            gestores: gestores.map(g => g.email)
+            message: `Email enviado para ${validGestores.length} gestor(es)`,
+            emails_enviados: validGestores.map(g => g.email),
+            gestores_sem_acesso_base44: gestoresIgnorados.length > 0 ? gestoresIgnorados.map(g => g.email) : undefined
         });
 
     } catch (error) {

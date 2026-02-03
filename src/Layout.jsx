@@ -7,15 +7,12 @@ import {
   LayoutDashboard,
   Users,
   MessageSquare,
-  CheckCircle,
   BarChart3,
-  AlertTriangle,
   Menu,
   X,
   LogOut,
   ChevronDown,
-  Shield,
-  Bell
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,37 +28,16 @@ import { Badge } from "@/components/ui/badge";
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [pendingCount, setPendingCount] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
     loadUser();
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      loadPendingFeedbacks();
-    }
-  }, [user]);
-
   const loadUser = async () => {
     try {
       const userData = await base44.auth.me();
       setUser(userData);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const loadPendingFeedbacks = async () => {
-    try {
-      if (user?.role !== 'admin') {
-        const feedbacks = await base44.entities.FeedbackRecord.filter({
-          employee_email: user.email,
-          validation_status: 'pending'
-        });
-        setPendingCount(feedbacks.length);
-      }
     } catch (e) {
       console.error(e);
     }
@@ -116,19 +92,6 @@ export default function Layout({ children, currentPageName }) {
       href: createPageUrl("Feedbacks"), 
       icon: MessageSquare,
       show: true 
-    },
-    { 
-      name: "Validação", 
-      href: createPageUrl("Validacao"), 
-      icon: CheckCircle,
-      show: !isAdmin,
-      badge: pendingCount > 0 ? pendingCount : null
-    },
-    { 
-      name: "Contestações", 
-      href: createPageUrl("Contestacoes"), 
-      icon: AlertTriangle,
-      show: isAdmin 
     },
     { 
       name: "Relatórios", 
@@ -264,25 +227,16 @@ export default function Layout({ children, currentPageName }) {
                 {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
                 {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
                 {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
-                {currentPageName === 'Validacao' && 'Validação de Feedbacks'}
-                {currentPageName === 'Contestacoes' && 'Contestações'}
                 {currentPageName === 'Relatorios' && 'Relatórios & BI'}
-                {currentPageName === 'AcessoPublicoFeedback' && 'Acesso Público'}
+                {currentPageName === 'CriarFeedback' && 'Criar Feedback'}
+                {currentPageName === 'PreencherFeedback' && 'Preencher Feedback'}
+                {currentPageName === 'RevisarFeedback' && 'Revisar Feedback'}
+                {currentPageName === 'VisualizarFeedback' && 'Visualizar Feedback'}
+                {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
               </h2>
             </div>
 
             <div className="flex items-center gap-3">
-              {pendingCount > 0 && !isAdmin && (
-                <Link to={createPageUrl("Validation")}>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="w-5 h-5" style={{color: '#14141E'}} />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 text-white text-xs rounded-full flex items-center justify-center font-bold" style={{background: '#F8B137'}}>
-                      {pendingCount}
-                    </span>
-                  </Button>
-                </Link>
-              )}
-              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">

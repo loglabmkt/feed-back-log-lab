@@ -49,7 +49,6 @@
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
 import Companies from './pages/Companies';
-import Contestacoes from './pages/Contestacoes';
 import Employees from './pages/Employees';
 import Feedbacks from './pages/Feedbacks';
 import Managers from './pages/Managers';
@@ -57,7 +56,6 @@ import MinhaEquipe from './pages/MinhaEquipe';
 import Painel from './pages/Painel';
 import Relatorios from './pages/Relatorios';
 import Usuarios from './pages/Usuarios';
-import Validacao from './pages/Validacao';
 import CriarFeedback from './pages/CriarFeedback';
 import PreencherFeedback from './pages/PreencherFeedback';
 import RevisarFeedback from './pages/RevisarFeedback';
@@ -69,7 +67,6 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
     "Companies": Companies,
-    "Contestacoes": Contestacoes,
     "Employees": Employees,
     "Feedbacks": Feedbacks,
     "Managers": Managers,
@@ -77,7 +74,6 @@ export const PAGES = {
     "Painel": Painel,
     "Relatorios": Relatorios,
     "Usuarios": Usuarios,
-    "Validacao": Validacao,
     "CriarFeedback": CriarFeedback,
     "PreencherFeedback": PreencherFeedback,
     "RevisarFeedback": RevisarFeedback,

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { 
@@ -272,7 +273,91 @@ export default function Contestacoes() {
         )}
       </div>
 
-      {/* ... keep existing code (dialog) ... */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <DialogTitle>Detalhes da Contestação</DialogTitle>
+          </DialogHeader>
+          {selectedJustification && (
+            <div className="py-4 space-y-4">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback className="bg-gradient-to-br from-red-500 to-red-600 text-white font-semibold">
+                    {getInitials(selectedJustification.employee_name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-semibold text-slate-900">{selectedJustification.employee_name}</p>
+                  <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <Calendar className="w-3 h-3" />
+                    <span>
+                      {selectedJustification.created_date && format(new Date(selectedJustification.created_date), "dd/MM/yyyy", { locale: ptBR })}
+                    </span>
+                    {selectedFeedback && (
+                      <>
+                        <span className="text-slate-300">•</span>
+                        <User className="w-3 h-3" />
+                        <span>Gestor: {selectedFeedback.manager_name}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">Motivo da Contestação</h3>
+                {getStatusBadge(selectedJustification.status)}
+              </div>
+              <p className="text-slate-700 bg-slate-50 p-3 rounded-md border border-slate-100">
+                {selectedJustification.reason}
+              </p>
+
+              {selectedFeedback && (
+                <>
+                  <h3 className="text-lg font-semibold text-slate-900 mt-4">Feedback Original</h3>
+                  <p className="text-slate-700 bg-blue-50 p-3 rounded-md border border-blue-100">
+                    {selectedFeedback.content}
+                  </p>
+                </>
+              )}
+
+              <div className="space-y-2 mt-4">
+                <Label htmlFor="reviewNotes">Notas de Revisão</Label>
+                <Textarea
+                  id="reviewNotes"
+                  placeholder="Adicione suas notas de revisão aqui..."
+                  value={reviewNotes}
+                  onChange={(e) => setReviewNotes(e.target.value)}
+                  rows={4}
+                  disabled={selectedJustification.status === 'resolved'} // Disable if already resolved
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4">
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Fechar
+            </Button>
+            {selectedJustification && selectedJustification.status !== 'resolved' && (
+              <>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => handleResolve("reviewed")} 
+                  disabled={processing}
+                >
+                  {processing ? "Analisando..." : "Marcar como Analisado"}
+                </Button>
+                <Button 
+                  onClick={() => handleResolve("resolved")} 
+                  disabled={processing}
+                >
+                  {processing ? "Resolvendo..." : "Marcar como Resolvido"}
+                </Button>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

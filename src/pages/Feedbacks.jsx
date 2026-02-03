@@ -39,7 +39,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format, differenceInDays, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-export default function FeedbacksPage() {
+export default function Feedbacks() {
   const [currentUser, setCurrentUser] = useState(null);
   const [feedbacks, setFeedbacks] = useState([]);
   const [users, setUsers] = useState([]);

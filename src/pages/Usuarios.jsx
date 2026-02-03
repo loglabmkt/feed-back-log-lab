@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { 
@@ -20,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -80,12 +82,16 @@ export default function Usuarios() {
     try {
       const allUsers = await base44.entities.User.list();
       setUsers(allUsers);
-      const potentialManagers = allUsers.filter(u => 
-        u.role === 'admin' || allUsers.some(subordinate => subordinate.manager_id === u.id)
+      // A user is considered a manager if they have the 'admin' role or if any other user has them as a manager.
+      // Filter out inactive users from the potential managers list
+      const activeUsers = allUsers.filter(u => u.status === 'active');
+      const potentialManagers = activeUsers.filter(u => 
+        u.role === 'admin' || activeUsers.some(subordinate => subordinate.manager_id === u.id)
       );
       setManagers(potentialManagers);
     } catch (e) {
       console.error(e);
+      setError("Erro ao carregar usuários.");
     } finally {
       setLoading(false);
     }
@@ -97,9 +103,10 @@ export default function Usuarios() {
       manager_id: user.manager_id || "",
       department: user.department || "",
       position: user.position || "",
-      admission_date: user.admission_date || "",
+      admission_date: user.admission_date ? format(new Date(user.admission_date), 'yyyy-MM-dd') : "", // Format for input type="date"
       status: user.status || "active"
     });
+    setError(""); // Clear previous errors
     setShowDialog(true);
   };
 
@@ -107,13 +114,21 @@ export default function Usuarios() {
     setSaving(true);
     setError("");
     try {
-      await base44.entities.User.update(editingUser.id, formData);
+      // Ensure manager_id is null if empty string
+      const dataToUpdate = {
+        ...formData,
+        manager_id: formData.manager_id || null,
+        admission_date: formData.admission_date || null,
+        department: formData.department || null,
+        position: formData.position || null,
+      };
+      await base44.entities.User.update(editingUser.id, dataToUpdate);
       await loadUsers();
       setShowDialog(false);
       setEditingUser(null);
     } catch (e) {
       console.error(e);
-      setError("Erro ao salvar usuário");
+      setError("Erro ao salvar usuário: " + (e.message || ""));
     } finally {
       setSaving(false);
     }
@@ -137,24 +152,31 @@ export default function Usuarios() {
     }
 
     try {
-      await base44.users.inviteUser(createFormData.email, createFormData.role || "user");
+      // Create user first via inviteUser (only email and role are directly handled here)
+      await base44.users.inviteUser(createFormData.email, createFormData.role || "user", createFormData.full_name);
 
+      // Fetch all users again to get the newly created user's ID
+      // This is a workaround as inviteUser might not return the full user object with ID directly
       const allUsers = await base44.entities.User.list();
       const newUser = allUsers.find(u => u.email.toLowerCase() === createFormData.email.toLowerCase());
       
       if (newUser) {
+        // Update the new user with additional details
         await base44.entities.User.update(newUser.id, {
+          full_name: createFormData.full_name, // Ensure full_name is also updated if not set by inviteUser
           manager_id: createFormData.manager_id || null,
           department: createFormData.department || null,
           position: createFormData.position || null,
           admission_date: createFormData.admission_date || null,
           status: createFormData.status || "active"
         });
+      } else {
+        throw new Error("Usuário criado, mas não encontrado para atualização de detalhes.");
       }
 
       await loadUsers();
       setShowCreateDialog(false);
-      setCreateFormData({
+      setCreateFormData({ // Reset form
         full_name: "",
         email: "",
         role: "user",
@@ -178,13 +200,19 @@ export default function Usuarios() {
     if (subordinates.length > 0) {
       setInactivatingUser(user);
       setShowInactivateDialog(true);
+      setNewManagerId(""); // Reset new manager selection
+      setError(""); // Clear previous errors
     } else {
-      confirmInactivation(user.id, null);
+      // If no subordinates, inactivate directly without the dialog
+      if (window.confirm(`Tem certeza que deseja inativar o usuário ${user.full_name}?`)) {
+        confirmInactivation(user.id, null);
+      }
     }
   };
 
   const confirmInactivation = async (userId, newManagerId) => {
     setSaving(true);
+    setError("");
     try {
       if (newManagerId) {
         const subordinates = users.filter(u => u.manager_id === userId && u.status === 'active');
@@ -205,21 +233,23 @@ export default function Usuarios() {
       setNewManagerId("");
     } catch (e) {
       console.error(e);
-      setError("Erro ao inativar usuário");
+      setError("Erro ao inativar usuário: " + (e.message || ""));
     } finally {
       setSaving(false);
     }
   };
 
   const isAtRisk = (user) => {
-    if (!user.last_feedback_date) return true;
+    if (!user.last_feedback_date) return true; // No feedback date means at risk
     const daysSince = differenceInDays(new Date(), new Date(user.last_feedback_date));
     return daysSince > 90;
   };
 
   const getInitials = (name) => {
     if (!name) return "U";
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const parts = name.split(' ');
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase().slice(0, 2);
   };
 
   const filteredUsers = users.filter(user => {
@@ -230,10 +260,13 @@ export default function Usuarios() {
                        (filterRisk === "at_risk" && isAtRisk(user)) ||
                        (filterRisk === "compliant" && !isAtRisk(user));
     
+    // Determine if a user is a manager based on having active subordinates
+    const userIsManager = users.some(u => u.manager_id === user.id && u.status === 'active');
+
     const matchesRole = filterRole === "all" || 
                        (filterRole === "admin" && user.role === 'admin') ||
-                       (filterRole === "manager" && users.some(u => u.manager_id === user.id)) ||
-                       (filterRole === "employee" && user.role !== 'admin' && !users.some(u => u.manager_id === user.id));
+                       (filterRole === "manager" && userIsManager) ||
+                       (filterRole === "employee" && user.role !== 'admin' && !userIsManager);
     
     return matchesSearch && matchesStatus && matchesRisk && matchesRole;
   });
@@ -381,8 +414,8 @@ export default function Usuarios() {
               <tbody>
                 {filteredUsers.map((user) => {
                   const atRisk = isAtRisk(user);
-                  const manager = managers.find(m => m.id === user.manager_id);
-                  const isManager = users.some(u => u.manager_id === user.id);
+                  const manager = users.find(m => m.id === user.manager_id); // Find manager from all users
+                  const isManager = users.some(u => u.manager_id === user.id); // Check if user has subordinates
                   const daysSinceLastFeedback = user.last_feedback_date
                     ? differenceInDays(new Date(), new Date(user.last_feedback_date))
                     : null;
@@ -498,7 +531,276 @@ export default function Usuarios() {
         </CardContent>
       </Card>
 
-      {/* ... keep existing code (dialogs) ... */}
+      {/* Edit User Dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Usuário</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="full_name" className="text-right">Nome</Label>
+              <Input
+                id="full_name"
+                defaultValue={editingUser?.full_name}
+                className="col-span-3"
+                disabled // Name should not be editable here
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">Email</Label>
+              <Input
+                id="email"
+                defaultValue={editingUser?.email}
+                className="col-span-3"
+                disabled // Email should not be editable here
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="manager" className="text-right">Gestor</Label>
+              <Select
+                value={formData.manager_id || ""}
+                onValueChange={(value) => setFormData({ ...formData, manager_id: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecionar gestor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Nenhum</SelectItem>
+                  {managers
+                    .filter(m => m.id !== editingUser?.id) // A user cannot be their own manager
+                    .map((manager) => (
+                      <SelectItem key={manager.id} value={manager.id}>
+                        {manager.full_name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="department" className="text-right">Departamento</Label>
+              <Input
+                id="department"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="position" className="text-right">Cargo</Label>
+              <Input
+                id="position"
+                value={formData.position}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="admission_date" className="text-right">Admissão</Label>
+              <Input
+                id="admission_date"
+                type="date"
+                value={formData.admission_date}
+                onChange={(e) => setFormData({ ...formData, admission_date: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Ativo</SelectItem>
+                  <SelectItem value="inactive">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-red-500 text-sm col-span-full">{error}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create User Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Novo Usuário</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_full_name" className="text-right">Nome Completo</Label>
+              <Input
+                id="create_full_name"
+                value={createFormData.full_name}
+                onChange={(e) => setCreateFormData({ ...createFormData, full_name: e.target.value })}
+                className="col-span-3"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_email" className="text-right">Email</Label>
+              <Input
+                id="create_email"
+                type="email"
+                value={createFormData.email}
+                onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
+                className="col-span-3"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_role" className="text-right">Perfil</Label>
+              <Select
+                value={createFormData.role}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, role: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecionar perfil" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">Colaborador</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_manager" className="text-right">Gestor</Label>
+              <Select
+                value={createFormData.manager_id || ""}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, manager_id: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecionar gestor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Nenhum</SelectItem>
+                  {managers.map((manager) => (
+                      <SelectItem key={manager.id} value={manager.id}>
+                        {manager.full_name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_department" className="text-right">Departamento</Label>
+              <Input
+                id="create_department"
+                value={createFormData.department}
+                onChange={(e) => setCreateFormData({ ...createFormData, department: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_position" className="text-right">Cargo</Label>
+              <Input
+                id="create_position"
+                value={createFormData.position}
+                onChange={(e) => setCreateFormData({ ...createFormData, position: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_admission_date" className="text-right">Admissão</Label>
+              <Input
+                id="create_admission_date"
+                type="date"
+                value={createFormData.admission_date}
+                onChange={(e) => setCreateFormData({ ...createFormData, admission_date: e.target.value })}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="create_status" className="text-right">Status</Label>
+              <Select
+                value={createFormData.status}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, status: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Ativo</SelectItem>
+                  <SelectItem value="inactive">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-red-500 text-sm col-span-full">{error}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreate} disabled={saving}>
+              {saving ? "Criando..." : "Criar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inactivate User Dialog */}
+      <Dialog open={showInactivateDialog} onOpenChange={setShowInactivateDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Inativar Usuário: {inactivatingUser?.full_name}</DialogTitle>
+            <DialogDescription>
+              {`Você está prestes a inativar o usuário ${inactivatingUser?.full_name}.`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <p className="text-sm text-slate-700">
+              Este usuário possui subordinados ativos. Para inativá-lo, você deve reatribuir seus subordinados a outro gestor.
+            </p>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="new_manager" className="text-right">Novo Gestor</Label>
+              <Select
+                value={newManagerId}
+                onValueChange={setNewManagerId}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecionar novo gestor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={null}>Nenhum (Subordinados ficarão sem gestor)</SelectItem>
+                  {managers
+                    .filter(m => m.id !== inactivatingUser?.id) // The inactivating user cannot be the new manager
+                    .map((manager) => (
+                      <SelectItem key={manager.id} value={manager.id}>
+                        {manager.full_name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-red-500 text-sm col-span-full">{error}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowInactivateDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => confirmInactivation(inactivatingUser?.id, newManagerId || null)} 
+              disabled={saving}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {saving ? "Inativando..." : "Confirmar Inativação"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

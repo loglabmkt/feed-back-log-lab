@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { 
@@ -55,7 +56,25 @@ export default function Validacao() {
         employee_email: user.email
       }, '-created_date');
 
-      setFeedbacks(myFeedbacks);
+      // Sort feedbacks by validation_date (most recent first) for processed tab, and by deadline for pending tab
+      const sortedFeedbacks = myFeedbacks.sort((a, b) => {
+        // Pending first, then by deadline for pending, or by validation_date for processed
+        if (a.validation_status === 'pending' && b.validation_status !== 'pending') return -1;
+        if (a.validation_status !== 'pending' && b.validation_status === 'pending') return 1;
+
+        if (a.validation_status === 'pending' && b.validation_status === 'pending') {
+          const deadlineA = a.validation_deadline ? new Date(a.validation_deadline).getTime() : Infinity;
+          const deadlineB = b.validation_deadline ? new Date(b.validation_deadline).getTime() : Infinity;
+          return deadlineA - deadlineB; // Earlier deadline first
+        } else {
+          const validationDateA = a.validation_date ? new Date(a.validation_date).getTime() : 0;
+          const validationDateB = b.validation_date ? new Date(b.validation_date).getTime() : 0;
+          return validationDateB - validationDateA; // Most recent processed first
+        }
+      });
+
+
+      setFeedbacks(sortedFeedbacks);
     } catch (e) {
       console.error(e);
     } finally {
@@ -276,17 +295,23 @@ export default function Validacao() {
                           <div className="flex items-center gap-2 text-sm text-slate-500">
                             <Calendar className="w-3 h-3" />
                             <span>
-                              {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd/MM/yyyy")}
+                              {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd/MM/yyyy", { locale: ptBR })}
                             </span>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         {getTypeBadge(feedback.feedback_type)}
-                        {daysUntilDeadline !== null && daysUntilDeadline <= 3 && (
+                        {daysUntilDeadline !== null && daysUntilDeadline <= 3 && daysUntilDeadline >=0 && (
                           <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
                             <AlertTriangle className="w-3 h-3 mr-1" />
                             {daysUntilDeadline} dias restantes
+                          </Badge>
+                        )}
+                        {daysUntilDeadline !== null && daysUntilDeadline < 0 && (
+                          <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200">
+                            <AlertTriangle className="w-3 h-3 mr-1" />
+                            Prazo Expirado
                           </Badge>
                         )}
                       </div>
@@ -333,7 +358,7 @@ export default function Validacao() {
                         <div className="flex items-center gap-2 text-sm text-slate-500">
                           <Calendar className="w-3 h-3" />
                           <span>
-                            {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd/MM/yyyy")}
+                            {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd/MM/yyyy", { locale: ptBR })}
                           </span>
                         </div>
                       </div>
@@ -350,7 +375,138 @@ export default function Validacao() {
         </TabsContent>
       </Tabs>
 
-      {/* ... keep existing code (dialogs) ... */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Feedback</DialogTitle>
+            <DialogDescription>
+              Visualize o feedback recebido e decida se deseja aceitá-lo ou contestá-lo.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedFeedback && (
+            <div className="grid gap-4 py-4 text-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold">
+                      {getInitials(selectedFeedback.manager_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold text-slate-900">{selectedFeedback.manager_name}</p>
+                    <p className="text-xs text-slate-500">Gerente</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {getTypeBadge(selectedFeedback.feedback_type)}
+                  {getStatusBadge(selectedFeedback.validation_status)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-500">Data do Feedback</p>
+                  <p className="font-medium">
+                    {selectedFeedback.feedback_date && format(new Date(selectedFeedback.feedback_date), "dd/MM/yyyy", { locale: ptBR })}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Prazo para Validação</p>
+                  <p className="font-medium">
+                    {selectedFeedback.validation_deadline && format(new Date(selectedFeedback.validation_deadline), "dd/MM/yyyy", { locale: ptBR })}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-500">Pontos Fortes</p>
+                <p className="text-slate-700 whitespace-pre-wrap">{selectedFeedback.strengths || "Não informado"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Pontos a Desenvolver</p>
+                <p className="text-slate-700 whitespace-pre-wrap">{selectedFeedback.areas_for_development || "Não informado"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-500">Sugestões de Melhoria</p>
+                <p className="text-slate-700 whitespace-pre-wrap">{selectedFeedback.suggestions || "Não informado"}</p>
+              </div>
+
+              {selectedFeedback.validation_status === 'contested' && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-xs text-red-700 flex items-center gap-1">
+                    <XCircle className="w-3 h-3" /> Motivo da Contestação
+                  </p>
+                  <p className="text-sm text-red-800 mt-1 whitespace-pre-wrap">{selectedFeedback.contestation_reason}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:gap-2">
+            {selectedFeedback && selectedFeedback.validation_status === 'pending' ? (
+              <>
+                <Button variant="outline" onClick={() => setShowDialog(false)} disabled={processing}>
+                  Fechar
+                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setShowDialog(false);
+                      setShowContestDialog(true);
+                    }}
+                    disabled={processing}
+                  >
+                    Contestar
+                  </Button>
+                  <Button onClick={handleAccept} disabled={processing}>
+                    {processing ? "Aceitando..." : "Aceitar"}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Button onClick={() => setShowDialog(false)} disabled={processing}>
+                Fechar
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showContestDialog} onOpenChange={setShowContestDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Contestar Feedback</DialogTitle>
+            <DialogDescription>
+              Por favor, explique o motivo da contestação. Seja o mais detalhado possível (mínimo de 50 caracteres).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              placeholder="Descreva o motivo da sua contestação..."
+              value={contestReason}
+              onChange={(e) => setContestReason(e.target.value)}
+              rows={6}
+              disabled={processing}
+            />
+            {contestReason.trim().length > 0 && contestReason.trim().length < 50 && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  A descrição deve ter pelo menos 50 caracteres. ({contestReason.trim().length}/50)
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowContestDialog(false); setShowDialog(true); }} disabled={processing}>
+              Cancelar
+            </Button>
+            <Button onClick={handleContest} disabled={processing || contestReason.trim().length < 50}>
+              {processing ? "Enviando..." : "Enviar Contestação"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

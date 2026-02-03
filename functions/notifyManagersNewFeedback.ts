@@ -19,43 +19,30 @@ Deno.serve(async (req) => {
             return Response.json({ message: 'Feedback não foi ativado nesta atualização' });
         }
 
-        // Buscar todos os gestores ativos
-        const gestores = await base44.asServiceRole.entities.Gestor.filter({ status: 'active' });
-
-        if (!gestores || gestores.length === 0) {
-            return Response.json({ message: 'Nenhum gestor ativo encontrado' });
-        }
-
-        // Buscar todos os usuários Base44 para verificar quais emails são válidos
+        // Buscar apenas usuários Base44 com role admin (que são os gestores com acesso ao sistema)
         const users = await base44.asServiceRole.entities.User.list();
-        const validEmails = new Set(users.map(u => u.email.toLowerCase()));
+        const adminUsers = users.filter(u => u.role === 'admin');
 
-        // Filtrar apenas gestores que também são usuários Base44
-        const validGestores = gestores.filter(gestor => 
-            validEmails.has(gestor.email.toLowerCase())
-        );
-
-        if (validGestores.length === 0) {
+        if (!adminUsers || adminUsers.length === 0) {
             return Response.json({ 
-                message: 'Nenhum gestor com email registrado no sistema Base44 encontrado',
-                total_gestores: gestores.length,
-                gestores_sem_acesso: gestores.map(g => g.email)
+                message: 'Nenhum administrador encontrado para notificar',
+                info: 'Apenas administradores Base44 receberão notificações por email'
             });
         }
 
-        // Enviar email para cada gestor válido
-        const emailPromises = validGestores.map(gestor => 
+        // Enviar email para cada administrador
+        const emailPromises = adminUsers.map(admin => 
             base44.asServiceRole.integrations.Core.SendEmail({
                 from_name: 'Compliance RH',
-                to: gestor.email,
+                to: admin.email,
                 subject: `✅ Novo Template de Feedback Disponível: ${data.title}`,
                 body: `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                         <h2 style="color: #F8B137;">Novo Template de Feedback Ativo</h2>
                         
-                        <p>Olá, <strong>${gestor.full_name}</strong>!</p>
+                        <p>Olá, <strong>${admin.full_name}</strong>!</p>
                         
-                        <p>Um novo template de feedback foi ativado e está disponível para uso:</p>
+                        <p>Um novo template de feedback foi ativado e está disponível para uso pelos gestores:</p>
                         
                         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #F8B137;">
                             <h3 style="margin-top: 0; color: #14141E;">${data.title}</h3>
@@ -63,12 +50,12 @@ Deno.serve(async (req) => {
                             ${data.checklist_questions?.length > 0 ? `<p style="margin: 10px 0;"><strong>Checklist:</strong> ${data.checklist_questions.length} perguntas</p>` : ''}
                         </div>
                         
-                        <p>Você já pode utilizar este template para realizar feedbacks com sua equipe.</p>
+                        <p>Os gestores agora podem utilizar este template para realizar feedbacks com suas equipes.</p>
                         
                         <p style="margin-top: 30px;">
-                            <a href="${Deno.env.get('BASE44_APP_URL') || 'https://seu-app.base44.com'}/painelgestor" 
+                            <a href="${Deno.env.get('BASE44_APP_URL') || 'https://seu-app.base44.com'}/painel" 
                                style="background: #F8B137; color: #14141E; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
-                                Acessar Painel do Gestor
+                                Acessar Painel Administrativo
                             </a>
                         </p>
                         
@@ -76,7 +63,7 @@ Deno.serve(async (req) => {
                         
                         <p style="color: #6b7280; font-size: 12px;">
                             Esta é uma notificação automática do sistema Compliance RH.<br>
-                            Se você não deveria receber este email, entre em contato com o administrador.
+                            Você está recebendo este email porque é administrador do sistema.
                         </p>
                     </div>
                 `
@@ -85,13 +72,10 @@ Deno.serve(async (req) => {
 
         await Promise.all(emailPromises);
 
-        const gestoresIgnorados = gestores.filter(g => !validEmails.has(g.email.toLowerCase()));
-
         return Response.json({ 
             success: true, 
-            message: `Email enviado para ${validGestores.length} gestor(es)`,
-            emails_enviados: validGestores.map(g => g.email),
-            gestores_sem_acesso_base44: gestoresIgnorados.length > 0 ? gestoresIgnorados.map(g => g.email) : undefined
+            message: `Email de notificação enviado para ${adminUsers.length} administrador(es)`,
+            emails_enviados: adminUsers.map(u => u.email)
         });
 
     } catch (error) {

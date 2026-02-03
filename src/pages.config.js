@@ -82,7 +82,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "Feedbacks",
+    mainPage: "Painel",
     Pages: PAGES,
     Layout: __Layout,
 };

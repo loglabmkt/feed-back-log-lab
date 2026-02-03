@@ -46,17 +46,15 @@ export default function Colaboradores() {
 
   const loadData = async () => {
     try {
-      const [users, companiesData] = await Promise.all([
+      const [colaboradores, users, companiesData] = await Promise.all([
+        base44.entities.Colaborador.list(),
         base44.entities.User.list(),
         base44.entities.Company.list()
       ]);
 
-      const employeeUsers = users.filter(u => u.role !== 'admin');
-      const managerUsers = users.filter(u => 
-        u.role === 'admin' || users.some(emp => emp.manager_id === u.id)
-      );
+      const managerUsers = users.filter(u => u.role === 'admin');
 
-      setEmployees(employeeUsers);
+      setEmployees(colaboradores);
       setManagers(managerUsers);
       setCompanies(companiesData);
     } catch (e) {
@@ -107,7 +105,7 @@ export default function Colaboradores() {
 
     try {
       if (editingEmployee) {
-        await base44.entities.User.update(editingEmployee.id, formData);
+        await base44.entities.Colaborador.update(editingEmployee.id, formData);
       } else {
         const emailExists = employees.some(e => e.email.toLowerCase() === formData.email.toLowerCase());
         if (emailExists) {
@@ -116,18 +114,14 @@ export default function Colaboradores() {
           return;
         }
 
-        await base44.users.inviteUser(formData.email, "user");
-        
-        const updatedUsers = await base44.entities.User.list();
-        const newUser = updatedUsers.find(u => u.email.toLowerCase() === formData.email.toLowerCase());
-        
-        if (newUser) {
-          await base44.entities.User.update(newUser.id, {
-            company_id: formData.company_id || null,
-            manager_id: formData.manager_id || null,
-            department: formData.department || null
-          });
-        }
+        await base44.entities.Colaborador.create({
+          full_name: formData.full_name,
+          email: formData.email,
+          company_id: formData.company_id || null,
+          manager_id: formData.manager_id || null,
+          department: formData.department || null,
+          status: "active"
+        });
       }
 
       await loadData();
@@ -251,7 +245,6 @@ export default function Colaboradores() {
                 value={formData.full_name}
                 onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                 placeholder="Nome do colaborador"
-                disabled={!!editingEmployee}
               />
             </div>
 
@@ -262,7 +255,6 @@ export default function Colaboradores() {
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase()})}
                 placeholder="email@empresa.com"
-                disabled={!!editingEmployee}
               />
             </div>
 

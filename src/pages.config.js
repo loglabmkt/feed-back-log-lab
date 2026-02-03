@@ -58,6 +58,9 @@ import Painel from './pages/Painel';
 import Relatorios from './pages/Relatorios';
 import Usuarios from './pages/Usuarios';
 import Validacao from './pages/Validacao';
+import CriarFeedback from './pages/CriarFeedback';
+import PreencherFeedback from './pages/PreencherFeedback';
+import RevisarFeedback from './pages/RevisarFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +76,9 @@ export const PAGES = {
     "Relatorios": Relatorios,
     "Usuarios": Usuarios,
     "Validacao": Validacao,
+    "CriarFeedback": CriarFeedback,
+    "PreencherFeedback": PreencherFeedback,
+    "RevisarFeedback": RevisarFeedback,
 }
 
 export const pagesConfig = {

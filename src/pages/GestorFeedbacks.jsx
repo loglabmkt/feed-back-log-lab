@@ -54,12 +54,11 @@ export default function GestorFeedbacks() {
       const allTemplates = await base44.entities.FeedbackTemplate.filter({ is_active: true });
       setTemplates(allTemplates);
 
-      // Buscar colaboradores do gestor
-      const allColaboradores = await base44.entities.Colaborador.list();
-      const gestorColaboradores = allColaboradores.filter(c => 
-        c.manager_id === gestorData.id && c.status === 'active'
-      );
-      setColaboradores(gestorColaboradores);
+      // Buscar todos os colaboradores ativos
+      const allColaboradores = await base44.entities.Colaborador.filter({
+        status: 'active'
+      });
+      setColaboradores(allColaboradores);
 
       // Buscar feedbacks criados pelo gestor
       const feedbacks = await base44.entities.FeedbackRecord.filter({
@@ -95,6 +94,13 @@ export default function GestorFeedbacks() {
     setSaving(true);
     try {
       const colaborador = colaboradores.find(c => c.id === formData.employee_id);
+      
+      // Vincular colaborador ao gestor se ainda não estiver vinculado
+      if (colaborador.manager_id !== gestor.id) {
+        await base44.entities.Colaborador.update(colaborador.id, {
+          manager_id: gestor.id
+        });
+      }
       
       await base44.entities.FeedbackRecord.create({
         template_id: selectedTemplate.id,
@@ -235,29 +241,29 @@ export default function GestorFeedbacks() {
           <div className="space-y-4 py-4">
             <div>
               <Label>Colaborador *</Label>
-              {colaboradores.length === 0 ? (
-                <div className="p-3 text-sm text-amber-600 bg-amber-50 rounded-lg border border-amber-200">
-                  Você não possui colaboradores vinculados. Entre em contato com o administrador.
-                </div>
-              ) : (
-                <Select
-                  value={formData.employee_id}
-                  onValueChange={(value) => setFormData({...formData, employee_id: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um colaborador" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {colaboradores.map((colab) => (
+              <Select
+                value={formData.employee_id}
+                onValueChange={(value) => setFormData({...formData, employee_id: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um colaborador" />
+                </SelectTrigger>
+                <SelectContent>
+                  {colaboradores.length === 0 ? (
+                    <div className="p-2 text-sm text-slate-500 text-center">
+                      Nenhum colaborador cadastrado
+                    </div>
+                  ) : (
+                    colaboradores.map((colab) => (
                       <SelectItem key={colab.id} value={colab.id}>
                         {colab.full_name} - {colab.position || 'Sem cargo'}
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-slate-500 mt-1">
-                {colaboradores.length} colaborador(es) disponível(is)
+                O colaborador será vinculado a você ao enviar o feedback
               </p>
             </div>
 

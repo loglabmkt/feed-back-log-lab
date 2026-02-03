@@ -62,6 +62,9 @@ import VisualizarFeedback from './pages/VisualizarFeedback';
 import Empresas from './pages/Empresas';
 import Gestores from './pages/Gestores';
 import Colaboradores from './pages/Colaboradores';
+import GestorCadastro from './pages/GestorCadastro';
+import GestorLogin from './pages/GestorLogin';
+import PainelGestor from './pages/PainelGestor';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +84,9 @@ export const PAGES = {
     "Empresas": Empresas,
     "Gestores": Gestores,
     "Colaboradores": Colaboradores,
+    "GestorCadastro": GestorCadastro,
+    "GestorLogin": GestorLogin,
+    "PainelGestor": PainelGestor,
 }
 
 export const pagesConfig = {

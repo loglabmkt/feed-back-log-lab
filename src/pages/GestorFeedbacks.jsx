@@ -235,27 +235,30 @@ export default function GestorFeedbacks() {
           <div className="space-y-4 py-4">
             <div>
               <Label>Colaborador *</Label>
-              <Select
-                value={formData.employee_id}
-                onValueChange={(value) => setFormData({...formData, employee_id: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um colaborador" />
-                </SelectTrigger>
-                <SelectContent>
-                  {colaboradores.length === 0 ? (
-                    <div className="p-2 text-sm text-slate-500 text-center">
-                      Nenhum colaborador encontrado
-                    </div>
-                  ) : (
-                    colaboradores.map((colab) => (
+              {colaboradores.length === 0 ? (
+                <div className="p-3 text-sm text-amber-600 bg-amber-50 rounded-lg border border-amber-200">
+                  Você não possui colaboradores vinculados. Entre em contato com o administrador.
+                </div>
+              ) : (
+                <Select
+                  value={formData.employee_id}
+                  onValueChange={(value) => setFormData({...formData, employee_id: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um colaborador" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {colaboradores.map((colab) => (
                       <SelectItem key={colab.id} value={colab.id}>
                         {colab.full_name} - {colab.position || 'Sem cargo'}
                       </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <p className="text-xs text-slate-500 mt-1">
+                {colaboradores.length} colaborador(es) disponível(is)
+              </p>
             </div>
 
             <div>

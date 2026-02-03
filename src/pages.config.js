@@ -61,6 +61,8 @@ import Validacao from './pages/Validacao';
 import CriarFeedback from './pages/CriarFeedback';
 import PreencherFeedback from './pages/PreencherFeedback';
 import RevisarFeedback from './pages/RevisarFeedback';
+import VisualizarFeedback from './pages/VisualizarFeedback';
+import ValidarFeedback from './pages/ValidarFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +81,8 @@ export const PAGES = {
     "CriarFeedback": CriarFeedback,
     "PreencherFeedback": PreencherFeedback,
     "RevisarFeedback": RevisarFeedback,
+    "VisualizarFeedback": VisualizarFeedback,
+    "ValidarFeedback": ValidarFeedback,
 }
 
 export const pagesConfig = {

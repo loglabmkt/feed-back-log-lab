@@ -55,11 +55,11 @@ export default function GestorFeedbacks() {
       setTemplates(allTemplates);
 
       // Buscar colaboradores do gestor
-      const allColaboradores = await base44.entities.Colaborador.filter({
-        manager_id: gestorData.id,
-        status: 'active'
-      });
-      setColaboradores(allColaboradores);
+      const allColaboradores = await base44.entities.Colaborador.list();
+      const gestorColaboradores = allColaboradores.filter(c => 
+        c.manager_id === gestorData.id && c.status === 'active'
+      );
+      setColaboradores(gestorColaboradores);
 
       // Buscar feedbacks criados pelo gestor
       const feedbacks = await base44.entities.FeedbackRecord.filter({
@@ -110,7 +110,7 @@ export default function GestorFeedbacks() {
         improvements: formData.improvements,
         action_plan: formData.action_plan,
         additional_notes: formData.additional_notes,
-        workflow_status: 'DISPONIVEL_PARA_GESTOR',
+        workflow_status: 'EM_REVISAO_ADMIN',
         checklist_questions: selectedTemplate.checklist_questions || []
       });
 
@@ -173,7 +173,7 @@ export default function GestorFeedbacks() {
                       onClick={() => handleCreateFeedback(template)}
                     >
                       <Plus className="w-4 h-4 mr-2" />
-                      Criar Feedback
+                      Responder Feedback
                     </Button>
                   </CardContent>
                 </Card>
@@ -229,7 +229,7 @@ export default function GestorFeedbacks() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Criar Feedback: {selectedTemplate?.title}</DialogTitle>
+            <DialogTitle>Responder Feedback: {selectedTemplate?.title}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
@@ -243,11 +243,17 @@ export default function GestorFeedbacks() {
                   <SelectValue placeholder="Selecione um colaborador" />
                 </SelectTrigger>
                 <SelectContent>
-                  {colaboradores.map((colab) => (
-                    <SelectItem key={colab.id} value={colab.id}>
-                      {colab.full_name} - {colab.position || 'Sem cargo'}
-                    </SelectItem>
-                  ))}
+                  {colaboradores.length === 0 ? (
+                    <div className="p-2 text-sm text-slate-500 text-center">
+                      Nenhum colaborador encontrado
+                    </div>
+                  ) : (
+                    colaboradores.map((colab) => (
+                      <SelectItem key={colab.id} value={colab.id}>
+                        {colab.full_name} - {colab.position || 'Sem cargo'}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -311,7 +317,7 @@ export default function GestorFeedbacks() {
               disabled={saving}
               style={{background: '#F8B137', color: '#14141E'}}
             >
-              {saving ? 'Salvando...' : 'Criar Feedback'}
+              {saving ? 'Enviando...' : 'Enviar'}
             </Button>
           </div>
         </DialogContent>

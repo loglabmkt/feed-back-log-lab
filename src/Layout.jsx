@@ -30,9 +30,24 @@ export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
+  // Páginas públicas que não devem mostrar o layout administrativo
+  const publicPages = [
+    '/gestorlogin',
+    '/gestorcadastro', 
+    '/acessopublicofeedback',
+    '/gestor',
+    '/painelgestor'
+  ];
+  
+  const isPublicPage = publicPages.some(page => 
+    location.pathname.toLowerCase().includes(page.toLowerCase())
+  );
+
   useEffect(() => {
-    loadUser();
-  }, []);
+    if (!isPublicPage) {
+      loadUser();
+    }
+  }, [isPublicPage]);
 
   const loadUser = async () => {
     try {
@@ -102,6 +117,11 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const filteredNav = navigation.filter(item => item.show);
+
+  // Se for página pública, renderiza apenas o conteúdo sem layout
+  if (isPublicPage) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">

@@ -128,7 +128,7 @@ export default function PainelGestor() {
                 Dashboard
               </a>
               <a
-                href="/painelgestor"
+                href="/gestorfeedbacks"
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900"
               >
                 <MessageSquare className="w-5 h-5 text-slate-400" />

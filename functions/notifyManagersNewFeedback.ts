@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
                                                     <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
                                                         <tr>
                                                             <td align="center">
-                                                                <a href="${Deno.env.get('BASE44_APP_URL') || window.location.origin}/gestorlogin" 
+                                                                <a href="${Deno.env.get('BASE44_APP_URL') || 'https://app.base44.com'}/gestorlogin" 
                                                                    style="display: inline-block; background: #F8B137; color: #14141E; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 14px rgba(248, 177, 55, 0.3);">
                                                                     Acessar Plataforma
                                                                 </a>

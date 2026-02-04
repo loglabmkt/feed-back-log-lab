@@ -54,6 +54,7 @@ import CriarFeedback from './pages/CriarFeedback';
 import EditarFeedback from './pages/EditarFeedback';
 import Empresas from './pages/Empresas';
 import Feedbacks from './pages/Feedbacks';
+import GerenciarFeedback from './pages/GerenciarFeedback';
 import GestorCadastro from './pages/GestorCadastro';
 import GestorFeedbacks from './pages/GestorFeedbacks';
 import GestorLogin from './pages/GestorLogin';
@@ -68,7 +69,6 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import GerenciarFeedback from './pages/GerenciarFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -80,6 +80,7 @@ export const PAGES = {
     "EditarFeedback": EditarFeedback,
     "Empresas": Empresas,
     "Feedbacks": Feedbacks,
+    "GerenciarFeedback": GerenciarFeedback,
     "GestorCadastro": GestorCadastro,
     "GestorFeedbacks": GestorFeedbacks,
     "GestorLogin": GestorLogin,
@@ -94,7 +95,6 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "GerenciarFeedback": GerenciarFeedback,
 }
 
 export const pagesConfig = {

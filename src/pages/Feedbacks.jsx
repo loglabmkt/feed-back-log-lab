@@ -55,9 +55,24 @@ export default function Feedbacks() {
 
   const handleToggleActive = async (template) => {
     try {
+      const newActiveState = !template.is_active;
+      
       await base44.entities.FeedbackTemplate.update(template.id, {
-        is_active: !template.is_active
+        is_active: newActiveState
       });
+      
+      // Se foi ativado, notificar gestores via Resend
+      if (newActiveState === true) {
+        try {
+          await base44.functions.invoke('notifyManagersNewFeedback', {
+            templateId: template.id
+          });
+        } catch (emailError) {
+          console.error('Erro ao enviar notificações:', emailError);
+          // Não bloqueia a ativação se o email falhar
+        }
+      }
+      
       await loadData();
     } catch (e) {
       console.error(e);

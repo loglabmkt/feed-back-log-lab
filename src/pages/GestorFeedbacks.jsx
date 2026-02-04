@@ -191,7 +191,7 @@ export default function GestorFeedbacks() {
 
       {/* Meus Feedbacks */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Feedbacks Criados</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Respondidos</h2>
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6">
             {myFeedbacks.length === 0 ? (

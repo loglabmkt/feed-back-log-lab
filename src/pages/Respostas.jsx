@@ -143,7 +143,7 @@ export default function Respostas() {
                   <Link to={createPageUrl("RevisarFeedback") + `?id=${record.id}`}>
                     <Button style={{background: '#F8B137', color: '#14141E'}}>
                       <Eye className="w-4 h-4 mr-2" />
-                      Revisar
+                      {record.workflow_status === 'EM_REVISAO_ADMIN' ? 'Revisar' : 'Ver'}
                     </Button>
                   </Link>
                 </div>

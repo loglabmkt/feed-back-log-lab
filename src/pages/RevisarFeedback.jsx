@@ -108,12 +108,24 @@ export default function RevisarFeedback() {
         </Button>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Revisar Feedback</h1>
-            <p className="text-slate-500">Analise e aprove o feedback preenchido pelo gestor</p>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Revisar Feedback' : 'Visualizar Feedback'}
+            </h1>
+            <p className="text-slate-500">
+              {feedback.workflow_status === 'EM_REVISAO_ADMIN' 
+                ? 'Analise e aprove o feedback preenchido pelo gestor'
+                : 'Feedback já revisado e aprovado'}
+            </p>
           </div>
-          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-            Em Revisão
-          </Badge>
+          {feedback.workflow_status === 'EM_REVISAO_ADMIN' ? (
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+              Em Revisão
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+              Aprovado
+            </Badge>
+          )}
         </div>
       </div>
 
@@ -184,29 +196,40 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
-      <Alert className="bg-blue-50 border-blue-200 mb-6">
-        <AlertDescription className="text-blue-700">
-          <strong>Revisão de Conformidade:</strong> Verifique se o conteúdo está adequado às políticas da empresa antes de aprovar.
-        </AlertDescription>
-      </Alert>
+      {feedback.workflow_status === 'EM_REVISAO_ADMIN' ? (
+        <>
+          <Alert className="bg-blue-50 border-blue-200 mb-6">
+            <AlertDescription className="text-blue-700">
+              <strong>Revisão de Conformidade:</strong> Verifique se o conteúdo está adequado às políticas da empresa antes de aprovar.
+            </AlertDescription>
+          </Alert>
 
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleApprove}
-          disabled={approving}
-          style={{background: '#22C55E', color: 'white'}}
-          className="font-semibold"
-        >
-          <CheckCircle className="w-4 h-4 mr-2" />
-          {approving ? "Aprovando..." : "Concluir e Aprovar Feedback"}
-        </Button>
-      </div>
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleApprove}
+              disabled={approving}
+              style={{background: '#22C55E', color: 'white'}}
+              className="font-semibold"
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              {approving ? "Aprovando..." : "Concluir e Aprovar Feedback"}
+            </Button>
+          </div>
 
-      <Alert className="bg-slate-50 border-slate-200">
-        <AlertDescription className="text-slate-600">
-          Após a aprovação, o gestor deverá agendar uma conversa com o colaborador antes de publicar o feedback.
-        </AlertDescription>
-      </Alert>
+          <Alert className="bg-slate-50 border-slate-200">
+            <AlertDescription className="text-slate-600">
+              Após a aprovação, o gestor deverá agendar uma conversa com o colaborador antes de publicar o feedback.
+            </AlertDescription>
+          </Alert>
+        </>
+      ) : (
+        <Alert className="bg-emerald-50 border-emerald-200">
+          <AlertDescription className="text-emerald-700">
+            <CheckCircle className="w-5 h-5 inline mr-2" />
+            <strong>Feedback em conformidade:</strong> Disponibilizado para o gestor enviar ao colaborador após conversa pessoalmente.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

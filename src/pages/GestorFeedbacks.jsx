@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GestorLayout from "@/components/GestorLayout";
+import { createPageUrl } from "@/utils";
 
 export default function GestorFeedbacks() {
   const [gestor, setGestor] = useState(null);
@@ -63,7 +64,7 @@ export default function GestorFeedbacks() {
       // Buscar feedbacks criados pelo gestor
       const feedbacks = await base44.entities.FeedbackRecord.filter({
         manager_id: gestorData.id
-      });
+      }, '-created_date');
       setMyFeedbacks(feedbacks);
     } catch (e) {
       console.error(e);
@@ -199,32 +200,45 @@ export default function GestorFeedbacks() {
               </div>
             ) : (
               <div className="space-y-3">
-                {myFeedbacks.map((feedback) => (
-                  <div key={feedback.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">{feedback.employee_name}</p>
-                      <p className="text-sm text-slate-500">{feedback.template_title}</p>
-                      <p className="text-xs text-slate-400 mt-1">
-                        {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <Badge
-                      className={
-                        feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'bg-blue-100 text-blue-700' :
-                        feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'bg-amber-100 text-amber-700' :
-                        feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'bg-purple-100 text-purple-700' :
-                        feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'bg-orange-100 text-orange-700' :
-                        'bg-green-100 text-green-700'
-                      }
-                    >
-                      {feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'Rascunho' :
-                       feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Em Revisão' :
-                       feedback.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? 'Aprovado' :
-                       feedback.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' ? 'Aguardando Assinatura' :
-                       'Concluído'}
-                    </Badge>
-                  </div>
-                ))}
+               {myFeedbacks.map((feedback) => {
+                 const getStatusDisplay = (status) => {
+                   const statusMap = {
+                     'DISPONIVEL_PARA_GESTOR': { label: 'Disponível', color: 'bg-blue-100 text-blue-700', clickable: false },
+                     'EM_REVISAO_ADMIN': { label: 'Em Revisão', color: 'bg-amber-100 text-amber-700', clickable: false },
+                     'APROVADO': { label: 'Aprovado - Ações Pendentes', color: 'bg-green-100 text-green-700', clickable: true },
+                     'CONVERSA_AGENDADA': { label: 'Conversa Agendada', color: 'bg-purple-100 text-purple-700', clickable: true },
+                     'CONVERSA_REALIZADA': { label: 'Conversa Realizada', color: 'bg-indigo-100 text-indigo-700', clickable: true },
+                     'PUBLICADO': { label: 'Publicado', color: 'bg-emerald-100 text-emerald-700', clickable: false },
+                     'ASSINADO_COLABORADOR': { label: 'Assinado', color: 'bg-teal-100 text-teal-700', clickable: false }
+                   };
+                   return statusMap[status] || { label: status, color: 'bg-slate-100 text-slate-700', clickable: false };
+                 };
+
+                 const statusDisplay = getStatusDisplay(feedback.workflow_status);
+
+                 return (
+                   <div 
+                     key={feedback.id} 
+                     className={`flex items-center justify-between p-4 border rounded-lg ${statusDisplay.clickable ? 'hover:bg-slate-50 cursor-pointer hover:border-[#F8B137]' : 'hover:bg-slate-50'} transition-all`}
+                     onClick={() => {
+                       if (statusDisplay.clickable) {
+                         window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
+                       }
+                     }}
+                   >
+                     <div className="flex-1">
+                       <p className="font-medium text-slate-900">{feedback.employee_name}</p>
+                       <p className="text-sm text-slate-500">{feedback.template_title}</p>
+                       <p className="text-xs text-slate-400 mt-1">
+                         {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
+                       </p>
+                     </div>
+                     <Badge className={statusDisplay.color}>
+                       {statusDisplay.label}
+                     </Badge>
+                   </div>
+                 );
+               })}
               </div>
             )}
           </CardContent>

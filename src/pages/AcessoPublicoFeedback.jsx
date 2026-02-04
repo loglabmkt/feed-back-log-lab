@@ -67,9 +67,12 @@ export default function AcessoPublicoFeedback() {
         return;
       }
 
-      const userFeedbacks = await base44.entities.FeedbackRecord.filter({
+      const allFeedbacks = await base44.entities.FeedbackRecord.filter({
         employee_email: email.toLowerCase().trim()
       }, '-created_date');
+      
+      // Filtrar apenas feedbacks publicados
+      const userFeedbacks = allFeedbacks.filter(f => f.workflow_status === 'PUBLICADO' || f.workflow_status === 'ASSINADO_COLABORADOR');
 
       setUser(foundUser);
       setFeedbacks(userFeedbacks);

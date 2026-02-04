@@ -1,0 +1,399 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { 
+  ArrowLeft, 
+  Calendar, 
+  CheckCircle2, 
+  MessageSquare, 
+  Send 
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import GestorLayout from "@/components/GestorLayout";
+
+export default function GerenciarFeedback() {
+  const navigate = useNavigate();
+  const [feedback, setFeedback] = useState(null);
+  const [gestor, setGestor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState("");
+  const [scheduledDate, setScheduledDate] = useState("");
+
+  useEffect(() => {
+    checkAuth();
+    loadData();
+  }, []);
+
+  const checkAuth = () => {
+    const session = localStorage.getItem('gestor_session');
+    if (!session) {
+      window.location.href = '/gestorlogin';
+      return;
+    }
+    setGestor(JSON.parse(session));
+  };
+
+  const loadData = async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const feedbackId = params.get('id');
+      
+      if (!feedbackId) {
+        navigate(createPageUrl("GestorFeedbacks"));
+        return;
+      }
+
+      const feedbackData = await base44.entities.FeedbackRecord.filter({ id: feedbackId });
+      
+      if (!feedbackData || feedbackData.length === 0) {
+        navigate(createPageUrl("GestorFeedbacks"));
+        return;
+      }
+
+      const fb = feedbackData[0];
+      setFeedback(fb);
+      
+      if (fb.conversation_scheduled_date) {
+        setScheduledDate(new Date(fb.conversation_scheduled_date).toISOString().split('T')[0]);
+      }
+    } catch (e) {
+      console.error(e);
+      setError("Erro ao carregar feedback");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSchedule = async () => {
+    if (!scheduledDate) {
+      setError("Por favor, selecione uma data para a conversa");
+      return;
+    }
+
+    setError("");
+    setProcessing(true);
+
+    try {
+      await base44.entities.FeedbackRecord.update(feedback.id, {
+        workflow_status: "CONVERSA_AGENDADA",
+        conversation_scheduled_date: new Date(scheduledDate).toISOString()
+      });
+
+      await loadData();
+    } catch (e) {
+      setError(e.message || "Erro ao agendar conversa");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleMarkAsCompleted = async () => {
+    setError("");
+    setProcessing(true);
+
+    try {
+      await base44.entities.FeedbackRecord.update(feedback.id, {
+        workflow_status: "CONVERSA_REALIZADA",
+        conversation_completed_date: new Date().toISOString()
+      });
+
+      await loadData();
+    } catch (e) {
+      setError(e.message || "Erro ao marcar conversa como realizada");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    setError("");
+    setProcessing(true);
+
+    try {
+      await base44.entities.FeedbackRecord.update(feedback.id, {
+        workflow_status: "PUBLICADO",
+        published_date: new Date().toISOString()
+      });
+
+      alert("Feedback publicado com sucesso! O colaborador já pode visualizá-lo.");
+      navigate(createPageUrl("GestorFeedbacks"));
+    } catch (e) {
+      setError(e.message || "Erro ao publicar feedback");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  if (loading) {
+    return (
+      <GestorLayout currentPage="feedbacks" gestor={gestor}>
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F8B137]" />
+        </div>
+      </GestorLayout>
+    );
+  }
+
+  if (!feedback) {
+    return (
+      <GestorLayout currentPage="feedbacks" gestor={gestor}>
+        <div className="text-center py-12">
+          <p className="text-slate-500">Feedback não encontrado</p>
+        </div>
+      </GestorLayout>
+    );
+  }
+
+  return (
+    <GestorLayout currentPage="feedbacks" gestor={gestor}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(createPageUrl("GestorFeedbacks"))}
+            className="mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Gerenciar Feedback</h1>
+              <p className="text-slate-500">Controle o fluxo de governança do feedback</p>
+            </div>
+            <Badge 
+              className={
+                feedback.workflow_status === 'APROVADO' ? 'bg-green-100 text-green-700' :
+                feedback.workflow_status === 'CONVERSA_AGENDADA' ? 'bg-purple-100 text-purple-700' :
+                'bg-indigo-100 text-indigo-700'
+              }
+            >
+              {feedback.workflow_status === 'APROVADO' ? 'Aprovado' :
+               feedback.workflow_status === 'CONVERSA_AGENDADA' ? 'Conversa Agendada' :
+               'Conversa Realizada'}
+            </Badge>
+          </div>
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Informações do Colaborador</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <Avatar className="h-14 w-14">
+                <AvatarFallback className="text-white text-lg font-semibold" style={{background: '#F8B137'}}>
+                  {getInitials(feedback.employee_name)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-lg font-semibold text-slate-900">{feedback.employee_name}</p>
+                <p className="text-sm text-slate-500">{feedback.employee_email}</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Template: {feedback.template_title} • Data: {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Conteúdo do Feedback</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
+              <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
+              <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
+              </div>
+            </div>
+
+            {feedback.action_plan && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
+                <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+                </div>
+              </div>
+            )}
+
+            {feedback.additional_notes && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Observações</Label>
+                <div className="mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.additional_notes}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Stepper de Ações */}
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Etapas de Governança</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Etapa 1: Agendar Conversa */}
+            <div className={`p-6 rounded-xl border-2 transition-all ${
+              feedback.workflow_status === 'APROVADO' 
+                ? 'border-[#F8B137] bg-amber-50' 
+                : 'border-slate-200 bg-slate-50'
+            }`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  feedback.workflow_status === 'APROVADO'
+                    ? 'bg-[#F8B137] text-white'
+                    : feedback.workflow_status === 'CONVERSA_AGENDADA' || feedback.workflow_status === 'CONVERSA_REALIZADA'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-slate-300 text-slate-600'
+                }`}>
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">1. Agendar Conversa</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Defina uma data para conversar com o colaborador antes de publicar o feedback.
+                  </p>
+                  {feedback.workflow_status === 'APROVADO' && (
+                    <div className="space-y-3">
+                      <Input
+                        type="date"
+                        value={scheduledDate}
+                        onChange={(e) => setScheduledDate(e.target.value)}
+                        className="max-w-xs"
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                      <Button
+                        onClick={handleSchedule}
+                        disabled={processing || !scheduledDate}
+                        style={{background: '#F8B137', color: '#14141E'}}
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {processing ? "Agendando..." : "Agendar Conversa"}
+                      </Button>
+                    </div>
+                  )}
+                  {(feedback.workflow_status === 'CONVERSA_AGENDADA' || feedback.workflow_status === 'CONVERSA_REALIZADA') && (
+                    <Badge className="bg-purple-100 text-purple-700">
+                      ✓ Agendado para {feedback.conversation_scheduled_date && format(new Date(feedback.conversation_scheduled_date), "dd/MM/yyyy")}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Etapa 2: Marcar Conversa como Realizada */}
+            <div className={`p-6 rounded-xl border-2 transition-all ${
+              feedback.workflow_status === 'CONVERSA_AGENDADA' 
+                ? 'border-[#F8B137] bg-amber-50' 
+                : 'border-slate-200 bg-slate-50'
+            }`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  feedback.workflow_status === 'CONVERSA_AGENDADA'
+                    ? 'bg-[#F8B137] text-white'
+                    : feedback.workflow_status === 'CONVERSA_REALIZADA'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-slate-300 text-slate-600'
+                }`}>
+                  <MessageSquare className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">2. Conversa Realizada</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Após realizar a conversa com o colaborador, confirme aqui para liberar a publicação.
+                  </p>
+                  {feedback.workflow_status === 'CONVERSA_AGENDADA' && (
+                    <Button
+                      onClick={handleMarkAsCompleted}
+                      disabled={processing}
+                      style={{background: '#F8B137', color: '#14141E'}}
+                    >
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      {processing ? "Processando..." : "Marcar como Realizada"}
+                    </Button>
+                  )}
+                  {feedback.workflow_status === 'CONVERSA_REALIZADA' && (
+                    <Badge className="bg-indigo-100 text-indigo-700">
+                      ✓ Realizada em {feedback.conversation_completed_date && format(new Date(feedback.conversation_completed_date), "dd/MM/yyyy")}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Etapa 3: Publicar Feedback */}
+            <div className={`p-6 rounded-xl border-2 transition-all ${
+              feedback.workflow_status === 'CONVERSA_REALIZADA' 
+                ? 'border-[#F8B137] bg-amber-50' 
+                : 'border-slate-200 bg-slate-50'
+            }`}>
+              <div className="flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  feedback.workflow_status === 'CONVERSA_REALIZADA'
+                    ? 'bg-[#F8B137] text-white'
+                    : 'bg-slate-300 text-slate-600'
+                }`}>
+                  <Send className="w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">3. Publicar Feedback</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Libere o acesso ao colaborador para visualização e validação do feedback.
+                  </p>
+                  {feedback.workflow_status === 'CONVERSA_REALIZADA' && (
+                    <Button
+                      onClick={handlePublish}
+                      disabled={processing}
+                      style={{background: '#22C55E', color: 'white'}}
+                      className="font-semibold"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      {processing ? "Publicando..." : "Publicar Feedback"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Alert className="bg-blue-50 border-blue-200">
+          <AlertDescription className="text-blue-700">
+            <strong>Importante:</strong> O colaborador só poderá visualizar o feedback após você publicá-lo. Siga todas as etapas em ordem.
+          </AlertDescription>
+        </Alert>
+      </div>
+    </GestorLayout>
+  );
+}

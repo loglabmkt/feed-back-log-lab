@@ -167,76 +167,17 @@ export default function Colaborador() {
   };
 
   const pendingFeedbacks = feedbacks.filter(f => 
-    f.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' || 
-    f.workflow_status === 'CONCLUIDO_PARA_ENVIO'
+    f.workflow_status === 'PUBLICADO'
   );
   const processedFeedbacks = feedbacks.filter(f => 
-    f.workflow_status !== 'AGUARDANDO_VALIDACAO_COLABORADOR' && 
-    f.workflow_status !== 'CONCLUIDO_PARA_ENVIO'
+    f.workflow_status === 'ASSINADO_COLABORADOR' || 
+    f.workflow_status === 'EM_REVISAO_ADMIN'
   );
 
-  if (!accessGranted) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-0 shadow-xl">
-          <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center shadow-lg" style={{background: '#F8B137'}}>
-              <Shield className="w-8 h-8" style={{color: '#14141E'}} />
-            </div>
-            <CardTitle className="text-2xl font-bold" style={{color: '#14141E'}}>
-              Portal do Colaborador
-            </CardTitle>
-            <p className="text-slate-500 mt-2">
-              Insira seu e-mail corporativo para visualizar seus feedbacks
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder="seu.email@empresa.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-                onKeyPress={(e) => e.key === 'Enter' && handleAccessRequest()}
-                className="h-12"
-              />
-              {error && (
-                <Alert variant="destructive" className="py-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-            </div>
-            
-            <Button 
-              onClick={handleAccessRequest}
-              disabled={loading}
-              className="w-full h-12 text-base font-semibold shadow-md"
-              style={{background: '#F8B137', color: '#14141E'}}
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2" />
-                  Verificando...
-                </>
-              ) : (
-                <>
-                  <Mail className="w-5 h-5 mr-2" />
-                  Acessar Meus Feedbacks
-                </>
-              )}
-            </Button>
-
-            <div className="pt-4 border-t border-slate-200">
-              <p className="text-xs text-slate-500 text-center">
-                🔒 Acesso seguro e sem senha. Apenas feedbacks vinculados ao seu e-mail serão exibidos.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F8B137]" />
       </div>
     );
   }

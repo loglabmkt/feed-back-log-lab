@@ -29,56 +29,41 @@ import { format, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export default function Colaborador() {
-  const [email, setEmail] = useState("");
   const [feedbacks, setFeedbacks] = useState([]);
   const [colaborador, setColaborador] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [showContestDialog, setShowContestDialog] = useState(false);
   const [contestReason, setContestReason] = useState("");
   const [processing, setProcessing] = useState(false);
-  const [accessGranted, setAccessGranted] = useState(false);
 
-  const handleAccessRequest = async () => {
-    if (!email.trim()) {
-      setError("Por favor, insira seu e-mail.");
+  React.useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const session = localStorage.getItem('colaborador_session');
+    if (!session) {
+      window.location.href = '/colaboradorlogin';
       return;
     }
-
-    setLoading(true);
-    setError("");
-
+    
     try {
-      const colaboradores = await base44.entities.Colaborador.filter({ 
-        email: email.toLowerCase().trim() 
-      });
+      const sessionData = JSON.parse(session);
+      setColaborador(sessionData);
       
-      if (colaboradores.length === 0) {
-        setError("E-mail não encontrado no sistema. Verifique e tente novamente.");
-        setLoading(false);
-        return;
-      }
-
-      const foundColaborador = colaboradores[0];
-      
-      if (foundColaborador.status !== 'active') {
-        setError("Usuário inativo. Entre em contato com o RH.");
-        setLoading(false);
-        return;
-      }
-
+      // Buscar feedbacks PUBLICADOS do colaborador
       const userFeedbacks = await base44.entities.FeedbackRecord.filter({
-        employee_email: email.toLowerCase().trim()
+        employee_email: sessionData.email.toLowerCase(),
+        workflow_status: 'PUBLICADO'
       }, '-created_date');
 
-      setColaborador(foundColaborador);
       setFeedbacks(userFeedbacks);
-      setAccessGranted(true);
     } catch (e) {
       console.error(e);
-      setError("Erro ao acessar o sistema. Tente novamente mais tarde.");
+      window.location.href = '/colaboradorlogin';
     } finally {
       setLoading(false);
     }
@@ -95,7 +80,8 @@ export default function Colaborador() {
       });
       
       const updatedFeedbacks = await base44.entities.FeedbackRecord.filter({
-        employee_email: email.toLowerCase().trim()
+        employee_email: colaborador.email.toLowerCase(),
+        workflow_status: 'PUBLICADO'
       }, '-created_date');
       setFeedbacks(updatedFeedbacks);
       
@@ -121,7 +107,8 @@ export default function Colaborador() {
       });
       
       const updatedFeedbacks = await base44.entities.FeedbackRecord.filter({
-        employee_email: email.toLowerCase().trim()
+        employee_email: colaborador.email.toLowerCase(),
+        workflow_status: 'PUBLICADO'
       }, '-created_date');
       setFeedbacks(updatedFeedbacks);
       
@@ -266,16 +253,14 @@ export default function Colaborador() {
                   Olá, {colaborador?.full_name?.split(' ')[0]}! 👋
                 </h1>
                 <p style={{color: '#14141E', opacity: 0.9}}>
-                  Acessando como: {email}
+                  Acessando como: {colaborador?.email}
                 </p>
               </div>
               <Button 
                 variant="outline" 
                 onClick={() => {
-                  setAccessGranted(false);
-                  setFeedbacks([]);
-                  setColaborador(null);
-                  setEmail("");
+                  localStorage.removeItem('colaborador_session');
+                  window.location.href = '/colaboradorlogin';
                 }}
                 className="bg-white"
                 style={{borderColor: '#14141E', color: '#14141E'}}
@@ -499,8 +484,7 @@ export default function Colaborador() {
             )}
 
             <DialogFooter className="flex-col sm:flex-row gap-2">
-              {selectedFeedback?.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR' || 
-               selectedFeedback?.workflow_status === 'CONCLUIDO_PARA_ENVIO' ? (
+              {selectedFeedback?.workflow_status === 'PUBLICADO' ? (
                 <>
                   <Button 
                     variant="outline" 

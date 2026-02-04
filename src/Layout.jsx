@@ -34,7 +34,9 @@ export default function Layout({ children, currentPageName }) {
   // Páginas públicas que não devem mostrar o layout administrativo
   const publicPages = [
     '/gestorlogin',
-    '/gestorcadastro', 
+    '/gestorcadastro',
+    '/colaboradorlogin',
+    '/colaboradorcadastro',
     '/colaborador',
     '/painelgestor',
     '/gestorfeedbacks',

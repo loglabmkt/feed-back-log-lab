@@ -19,10 +19,17 @@ export default function Respostas() {
 
   const loadData = async () => {
     try {
-      const allRecords = await base44.entities.FeedbackRecord.filter({
-        workflow_status: 'EM_REVISAO_ADMIN'
-      });
-      setFeedbackRecords(allRecords);
+      const allRecords = await base44.entities.FeedbackRecord.list('-created_date');
+      // Filtrar apenas feedbacks que estão em revisão ou já foram aprovados
+      const relevantRecords = allRecords.filter(r => 
+        r.workflow_status === 'EM_REVISAO_ADMIN' || 
+        r.workflow_status === 'APROVADO' ||
+        r.workflow_status === 'CONVERSA_AGENDADA' ||
+        r.workflow_status === 'CONVERSA_REALIZADA' ||
+        r.workflow_status === 'PUBLICADO' ||
+        r.workflow_status === 'ASSINADO_COLABORADOR'
+      );
+      setFeedbackRecords(relevantRecords);
     } catch (e) {
       console.error(e);
     } finally {
@@ -85,9 +92,37 @@ export default function Respostas() {
                       <h3 className="text-lg font-semibold text-slate-900">
                         {record.employee_name}
                       </h3>
-                      <Badge className="bg-amber-100 text-amber-700">
-                        Em Revisão
-                      </Badge>
+                      {record.workflow_status === 'EM_REVISAO_ADMIN' && (
+                        <Badge className="bg-amber-100 text-amber-700">
+                          Em Revisão
+                        </Badge>
+                      )}
+                      {record.workflow_status === 'APROVADO' && (
+                        <Badge className="bg-emerald-100 text-emerald-700">
+                          Aprovado
+                        </Badge>
+                      )}
+                      {record.workflow_status === 'CONVERSA_AGENDADA' && (
+                        <Badge className="bg-blue-100 text-blue-700">
+                          Conversa Agendada
+                        </Badge>
+                      )}
+                      {record.workflow_status === 'CONVERSA_REALIZADA' && (
+                        <Badge className="bg-purple-100 text-purple-700">
+                          Conversa Realizada
+                        </Badge>
+                      )}
+                      {record.workflow_status === 'PUBLICADO' && (
+                        <Badge className="bg-indigo-100 text-indigo-700">
+                          Publicado
+                        </Badge>
+                      )}
+                      {record.workflow_status === 'ASSINADO_COLABORADOR' && (
+                        <Badge className="bg-green-100 text-green-700">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Assinado
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-slate-500 mb-1">
                       <span className="font-medium">Template:</span> {record.template_title}

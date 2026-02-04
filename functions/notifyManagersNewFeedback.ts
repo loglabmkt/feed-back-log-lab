@@ -8,20 +8,45 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const payload = await req.json();
 
-        const { templateId } = payload;
+        // Suporte para chamada manual (frontend) e automação de entidade
+        let templateId;
+        let template;
 
-        if (!templateId) {
-            return Response.json({ error: 'templateId é obrigatório' }, { status: 400 });
+        // Se veio de automação de entidade
+        if (payload.event && payload.data && payload.old_data) {
+            const { event, data, old_data } = payload;
+            
+            // Verificar se is_active mudou de false para true
+            const wasActivated = old_data?.is_active === false && data?.is_active === true;
+            
+            if (!wasActivated) {
+                return Response.json({ 
+                    success: true,
+                    message: 'Feedback não foi ativado nesta atualização (is_active não mudou de false para true)' 
+                });
+            }
+            
+            templateId = event.entity_id;
+            template = data;
+        } 
+        // Se veio de chamada manual do frontend
+        else if (payload.templateId) {
+            templateId = payload.templateId;
+            
+            // Buscar o template
+            const templates = await base44.asServiceRole.entities.FeedbackTemplate.filter({ id: templateId });
+            
+            if (!templates || templates.length === 0) {
+                return Response.json({ error: 'Template não encontrado' }, { status: 404 });
+            }
+            
+            template = templates[0];
         }
-
-        // Buscar o template
-        const templates = await base44.asServiceRole.entities.FeedbackTemplate.filter({ id: templateId });
-        
-        if (!templates || templates.length === 0) {
-            return Response.json({ error: 'Template não encontrado' }, { status: 404 });
+        else {
+            return Response.json({ 
+                error: 'Payload inválido. Esperado: {templateId} ou payload de entity automation' 
+            }, { status: 400 });
         }
-
-        const template = templates[0];
 
         // Buscar APENAS gestores ativos da tabela Gestor
         const gestores = await base44.asServiceRole.entities.Gestor.filter({ status: 'active' });

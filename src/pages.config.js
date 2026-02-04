@@ -63,11 +63,11 @@ import Painel from './pages/Painel';
 import PainelGestor from './pages/PainelGestor';
 import PreencherFeedback from './pages/PreencherFeedback';
 import Relatorios from './pages/Relatorios';
+import Respostas from './pages/Respostas';
 import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import Respostas from './pages/Respostas';
 import __Layout from './Layout.jsx';
 
 
@@ -88,11 +88,11 @@ export const PAGES = {
     "PainelGestor": PainelGestor,
     "PreencherFeedback": PreencherFeedback,
     "Relatorios": Relatorios,
+    "Respostas": Respostas,
     "RevisarFeedback": RevisarFeedback,
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "Respostas": Respostas,
 }
 
 export const pagesConfig = {

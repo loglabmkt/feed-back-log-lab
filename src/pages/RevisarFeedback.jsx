@@ -20,7 +20,6 @@ export default function RevisarFeedback() {
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState(false);
   const [error, setError] = useState("");
-  const [reviewNotes, setReviewNotes] = useState("");
 
   useEffect(() => {
     loadData();
@@ -48,7 +47,6 @@ export default function RevisarFeedback() {
 
       const fb = feedbackData[0];
       setFeedback(fb);
-      setReviewNotes(fb.admin_review_notes || "");
     } catch (e) {
       console.error(e);
       setError("Erro ao carregar feedback");
@@ -63,13 +61,12 @@ export default function RevisarFeedback() {
 
     try {
       await base44.entities.FeedbackRecord.update(feedback.id, {
-        workflow_status: "CONCLUIDO_PARA_ENVIO",
-        admin_review_notes: reviewNotes,
+        workflow_status: "APROVADO",
         admin_approved_by: currentUser.id,
         admin_approved_date: new Date().toISOString()
       });
 
-      navigate(createPageUrl("Feedbacks"));
+      navigate(createPageUrl("Respostas"));
     } catch (e) {
       setError(e.message || "Erro ao aprovar feedback");
     } finally {
@@ -187,25 +184,11 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Edit3 className="w-5 h-5" />
-            Notas de Revisão (Admin)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            value={reviewNotes}
-            onChange={(e) => setReviewNotes(e.target.value)}
-            placeholder="Adicione suas considerações, ajustes ou comentários sobre este feedback..."
-            className="min-h-32"
-          />
-          <p className="text-xs text-slate-500 mt-2">
-            Estas notas ficarão registradas no sistema para auditoria
-          </p>
-        </CardContent>
-      </Card>
+      <Alert className="bg-blue-50 border-blue-200 mb-6">
+        <AlertDescription className="text-blue-700">
+          <strong>Revisão de Conformidade:</strong> Verifique se o conteúdo está adequado às políticas da empresa antes de aprovar.
+        </AlertDescription>
+      </Alert>
 
       <div className="flex justify-end">
         <Button 
@@ -219,9 +202,9 @@ export default function RevisarFeedback() {
         </Button>
       </div>
 
-      <Alert className="bg-blue-50 border-blue-200">
-        <AlertDescription className="text-blue-700">
-          Após a aprovação, o gestor poderá gerar o link de acesso público para o colaborador validar o feedback.
+      <Alert className="bg-slate-50 border-slate-200">
+        <AlertDescription className="text-slate-600">
+          Após a aprovação, o gestor deverá agendar uma conversa com o colaborador antes de publicar o feedback.
         </AlertDescription>
       </Alert>
     </div>

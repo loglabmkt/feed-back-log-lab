@@ -89,6 +89,17 @@ export default function GerenciarFeedback() {
         conversation_scheduled_date: new Date(scheduledDate).toISOString()
       });
 
+      // Enviar email para o colaborador
+      try {
+        await base44.functions.invoke('notifyEmployeeScheduledConversation', {
+          feedbackId: feedback.id,
+          scheduledDate: scheduledDate
+        });
+      } catch (emailError) {
+        console.error('Erro ao enviar email:', emailError);
+        // Não bloqueia o fluxo se o email falhar
+      }
+
       await loadData();
     } catch (e) {
       setError(e.message || "Erro ao agendar conversa");

@@ -73,14 +73,37 @@ Deno.serve(async (req) => {
                     from: 'Compliance RH <marketing@loglabdigital.com.br>',
                     to: gestor.email,
                     subject: `✅ Novo Template de Feedback Disponível: ${template.title}`,
-                    react: 'feedback_ativo',
-                    react_props: {
-                        nome_gestor: gestor.full_name,
-                        titulo_template: template.title,
-                        tipo_feedback: tipoFeedback,
-                        num_perguntas: template.checklist_questions?.length || 0,
-                        url_plataforma: `${Deno.env.get('BASE44_APP_URL') || 'https://app.base44.com'}/gestorlogin`
-                    }
+                    html: `
+                      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+                        <div style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                          <h2 style="color: #14141E; margin-bottom: 20px;">Olá</h2>
+                          
+                          <p style="color: #333; line-height: 1.6; font-size: 16px; margin-bottom: 20px;">
+                            Existe um formulário de Feedback disponível para você responder aos seus colaboradores, você tem até <strong>01/01/2026</strong> para responder.
+                          </p>
+                          
+                          <div style="margin: 30px 0; text-align: center;">
+                            <a href="https://feedback.loglabdigital.com.br/PainelGestor" 
+                               style="background: #F8B137; color: #14141E; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                              Acessar Sistema
+                            </a>
+                          </div>
+                          
+                          <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px;">
+                            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+                              <strong>Template:</strong> ${template.title}
+                            </p>
+                            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+                              <strong>Tipo:</strong> ${tipoFeedback}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 20px;">
+                          LogLab Digital - Sistema de Compliance RH
+                        </p>
+                      </div>
+                    `
                 });
                 return { success: true, email: gestor.email };
             } catch (emailError) {

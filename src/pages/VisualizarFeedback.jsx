@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Link as LinkIcon, Copy, CheckCircle } from "lucide-react";
+import { ArrowLeft, Link as LinkIcon, Copy, CheckCircle, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -83,6 +83,10 @@ export default function VisualizarFeedback() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const getInitials = (name) => {
     if (!name) return "U";
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -125,6 +129,14 @@ export default function VisualizarFeedback() {
             <h1 className="text-2xl font-bold text-slate-900">Detalhes do Feedback</h1>
             <p className="text-slate-500">Visualize e gerencie o feedback</p>
           </div>
+          <Button 
+            onClick={handlePrint}
+            variant="outline"
+            className="gap-2"
+          >
+            <Printer className="w-4 h-4" />
+            Imprimir
+          </Button>
         </div>
       </div>
 

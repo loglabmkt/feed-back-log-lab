@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
   // Páginas públicas que não devem mostrar o layout administrativo
@@ -191,28 +192,31 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-50 h-full w-72 bg-white border-r border-slate-200
-        transform transition-transform duration-300 ease-in-out
+        fixed top-0 left-0 z-50 h-full border-r border-slate-700
+        transform transition-all duration-300 ease-in-out
         lg:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+        ${sidebarCollapsed ? 'w-20' : 'w-72'}
+      `} style={{background: '#14141E'}}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style={{background: '#F8B137', boxShadow: '0 4px 14px rgba(248, 177, 55, 0.3)'}}>
+          <div className="h-20 flex items-center justify-center px-4 border-b border-slate-700">
+            {!sidebarCollapsed ? (
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6980e7673597ded54b61feca/68c8706a7_LOG-LAB-TECNOLOGIA-QUE-TRANSFORMA-NOVA-BRANCO-LARANJA.png"
+                alt="LogLab"
+                className="h-12 w-auto object-contain"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{background: '#F9B136'}}>
                 <Shield className="w-5 h-5" style={{color: '#14141E'}} />
               </div>
-              <div>
-                <h1 className="font-bold tracking-tight" style={{color: '#14141E'}}>Compliance RH</h1>
-                <p className="text-[10px] uppercase tracking-wider" style={{color: '#F8B137'}}>Gestão de Pessoas</p>
-              </div>
-            </div>
+            )}
             <button 
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 hover:bg-slate-100 rounded-lg"
+              className="lg:hidden absolute right-4 p-2 hover:bg-slate-700 rounded-lg"
             >
-              <X className="w-5 h-5 text-slate-500" />
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
 
@@ -229,61 +233,85 @@ export default function Layout({ children, currentPageName }) {
                     flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold
                     transition-all duration-200 relative
                     ${isActive 
-                      ? 'text-slate-900' 
-                      : 'text-slate-600 hover:text-slate-900'
+                      ? 'text-[#F9B136]' 
+                      : 'text-white hover:text-[#F9B136]'
                     }
                   `}
                   style={isActive ? {
-                    background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.15) 0%, rgba(248, 177, 55, 0.05) 100%)',
-                    borderLeft: '3px solid #F8B137'
+                    background: 'rgba(249, 177, 54, 0.1)',
+                    borderLeft: '3px solid #F9B136'
                   } : {}}
+                  title={sidebarCollapsed ? item.name : ''}
                 >
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-[#F8B137]' : 'text-slate-400'}`} />
-                  {item.name}
-                  {item.badge && (
-                    <Badge className="ml-auto text-white text-xs px-2" style={{background: '#F8B137'}}>
-                      {item.badge}
-                    </Badge>
+                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#F9B136]' : ''}`} />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1">{item.name}</span>
+                      {item.badge && (
+                        <Badge className="text-white text-xs px-2" style={{background: '#F9B136'}}>
+                          {item.badge}
+                        </Badge>
+                      )}
+                    </>
                   )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* User section */}
-          <div className="p-4 border-t border-slate-100">
-            <div className="flex items-center gap-3 p-3 rounded-xl" style={{background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.1) 0%, rgba(248, 177, 55, 0.05) 100%)'}}>
-              <Avatar className="h-10 w-10 border-2 shadow-sm" style={{borderColor: '#F8B137'}}>
-                <AvatarFallback className="text-white text-sm font-bold" style={{background: '#F8B137'}}>
-                  {getInitials(user?.full_name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 truncate">
-                  {user?.full_name || 'Usuário'}
-                </p>
-                <p className="text-xs text-slate-500 truncate">
-                  {isAdmin ? 'Administrador' : 'Colaborador'}
-                </p>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleLogout}
-                className="text-slate-400 hover:bg-red-50"
-                style={{color: '#14141E'}}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#14141E'}
+          {/* User section and collapse button */}
+          <div className="border-t border-slate-700">
+            {/* Collapse Toggle */}
+            <div className="p-4">
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="w-full flex items-center justify-center p-3 rounded-xl text-white hover:text-[#F9B136] transition-colors"
+                style={{background: 'rgba(249, 177, 54, 0.1)'}}
               >
-                <LogOut className="w-4 h-4" />
-              </Button>
+                {sidebarCollapsed ? (
+                  <Menu className="w-5 h-5" />
+                ) : (
+                  <X className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            
+            {/* User Info */}
+            <div className="p-4">
+              <div className="flex items-center gap-3 p-3 rounded-xl" style={{background: 'rgba(249, 177, 54, 0.1)'}}>
+                <Avatar className="h-10 w-10 border-2 shadow-sm flex-shrink-0" style={{borderColor: '#F9B136'}}>
+                  <AvatarFallback className="text-white text-sm font-bold" style={{background: '#F9B136'}}>
+                    {getInitials(user?.full_name)}
+                  </AvatarFallback>
+                </Avatar>
+                {!sidebarCollapsed && (
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">
+                        {user?.full_name || 'Usuário'}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate">
+                        {isAdmin ? 'Administrador' : 'Colaborador'}
+                      </p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={handleLogout}
+                      className="text-white hover:text-red-400 hover:bg-red-500/10"
+                    >
+                      <LogOut className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-72">
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
         {/* Top bar */}
         <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-lg border-b" style={{borderColor: 'rgba(248, 177, 55, 0.1)'}}>
           <div className="flex items-center justify-between h-full px-4 lg:px-8">
@@ -294,53 +322,22 @@ export default function Layout({ children, currentPageName }) {
               <Menu className="w-5 h-5 text-slate-600" />
             </button>
 
-            <div className="hidden lg:block">
-              <h2 className="text-lg font-semibold text-slate-900">
-                {currentPageName === 'Painel' && 'Visão Geral'}
-                {currentPageName === 'Empresas' && 'Empresas'}
-                {currentPageName === 'Gestores' && 'Gestores'}
-                {currentPageName === 'Colaboradores' && 'Colaboradores'}
-                {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
-                {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
-                {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
-                {currentPageName === 'Respostas' && 'Respostas dos Gestores'}
-                {currentPageName === 'Relatorios' && 'Relatórios & BI'}
-                {currentPageName === 'CriarFeedback' && 'Criar Feedback'}
-                {currentPageName === 'PreencherFeedback' && 'Preencher Feedback'}
-                {currentPageName === 'RevisarFeedback' && 'Revisar Feedback'}
-                {currentPageName === 'VisualizarFeedback' && 'Visualizar Feedback'}
-                {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-white text-xs font-bold" style={{background: '#F8B137'}}>
-                        {getInitials(user?.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden sm:inline text-sm font-medium text-slate-700">
-                      {user?.full_name?.split(' ')[0]}
-                    </span>
-                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-medium">{user?.full_name}</p>
-                    <p className="text-xs text-slate-500">{user?.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sair
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {currentPageName === 'Painel' && 'Visão Geral'}
+              {currentPageName === 'Empresas' && 'Empresas'}
+              {currentPageName === 'Gestores' && 'Gestores'}
+              {currentPageName === 'Colaboradores' && 'Colaboradores'}
+              {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
+              {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
+              {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}
+              {currentPageName === 'Respostas' && 'Respostas dos Gestores'}
+              {currentPageName === 'Relatorios' && 'Relatórios & BI'}
+              {currentPageName === 'CriarFeedback' && 'Criar Feedback'}
+              {currentPageName === 'PreencherFeedback' && 'Preencher Feedback'}
+              {currentPageName === 'RevisarFeedback' && 'Revisar Feedback'}
+              {currentPageName === 'VisualizarFeedback' && 'Visualizar Feedback'}
+              {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
+            </h2>
           </div>
         </header>
 

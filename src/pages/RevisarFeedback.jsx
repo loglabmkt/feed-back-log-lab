@@ -167,6 +167,7 @@ export default function RevisarFeedback() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [approving, setApproving] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {

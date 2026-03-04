@@ -39,10 +39,28 @@ export default function Feedbacks() {
     loadData();
   }, []);
 
+  const AVALIACAO_TRIMESTRAL_TITLE = "Avaliação de Desempenho Trimestral";
+
+  const ensureAvaliacaoTemplate = async (user) => {
+    if (user?.role !== 'admin') return;
+    const existing = await base44.entities.FeedbackTemplate.filter({ feedback_type: 'evaluation', title: AVALIACAO_TRIMESTRAL_TITLE });
+    if (existing.length === 0) {
+      await base44.entities.FeedbackTemplate.create({
+        title: AVALIACAO_TRIMESTRAL_TITLE,
+        feedback_type: 'evaluation',
+        is_active: true,
+        checklist_questions: [],
+        created_by_admin: user.id
+      });
+    }
+  };
+
   const loadData = async () => {
     try {
       const user = await base44.auth.me();
       setCurrentUser(user);
+
+      await ensureAvaliacaoTemplate(user);
 
       const allTemplates = await base44.entities.FeedbackTemplate.list('-created_date', 100);
       setTemplates(allTemplates);

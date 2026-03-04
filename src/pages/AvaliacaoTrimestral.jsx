@@ -75,8 +75,12 @@ export default function AvaliacaoTrimestral() {
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
     try {
-      const emps = await base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" });
+      const [emps, all] = await Promise.all([
+        base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),
+        base44.entities.Colaborador.filter({ status: "active" })
+      ]);
       setEmployees(emps);
+      setAllColaboradores(all);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };

@@ -151,15 +151,32 @@ export default function GestorFeedbacks() {
         {/* Templates Ativos */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-slate-900 mb-4">Templates Disponíveis</h2>
-          {templates.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="py-8 text-center text-slate-500">
-                Nenhum template ativo no momento
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {templates.map((template) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Card fixo: Avaliação Trimestral */}
+              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow border-l-4" style={{borderLeftColor: '#F8B137'}}>
+                <CardHeader>
+                  <CardTitle className="flex items-start justify-between">
+                    <span className="text-base">Avaliação de Desempenho Trimestral</span>
+                    <Badge className="ml-2" style={{background: '#14141E', color: '#F8B137'}}>
+                      Avaliação
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-500 mb-1">10 competências (H1–H5 + S1–S5)</p>
+                  <p className="text-xs text-slate-400 mb-4">Escala 1–4 · Soma 10–40 pts · Motor de faixa automático</p>
+                  <Button
+                    className="w-full font-bold"
+                    style={{background: '#F8B137', color: '#14141E'}}
+                    onClick={() => window.location.href = createPageUrl("AvaliacaoTrimestral")}
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Iniciar Avaliação
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {templates.length === 0 ? null : templates.map((template) => (
                 <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
                   <CardHeader>
                     <CardTitle className="flex items-start justify-between">
@@ -186,7 +203,6 @@ export default function GestorFeedbacks() {
                 </Card>
               ))}
             </div>
-          )}
         </div>
 
       {/* Meus Feedbacks */}

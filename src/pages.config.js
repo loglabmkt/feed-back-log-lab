@@ -49,6 +49,8 @@
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
 import Colaborador from './pages/Colaborador';
+import ColaboradorCadastro from './pages/ColaboradorCadastro';
+import ColaboradorLogin from './pages/ColaboradorLogin';
 import Colaboradores from './pages/Colaboradores';
 import CriarFeedback from './pages/CriarFeedback';
 import EditarFeedback from './pages/EditarFeedback';
@@ -69,14 +71,15 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import ColaboradorLogin from './pages/ColaboradorLogin';
-import ColaboradorCadastro from './pages/ColaboradorCadastro';
+import AvaliacaoTrimestral from './pages/AvaliacaoTrimestral';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
     "Colaborador": Colaborador,
+    "ColaboradorCadastro": ColaboradorCadastro,
+    "ColaboradorLogin": ColaboradorLogin,
     "Colaboradores": Colaboradores,
     "CriarFeedback": CriarFeedback,
     "EditarFeedback": EditarFeedback,
@@ -97,8 +100,7 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "ColaboradorLogin": ColaboradorLogin,
-    "ColaboradorCadastro": ColaboradorCadastro,
+    "AvaliacaoTrimestral": AvaliacaoTrimestral,
 }
 
 export const pagesConfig = {

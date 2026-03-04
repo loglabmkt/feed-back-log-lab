@@ -281,37 +281,85 @@ export default function AvaliacaoTrimestral() {
             {/* Employee selector */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Colaborador Avaliado *</label>
-              {employees.length === 0 ? (
-                <p className="text-sm text-slate-400 py-2">Nenhum colaborador ativo vinculado à sua conta.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {employees.map(emp => (
-                    <button
-                      key={emp.id}
-                      type="button"
-                      onClick={() => setSelectedEmployee(emp)}
-                      className={`p-3.5 rounded-xl border-2 text-left transition-all flex items-center gap-3 ${
-                        selectedEmployee?.id === emp.id
-                          ? "border-[#F8B137] bg-amber-50 shadow-sm"
-                          : "border-slate-200 hover:border-slate-300 bg-white"
-                      }`}
-                    >
-                      <Avatar className="h-9 w-9 flex-shrink-0">
-                        <AvatarFallback className={`text-xs font-bold text-white ${selectedEmployee?.id === emp.id ? "" : "bg-slate-400"}`}
-                          style={selectedEmployee?.id === emp.id ? {background: "#F8B137", color: "#14141E"} : {}}>
-                          {getInitials(emp.full_name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
-                        <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
-                      </div>
-                      {selectedEmployee?.id === emp.id && (
-                        <CheckCircle className="w-4 h-4 ml-auto flex-shrink-0" style={{color: "#F8B137"}} />
-                      )}
-                    </button>
-                  ))}
+              
+              {/* Search + buttons row */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar colaborador pelo nome..."
+                    className="pl-9"
+                  />
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setModalSearch(""); setShowColabModal(true); }}
+                  className="flex-shrink-0 gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  Ver todos
+                </Button>
+              </div>
+
+              {/* Search results */}
+              {searchQuery.trim().length > 0 && (() => {
+                const results = allColaboradores.filter(e =>
+                  e.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                return results.length === 0 ? (
+                  <p className="text-sm text-slate-400 py-1 px-1">Nenhum colaborador encontrado.</p>
+                ) : (
+                  <div className="border rounded-xl overflow-hidden divide-y">
+                    {results.map(emp => (
+                      <button
+                        key={emp.id}
+                        type="button"
+                        onClick={() => { setSelectedEmployee(emp); setSearchQuery(""); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-amber-50 text-left transition-colors"
+                      >
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                          <AvatarFallback className="text-xs font-bold text-white bg-slate-400">
+                            {getInitials(emp.full_name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
+                          <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
+
+              {/* Selected employee display */}
+              {selectedEmployee && (
+                <div className="flex items-center gap-3 p-3.5 rounded-xl border-2 border-[#F8B137] bg-amber-50">
+                  <Avatar className="h-9 w-9 flex-shrink-0">
+                    <AvatarFallback className="text-xs font-bold" style={{background: "#F8B137", color: "#14141E"}}>
+                      {getInitials(selectedEmployee.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-slate-900 text-sm">{selectedEmployee.full_name}</p>
+                    <p className="text-xs text-slate-500">{selectedEmployee.position || selectedEmployee.department || selectedEmployee.email}</p>
+                  </div>
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" style={{color: "#F8B137"}} />
+                  <button
+                    type="button"
+                    onClick={() => setSelectedEmployee(null)}
+                    className="text-xs text-slate-400 hover:text-red-500 ml-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              {!selectedEmployee && searchQuery.trim().length === 0 && (
+                <p className="text-xs text-slate-400">Digite para buscar ou clique em "Ver todos" para listar colaboradores.</p>
               )}
             </div>
           </CardContent>

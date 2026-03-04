@@ -492,6 +492,54 @@ export default function AvaliacaoTrimestral() {
           </Alert>
         )}
 
+        {/* ── Modal: Ver todos colaboradores ── */}
+        <Dialog open={showColabModal} onOpenChange={setShowColabModal}>
+          <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Selecionar Colaborador</DialogTitle>
+            </DialogHeader>
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                value={modalSearch}
+                onChange={(e) => setModalSearch(e.target.value)}
+                placeholder="Buscar pelo nome..."
+                className="pl-9"
+                autoFocus
+              />
+            </div>
+            <div className="overflow-y-auto flex-1 divide-y border rounded-xl">
+              {allColaboradores
+                .filter(e => e.full_name.toLowerCase().includes(modalSearch.toLowerCase()))
+                .map(emp => (
+                  <button
+                    key={emp.id}
+                    type="button"
+                    onClick={() => { setSelectedEmployee(emp); setShowColabModal(false); setSearchQuery(""); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-amber-50 text-left transition-colors"
+                  >
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarFallback className="text-xs font-bold text-white bg-slate-400">
+                        {getInitials(emp.full_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
+                      <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
+                    </div>
+                    {selectedEmployee?.id === emp.id && (
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{color: "#F8B137"}} />
+                    )}
+                  </button>
+                ))
+              }
+              {allColaboradores.filter(e => e.full_name.toLowerCase().includes(modalSearch.toLowerCase())).length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-6">Nenhum resultado encontrado.</p>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* ── Submit ── */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
           <p className="text-xs text-slate-400 text-center sm:text-left">

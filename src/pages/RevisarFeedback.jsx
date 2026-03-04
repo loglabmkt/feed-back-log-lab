@@ -223,6 +223,204 @@ export default function RevisarFeedback() {
     }
   };
 
+  const handleGeneratePdf = async () => {
+    setGeneratingPdf(true);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const margin = 15;
+      const contentW = pageW - margin * 2;
+      let y = 18;
+
+      const addText = (text, x, fontSize = 10, style = "normal", color = [30, 30, 30]) => {
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", style);
+        doc.setTextColor(...color);
+        const lines = doc.splitTextToSize(String(text || ""), contentW - (x - margin));
+        doc.text(lines, x, y);
+        y += lines.length * (fontSize * 0.45) + 2;
+        return lines.length;
+      };
+
+      const checkPage = (needed = 20) => {
+        if (y + needed > 280) { doc.addPage(); y = 18; }
+      };
+
+      const drawBox = (bgR, bgG, bgB, height = 8) => {
+        doc.setFillColor(bgR, bgG, bgB);
+        doc.roundedRect(margin, y - 5, contentW, height, 2, 2, "F");
+      };
+
+      // Header
+      doc.setFillColor(20, 20, 30);
+      doc.rect(0, 0, pageW, 24, "F");
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(249, 177, 54);
+      doc.text("Avaliação de Desempenho", margin, 11);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(200, 200, 200);
+      doc.text(`Gerado em ${format(new Date(), "dd/MM/yyyy 'às' HH:mm")}`, margin, 18);
+      y = 32;
+
+      // Colaborador info
+      addText("INFORMAÇÕES DO COLABORADOR", margin, 9, "bold", [100, 100, 120]);
+      y += 1;
+      addText(feedback.employee_name, margin, 13, "bold", [20, 20, 30]);
+      addText(feedback.employee_email, margin, 9, "normal", [80, 80, 100]);
+      addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? format(new Date(feedback.feedback_date), "dd/MM/yyyy") : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
+      y += 4;
+
+      if (feedback.feedback_type === 'evaluation') {
+        const HARD = [
+          { id: "h1", label: "H1 – Conhecimento Técnico" },
+          { id: "h2", label: "H2 – Qualidade das Entregas" },
+          { id: "h3", label: "H3 – Produtividade" },
+          { id: "h4", label: "H4 – Gestão de Informações" },
+          { id: "h5", label: "H5 – Cumprimento de Prazos" },
+        ];
+        const SOFT = [
+          { id: "s1", label: "S1 – Comunicação" },
+          { id: "s2", label: "S2 – Trabalho em Equipe" },
+          { id: "s3", label: "S3 – Proatividade" },
+          { id: "s4", label: "S4 – Adaptabilidade" },
+          { id: "s5", label: "S5 – Responsabilidade" },
+        ];
+        const SL = { 1: "Abaixo do Esperado", 2: "Em Desenvolvimento", 3: "Atende ao Esperado", 4: "Supera o Esperado" };
+        const hardTotal = HARD.reduce((s, c) => s + (feedback[`${c.id}_score`] || 0), 0);
+        const softTotal = SOFT.reduce((s, c) => s + (feedback[`${c.id}_score`] || 0), 0);
+        const total = feedback.total_score || (hardTotal + softTotal);
+        const BANDS = { immediate_action: "Alerta – PIP", attention: "Atenção – Suporte necessário", adequate: "Adequado – Manutenção", reference: "Referência – Promoção" };
+
+        // Resultado
+        checkPage(30);
+        doc.setFillColor(248, 177, 54);
+        doc.rect(margin, y - 1, contentW, 0.5, "F");
+        y += 4;
+        addText("RESULTADO DA AVALIAÇÃO", margin, 9, "bold", [100, 100, 120]);
+        y += 1;
+        addText(`Pontuação Total: ${total}/40   |   Hard Skills: ${hardTotal}/20   |   Soft Skills: ${softTotal}/20`, margin, 11, "bold", [20, 20, 30]);
+        if (feedback.performance_band) addText(`Faixa de Desempenho: ${BANDS[feedback.performance_band] || feedback.performance_band}`, margin, 10, "bold", [20, 20, 30]);
+        if (feedback.recommended_action) addText(`Ação Recomendada: ${feedback.recommended_action}`, margin, 9, "normal", [60, 60, 80]);
+        y += 4;
+
+        // Hard Skills
+        checkPage(20);
+        doc.setFillColor(20, 20, 30);
+        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(249, 177, 54);
+        doc.text(`BLOCO H – HARD SKILLS   (${hardTotal}/20)`, margin + 3, y + 4);
+        y += 12;
+
+        HARD.forEach(c => {
+          checkPage(16);
+          const score = feedback[`${c.id}_score`];
+          const evidence = feedback[`${c.id}_evidence`];
+          const scoreColors = { 1: [254,226,226], 2: [255,251,235], 3: [219,234,254], 4: [209,250,229] };
+          const sc = scoreColors[score] || [245,245,245];
+          doc.setFillColor(...sc);
+          doc.roundedRect(margin, y - 4, contentW, evidence ? 16 : 10, 1, 1, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+          doc.text(c.label, margin + 3, y + 1);
+          doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+          doc.text(`${score} – ${SL[score] || ""}`, pageW - margin - 3, y + 1, { align: "right" });
+          y += 6;
+          if (evidence) {
+            doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(100, 100, 120);
+            const lines = doc.splitTextToSize(`Evidência: ${evidence}`, contentW - 6);
+            doc.text(lines, margin + 3, y);
+            y += lines.length * 4;
+          }
+          y += 5;
+        });
+
+        // Soft Skills
+        checkPage(20);
+        doc.setFillColor(248, 177, 54);
+        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(20, 20, 30);
+        doc.text(`BLOCO S – SOFT SKILLS   (${softTotal}/20)`, margin + 3, y + 4);
+        y += 12;
+
+        SOFT.forEach(c => {
+          checkPage(16);
+          const score = feedback[`${c.id}_score`];
+          const evidence = feedback[`${c.id}_evidence`];
+          const scoreColors = { 1: [254,226,226], 2: [255,251,235], 3: [219,234,254], 4: [209,250,229] };
+          const sc = scoreColors[score] || [245,245,245];
+          doc.setFillColor(...sc);
+          doc.roundedRect(margin, y - 4, contentW, evidence ? 16 : 10, 1, 1, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+          doc.text(c.label, margin + 3, y + 1);
+          doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+          doc.text(`${score} – ${SL[score] || ""}`, pageW - margin - 3, y + 1, { align: "right" });
+          y += 6;
+          if (evidence) {
+            doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(100, 100, 120);
+            const lines = doc.splitTextToSize(`Evidência: ${evidence}`, contentW - 6);
+            doc.text(lines, margin + 3, y);
+            y += lines.length * 4;
+          }
+          y += 5;
+        });
+
+        // Plano de Ação
+        if (feedback.eval_action_1 || feedback.eval_action_2 || feedback.eval_action_3) {
+          checkPage(20);
+          y += 2;
+          addText("PLANO DE AÇÃO (PDI)", margin, 9, "bold", [100, 100, 120]);
+          [[feedback.eval_action_1, "Ação 1"], [feedback.eval_action_2, "Ação 2"], [feedback.eval_action_3, "Ação 3"]].forEach(([val, lbl]) => {
+            if (!val) return;
+            checkPage(14);
+            doc.setFillColor(245, 245, 250);
+            doc.roundedRect(margin, y - 4, contentW, 12, 1, 1, "F");
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(120, 120, 140);
+            doc.text(lbl, margin + 3, y);
+            y += 4;
+            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+            const lines = doc.splitTextToSize(val, contentW - 6);
+            doc.text(lines, margin + 3, y);
+            y += lines.length * 4 + 5;
+          });
+        }
+      } else {
+        // Feedback simples
+        [["Pontos Fortes", feedback.strengths, [209,250,229]], ["Pontos de Melhoria", feedback.improvements, [255,251,235]], ["Plano de Ação", feedback.action_plan, [219,234,254]], ["Observações", feedback.additional_notes, [245,245,250]]].forEach(([lbl, val, bg]) => {
+          if (!val) return;
+          checkPage(20);
+          addText(lbl.toUpperCase(), margin, 9, "bold", [100, 100, 120]);
+          y += 1;
+          doc.setFillColor(...bg);
+          const lines = doc.splitTextToSize(val, contentW - 6);
+          doc.roundedRect(margin, y - 4, contentW, lines.length * 5 + 6, 2, 2, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+          doc.text(lines, margin + 3, y);
+          y += lines.length * 5 + 8;
+        });
+      }
+
+      // Footer
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFillColor(20, 20, 30);
+        doc.rect(0, 285, pageW, 12, "F");
+        doc.setFontSize(7); doc.setFont("helvetica", "normal"); doc.setTextColor(150, 150, 150);
+        doc.text("LogLab – Sistema de Gestão de Pessoas", margin, 292);
+        doc.text(`Página ${i} de ${totalPages}`, pageW - margin, 292, { align: "right" });
+      }
+
+      const fileName = `avaliacao_${(feedback.employee_name || "colaborador").replace(/\s+/g, "_")}_${feedback.quarter_reference || format(new Date(), "yyyy-MM")}.pdf`;
+      doc.save(fileName);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
+
   const getInitials = (name) => {
     if (!name) return "U";
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);

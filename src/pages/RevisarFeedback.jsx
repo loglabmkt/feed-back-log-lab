@@ -552,7 +552,16 @@ export default function RevisarFeedback() {
             </AlertDescription>
           </Alert>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={handleGeneratePdf}
+              disabled={generatingPdf}
+              className="font-semibold"
+            >
+              <FileDown className="w-4 h-4 mr-2" />
+              {generatingPdf ? "Gerando PDF..." : "Gerar PDF"}
+            </Button>
             <Button 
               onClick={handleApprove}
               disabled={approving}
@@ -571,12 +580,25 @@ export default function RevisarFeedback() {
           </Alert>
         </>
       ) : (
-        <Alert className="bg-emerald-50 border-emerald-200">
-          <AlertDescription className="text-emerald-700">
-            <CheckCircle className="w-5 h-5 inline mr-2" />
-            <strong>Feedback em conformidade:</strong> Disponibilizado para o gestor enviar ao colaborador após conversa pessoalmente.
-          </AlertDescription>
-        </Alert>
+        <>
+          <Alert className="bg-emerald-50 border-emerald-200">
+            <AlertDescription className="text-emerald-700">
+              <CheckCircle className="w-5 h-5 inline mr-2" />
+              <strong>Feedback em conformidade:</strong> Disponibilizado para o gestor enviar ao colaborador após conversa pessoalmente.
+            </AlertDescription>
+          </Alert>
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              onClick={handleGeneratePdf}
+              disabled={generatingPdf}
+              className="font-semibold"
+            >
+              <FileDown className="w-4 h-4 mr-2" />
+              {generatingPdf ? "Gerando PDF..." : "Gerar PDF"}
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );

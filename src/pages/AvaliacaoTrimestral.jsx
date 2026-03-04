@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, Calendar, ClipboardList, ChevronRight
+  User, Calendar, ClipboardList, ChevronRight, Search, Users
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -48,7 +50,11 @@ const BANDS_MAP = {
 export default function AvaliacaoTrimestral() {
   const [gestor, setGestor] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const [allColaboradores, setAllColaboradores] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showColabModal, setShowColabModal] = useState(false);
+  const [modalSearch, setModalSearch] = useState("");
   const [quarterRef, setQuarterRef] = useState("");
   const [scores, setScores] = useState({});
   const [evidences, setEvidences] = useState({});

@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AcessoPublicoFeedback from './pages/AcessoPublicoFeedback';
+import AvaliacaoTrimestral from './pages/AvaliacaoTrimestral';
 import Colaborador from './pages/Colaborador';
 import ColaboradorCadastro from './pages/ColaboradorCadastro';
 import ColaboradorLogin from './pages/ColaboradorLogin';
@@ -71,12 +72,12 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import AvaliacaoTrimestral from './pages/AvaliacaoTrimestral';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AcessoPublicoFeedback": AcessoPublicoFeedback,
+    "AvaliacaoTrimestral": AvaliacaoTrimestral,
     "Colaborador": Colaborador,
     "ColaboradorCadastro": ColaboradorCadastro,
     "ColaboradorLogin": ColaboradorLogin,
@@ -100,7 +101,6 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "AvaliacaoTrimestral": AvaliacaoTrimestral,
 }
 
 export const pagesConfig = {

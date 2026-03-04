@@ -305,44 +305,45 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
-      <Card className="border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle>Conteúdo do Feedback</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
-            <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-              <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
-            </div>
-          </div>
-
-          <div>
-            <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
-            <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
-              <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
-            </div>
-          </div>
-
-          {feedback.action_plan && (
+      {feedback.feedback_type === 'evaluation' ? (
+        <AvaliacaoContent fb={feedback} />
+      ) : (
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Conteúdo do Feedback</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
             <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
-              <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
+              <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
               </div>
             </div>
-          )}
-
-          {feedback.additional_notes && (
             <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Observações</Label>
-              <div className="mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.additional_notes}</p>
+              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
+              <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            {feedback.action_plan && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
+                <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+                </div>
+              </div>
+            )}
+            {feedback.additional_notes && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Observações</Label>
+                <div className="mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.additional_notes}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {feedback.workflow_status === 'EM_REVISAO_ADMIN' ? (
         <>

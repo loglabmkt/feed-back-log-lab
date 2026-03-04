@@ -198,7 +198,7 @@ export default function AvaliacaoTrimestral() {
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-black text-slate-900 leading-tight">Avaliação de Desempenho Trimestral</h1>
+            <h1 className="text-lg font-bold text-slate-900 leading-tight">Avaliação de Desempenho Trimestral</h1>
             <p className="text-xs text-slate-400">AVAL_TRIMESTRAL_V1 · Escala par 1–4 · Soma 10–40 pontos</p>
           </div>
           {filledCount > 0 && (
@@ -369,9 +369,9 @@ export default function AvaliacaoTrimestral() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-sm" style={{background: "#14141E"}}>H</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-sm" style={{background: "#14141E"}}>H</div>
               <div>
-                <CardTitle className="text-base font-black text-slate-900">Bloco H – Hard Skills</CardTitle>
+                <CardTitle className="text-base font-bold text-slate-900">Bloco H – Hard Skills</CardTitle>
                 <p className="text-sm text-slate-500">Competências técnicas e de execução (H1 a H5)</p>
               </div>
               <div className="ml-auto text-right">
@@ -399,9 +399,9 @@ export default function AvaliacaoTrimestral() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm" style={{background: "#F8B137", color: "#14141E"}}>S</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm" style={{background: "#F8B137", color: "#14141E"}}>S</div>
               <div>
-                <CardTitle className="text-base font-black text-slate-900">Bloco S – Soft Skills</CardTitle>
+                <CardTitle className="text-base font-bold text-slate-900">Bloco S – Soft Skills</CardTitle>
                 <p className="text-sm text-slate-500">Competências comportamentais e relacionais (S1 a S5)</p>
               </div>
               <div className="ml-auto text-right">

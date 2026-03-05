@@ -163,6 +163,7 @@ export default function EditarFeedback() {
   const [error, setError] = useState("");
   const [template, setTemplate] = useState(null);
   const [isAvaliacaoTrimestral, setIsAvaliacaoTrimestral] = useState(false);
+  const [isExp45, setIsExp45] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",

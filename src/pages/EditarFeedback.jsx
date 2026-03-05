@@ -273,6 +273,23 @@ export default function EditarFeedback() {
     }
   };
 
+  const handleExp45Save = async (data) => {
+    setSaving(true);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      await base44.entities.FeedbackTemplate.update(params.get('id'), {
+        title: data.title,
+        is_active: data.is_active,
+        exp45_items_config: data.exp45_items_config,
+      });
+      navigate(createPageUrl("Feedbacks"));
+    } catch (e) {
+      setError(e.message || "Erro ao atualizar avaliação 45 dias");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">

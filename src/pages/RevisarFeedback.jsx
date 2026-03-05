@@ -506,6 +506,8 @@ export default function RevisarFeedback() {
 
       {feedback.feedback_type === 'evaluation' ? (
         <AvaliacaoContent fb={feedback} />
+      ) : feedback.feedback_type === 'experience_45d' ? (
+        <Exp45Content fb={feedback} />
       ) : (
         <Card className="border-0 shadow-sm">
           <CardHeader>

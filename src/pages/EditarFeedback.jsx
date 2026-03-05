@@ -21,6 +21,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AVALIACAO_TITLE = "Avaliação de Desempenho Trimestral";
+const EXP45_TYPE = "experience_45d";
 
 const DEFAULT_HARD_SKILLS = [
   { id: "h1", label: "H1 – Conhecimento Técnico", description: "Domínio das ferramentas, processos e métodos exigidos pela função" },

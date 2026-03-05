@@ -58,6 +58,120 @@ function CriterionRow({ label, score, evidence }) {
   );
 }
 
+const EXP45_ITEMS = [
+  { id: "e1",  label: "1 – Assimilação / Rapidez" },
+  { id: "e2",  label: "2 – Cooperação" },
+  { id: "e3",  label: "3 – Empenho / Entusiasmo" },
+  { id: "e4",  label: "4 – Qualidade" },
+  { id: "e5",  label: "5 – Articulação / Equipe" },
+  { id: "e6",  label: "6 – Superação de Obstáculos" },
+  { id: "e7",  label: "7 – Conclusividade" },
+  { id: "e8",  label: "8 – Agregação de Valor" },
+  { id: "e9",  label: "9 – Conhecimento Técnico" },
+  { id: "e10", label: "10 – Geração de Soluções" },
+  { id: "e11", label: "11 – Organização / Gestão" },
+  { id: "e12", label: "12 – Auto-motivação" },
+  { id: "e13", label: "13 – Pontualidade / Compromissos" },
+];
+
+const EXP45_SCORE_COLORS = {
+  4: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  3: "bg-blue-100 text-blue-700 border-blue-200",
+  2: "bg-amber-100 text-amber-700 border-amber-200",
+  1: "bg-red-100 text-red-700 border-red-200",
+  "NO": "bg-slate-100 text-slate-600 border-slate-200",
+};
+const EXP45_SCORE_LABELS = { 4: "Acima do esperado", 3: "Dentro do esperado", 2: "Abaixo do esperado", 1: "Muito abaixo", "NO": "Não Observado" };
+
+function Exp45Content({ fb }) {
+  const scores = fb.exp45_scores || {};
+  const average = fb.exp45_average;
+  return (
+    <div className="space-y-6">
+      {/* Resultado */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3"><CardTitle className="text-base">Resultado da Avaliação</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="text-center px-6 py-3 rounded-xl bg-amber-50 border border-amber-200">
+              <p className="text-xs text-amber-600 mb-1">Média Ponderada</p>
+              <p className="text-3xl font-bold" style={{color: '#F8B137'}}>{average ? Number(average).toFixed(2) : "—"}<span className="text-base font-normal text-slate-400">/4,00</span></p>
+            </div>
+            <div className="text-center px-6 py-3 rounded-xl bg-slate-50 border">
+              <p className="text-xs text-slate-500 mb-1">Itens Avaliados</p>
+              <p className="text-2xl font-bold text-slate-700">{Object.keys(scores).length}<span className="text-sm font-normal text-slate-400">/13</span></p>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-slate-400">* Itens marcados como "Não Observado" são excluídos do cálculo da média.</p>
+        </CardContent>
+      </Card>
+
+      {/* 13 itens */}
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style={{background: "#F8B137", color: "#14141E"}}>13</div>
+            <CardTitle className="text-base font-bold">Itens de Avaliação</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {EXP45_ITEMS.map(item => {
+            const score = scores[item.id];
+            const colorClass = EXP45_SCORE_COLORS[score] || "bg-slate-100 text-slate-600 border-slate-200";
+            return (
+              <div key={item.id} className="p-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
+                <span className="font-semibold text-slate-800 text-sm">{item.label}</span>
+                {score !== undefined ? (
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold border flex-shrink-0 ${colorClass}`}>
+                    {score} – {EXP45_SCORE_LABELS[score]}
+                  </span>
+                ) : (
+                  <span className="text-xs text-slate-400">—</span>
+                )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      {/* Bloco Qualitativo */}
+      {(fb.exp45_strengths || fb.exp45_developments || fb.exp45_action_plan) && (
+        <Card className="border-0 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-bold">Comentários Qualitativos (Interno – Gestor/Admin)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {fb.exp45_strengths && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
+                <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <p className="text-slate-700 whitespace-pre-wrap text-sm">{fb.exp45_strengths}</p>
+                </div>
+              </div>
+            )}
+            {fb.exp45_developments && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Desenvolvimento</Label>
+                <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                  <p className="text-slate-700 whitespace-pre-wrap text-sm">{fb.exp45_developments}</p>
+                </div>
+              </div>
+            )}
+            {fb.exp45_action_plan && (
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
+                <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="text-slate-700 whitespace-pre-wrap text-sm">{fb.exp45_action_plan}</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 function AvaliacaoContent({ fb }) {
   const hardTotal = HARD_SKILLS.reduce((s, c) => s + (fb[`${c.id}_score`] || 0), 0);
   const softTotal = SOFT_SKILLS.reduce((s, c) => s + (fb[`${c.id}_score`] || 0), 0);

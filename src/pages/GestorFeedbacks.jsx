@@ -156,6 +156,7 @@ export default function GestorFeedbacks() {
                 <p className="text-sm text-slate-400 col-span-3 py-4">Nenhum template ativo disponível.</p>
               ) : templates.map((template) => {
                 const isAvaliacao = template.feedback_type === 'evaluation';
+                const isExp45 = template.feedback_type === 'experience_45d';
                 return (
                   <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isAvaliacao ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>

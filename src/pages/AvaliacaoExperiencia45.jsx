@@ -466,6 +466,6 @@ export default function AvaliacaoExperiencia45() {
           </div>
         </div>
       </div>
-    </div>
+    </GestorLayout>
   );
 }

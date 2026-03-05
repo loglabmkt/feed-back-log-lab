@@ -306,10 +306,12 @@ export default function EditarFeedback() {
           Voltar
         </Button>
         <h1 className="text-2xl font-bold text-slate-900">
-          {isAvaliacaoTrimestral ? "Editar Avaliação Trimestral" : "Editar Feedback"}
+          {isExp45 ? "Editar Avaliação 45 Dias" : isAvaliacaoTrimestral ? "Editar Avaliação Trimestral" : "Editar Feedback"}
         </h1>
         <p className="text-slate-500">
-          {isAvaliacaoTrimestral
+          {isExp45
+            ? "Gerencie os 13 itens e o status da Avaliação de Experiência 45 Dias"
+            : isAvaliacaoTrimestral
             ? "Gerencie os critérios, nomes e status da avaliação de desempenho"
             : "Atualize as informações do feedback"}
         </p>

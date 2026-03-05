@@ -72,8 +72,6 @@ export default function Painel() {
       setRecentFeedbacks(myFeedbacks.slice(0, 5));
     } catch (e) {
       console.error(e);
-      // Se houver erro na autenticação, redirecionar para login
-      base44.auth.redirectToLogin('/painel');
     } finally {
       setLoading(false);
     }

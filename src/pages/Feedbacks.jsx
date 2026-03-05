@@ -131,12 +131,14 @@ export default function Feedbacks() {
     const styles = {
       feedback: "bg-blue-50 text-blue-700 border-blue-200",
       one_on_one: "bg-purple-50 text-purple-700 border-purple-200",
-      evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200"
+      evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      experience_45d: "bg-orange-50 text-orange-700 border-orange-200"
     };
     const labels = {
       feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      evaluation: "Avaliação de Experiência"
+      evaluation: "Avaliação Trimestral",
+      experience_45d: "Avaliação 45 Dias"
     };
     return (
       <Badge variant="outline" className={styles[type]}>

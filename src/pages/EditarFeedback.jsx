@@ -188,7 +188,9 @@ export default function EditarFeedback() {
       const t = templates[0];
       setTemplate(t);
 
-      if (t.title === AVALIACAO_TITLE || t.feedback_type === 'evaluation') {
+      if (t.feedback_type === EXP45_TYPE) {
+        setIsExp45(true);
+      } else if (t.title === AVALIACAO_TITLE || t.feedback_type === 'evaluation') {
         setIsAvaliacaoTrimestral(true);
       } else {
         setFormData({

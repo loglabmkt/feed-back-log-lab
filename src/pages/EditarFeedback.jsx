@@ -323,7 +323,14 @@ export default function EditarFeedback() {
         </Alert>
       )}
 
-      {isAvaliacaoTrimestral ? (
+      {isExp45 ? (
+        <Exp45Editor
+          template={template}
+          onSave={handleExp45Save}
+          onCancel={() => navigate(createPageUrl("Feedbacks"))}
+          saving={saving}
+        />
+      ) : isAvaliacaoTrimestral ? (
         <AvaliacaoEditor
           template={template}
           onSave={handleAvaliacaoSave}

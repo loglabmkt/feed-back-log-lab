@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import GestorLayout from "@/components/GestorLayout";
 
 const DEFAULT_ITEMS = [
   { id: "e1",  label: "1 – Assimilação / Rapidez",          description: "Velocidade de aprendizado das rotinas, processos e ferramentas da função" },

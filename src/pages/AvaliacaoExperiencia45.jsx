@@ -225,7 +225,7 @@ export default function AvaliacaoExperiencia45() {
         )}
       </div>
 
-      <div className="space-y-6 pb-10">
+      <div className="space-y-6 pb-10 max-w-4xl">
 
         {/* Identificação */}
         <Card className="border-0 shadow-sm">

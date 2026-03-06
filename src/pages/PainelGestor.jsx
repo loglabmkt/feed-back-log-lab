@@ -49,9 +49,10 @@ export default function PainelGestor() {
     }
   };
 
+  const doneStatuses = ['APROVADO', 'CONVERSA_AGENDADA', 'CONVERSA_REALIZADA', 'PUBLICADO', 'ASSINADO_COLABORADOR', 'EM_REVISAO_ADMIN'];
   const stats = {
-    total: feedbacks.length,
-    disponiveis: feedbacks.filter(f => f.workflow_status === 'DISPONIVEL_PARA_GESTOR').length,
+    meuTime: teamCount,
+    feedbacksRealizados: feedbacks.filter(f => doneStatuses.includes(f.workflow_status)).length,
     emRevisao: feedbacks.filter(f => f.workflow_status === 'EM_REVISAO_ADMIN').length,
     assinados: feedbacks.filter(f => f.workflow_status === 'ASSINADO_COLABORADOR').length
   };

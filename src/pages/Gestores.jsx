@@ -153,6 +153,10 @@ export default function Gestores() {
 
   const handleNew = () => {
     setEditingManager(null);
+    setSelectedUser(null);
+    setUserSearch("");
+    setUserSearchResults([]);
+    setShowDropdown(false);
     setFormData({
       full_name: "",
       email: "",
@@ -160,6 +164,7 @@ export default function Gestores() {
       department: "",
       role: "user"
     });
+    setError("");
     setShowDialog(true);
   };
 

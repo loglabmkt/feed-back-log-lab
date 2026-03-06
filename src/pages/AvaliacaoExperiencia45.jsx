@@ -220,9 +220,10 @@ export default function AvaliacaoExperiencia45() {
 
   return (
     <GestorLayout currentPage="feedbacks" gestor={gestor}>
+      <div className="space-y-6 pb-10 max-w-4xl mx-auto">
 
       {/* Header interno */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3">
         <button onClick={() => window.history.back()} className="p-2 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0">
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </button>
@@ -237,8 +238,6 @@ export default function AvaliacaoExperiencia45() {
           </div>
         )}
       </div>
-
-      <div className="space-y-6 pb-10 max-w-4xl mx-auto">
 
         {/* Identificação */}
         <Card className="border-0 shadow-sm">

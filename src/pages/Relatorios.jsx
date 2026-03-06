@@ -247,6 +247,60 @@ export default function Relatorios() {
         </div>
       </div>
 
+      {/* Filtro Inteligente por Gestor */}
+      <Card className="border-0 shadow-sm" style={{ borderLeft: '4px solid #F8B137' }}>
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-end">
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs font-semibold text-slate-600">Selecionar Gestor</Label>
+              <Select value={filterGestorId} onValueChange={(v) => { setFilterGestorId(v); setFilterFeedbackType('all'); }}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Selecione um gestor..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">— Visão Geral (todos os gestores)</SelectItem>
+                  {gestores.filter(g => g.status === 'active').sort((a,b) => a.full_name?.localeCompare(b.full_name)).map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs font-semibold text-slate-600">Tipo de Avaliação</Label>
+              <Select value={filterFeedbackType} onValueChange={setFilterFeedbackType} disabled={filterGestorId === 'all'}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="Todos os tipos" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FEEDBACK_TYPE_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {filterGestorId !== 'all' && (
+              <Button variant="outline" size="sm" onClick={() => { setFilterGestorId('all'); setFilterFeedbackType('all'); }}>
+                Limpar
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Painel de Métricas do Gestor Selecionado */}
+      {filterGestorId !== 'all' && selectedGestorObj && (
+        <GestorMetricsPanel
+          gestor={selectedGestorObj}
+          colaboradores={colaboradores}
+          feedbacks={feedbacks}
+          selectedFeedbackType={filterFeedbackType}
+        />
+      )}
+
+      {/* Visão Geral — só aparece quando nenhum gestor está selecionado */}
+      {filterGestorId === 'all' && (
+      <>
+
       {showFilters && (
         <Card className="border-0 shadow-sm bg-blue-50/50">
           <CardContent className="p-4">

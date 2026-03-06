@@ -54,15 +54,62 @@ export default function Feedbacks() {
 
   const loadData = async () => {
     try {
-      const user = await base44.auth.me();
+      const [user, allTemplates, gestoresList, colaboradoresList] = await Promise.all([
+        base44.auth.me(),
+        base44.entities.FeedbackTemplate.list('-created_date', 100),
+        base44.entities.Gestor.list(),
+        base44.entities.Colaborador.list()
+      ]);
       setCurrentUser(user);
-
-      const allTemplates = await base44.entities.FeedbackTemplate.list('-created_date', 100);
       setTemplates(allTemplates);
+      setGestores(gestoresList.filter(g => g.status === 'active'));
+      setColaboradores(colaboradoresList.filter(c => c.status === 'active'));
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const filteredColaboradores = dispatchForm.gestor_id
+    ? colaboradores.filter(c => c.manager_id === dispatchForm.gestor_id)
+    : colaboradores;
+
+  const handleOpenDispatch = (template) => {
+    setDispatchTemplate(template);
+    setDispatchForm({ gestor_id: '', colaborador_id: '', feedback_date: new Date().toISOString().split('T')[0] });
+    setDispatchError("");
+  };
+
+  const handleDispatch = async () => {
+    if (!dispatchForm.gestor_id || !dispatchForm.colaborador_id) {
+      setDispatchError("Selecione o gestor e o colaborador.");
+      return;
+    }
+    setDispatching(true);
+    setDispatchError("");
+    try {
+      const gestor = gestores.find(g => g.id === dispatchForm.gestor_id);
+      const colaborador = colaboradores.find(c => c.id === dispatchForm.colaborador_id);
+      await base44.entities.FeedbackRecord.create({
+        template_id: dispatchTemplate.id,
+        template_title: dispatchTemplate.title,
+        manager_id: gestor.id,
+        manager_name: gestor.full_name,
+        employee_id: colaborador.id,
+        employee_name: colaborador.full_name,
+        employee_email: colaborador.email,
+        feedback_date: dispatchForm.feedback_date,
+        feedback_type: dispatchTemplate.feedback_type,
+        workflow_status: 'DISPONIVEL_PARA_GESTOR',
+        checklist_questions: dispatchTemplate.checklist_questions || []
+      });
+      setDispatchTemplate(null);
+      alert(`Avaliação QS-45 disparada com sucesso para ${gestor.full_name} avaliar ${colaborador.full_name}.`);
+    } catch (e) {
+      setDispatchError(e.message || "Erro ao disparar avaliação.");
+    } finally {
+      setDispatching(false);
     }
   };
 

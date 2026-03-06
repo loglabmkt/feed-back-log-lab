@@ -128,7 +128,8 @@ export default function Relatorios() {
     complianceRate
   };
 
-  const managerAdherence = managers.map(manager => {
+  // Só calcula aderência se houver feedbacks no sistema
+  const managerAdherence = filteredFeedbacks.length === 0 ? [] : managers.map(manager => {
     const teamMembers = filteredUsers.filter(u => u.manager_id === manager.id);
     const teamFeedbacks = filteredFeedbacks.filter(f => f.manager_id === manager.id);
     const teamWithFeedback = teamMembers.filter(member => {
@@ -149,7 +150,7 @@ export default function Relatorios() {
       adherence: adherenceRate,
       atRisk: teamMembers.length - teamWithFeedback.length
     };
-  }).filter(m => m.team > 0);
+  }).filter(m => m.team > 0 && m.feedbacks > 0);
 
   const periodMonths = parseInt(period);
   const monthlyData = [];

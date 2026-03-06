@@ -165,6 +165,7 @@ export default function AvaliacaoTrimestral() {
       try {
         await base44.functions.invoke('notifyAdminNewEvaluation', {
           managerName: gestor.full_name,
+          managerEmail: gestor.email,
           employeeName: selectedEmployee.full_name,
         });
       } catch (emailErr) {

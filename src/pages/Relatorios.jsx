@@ -96,8 +96,9 @@ export default function Relatorios() {
     filteredUsers = filteredUsers.filter(u => u.manager_id === selectedManager);
   }
 
-  const usersAtRisk = filteredUsers.filter(u => {
-    if (!u.last_feedback_date) return true;
+  // Só considera "em risco" se houver feedbacks no sistema E o usuário não tiver feedback recente
+  const usersAtRisk = filteredFeedbacks.length === 0 ? [] : filteredUsers.filter(u => {
+    if (!u.last_feedback_date) return false;
     const daysSince = differenceInDays(new Date(), new Date(u.last_feedback_date));
     return daysSince > 90;
   });

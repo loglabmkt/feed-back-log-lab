@@ -86,19 +86,14 @@ export default function Gestores() {
       return;
     }
 
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const users = await base44.entities.User.list();
-        const term = value.toLowerCase();
-        const filtered = users.filter(u =>
-          u.full_name?.toLowerCase().includes(term) ||
-          u.email?.toLowerCase().includes(term)
-        );
-        setUserSearchResults(filtered);
-        setShowDropdown(true);
-      } catch (e) {
-        console.error(e);
-      }
+    debounceRef.current = setTimeout(() => {
+      const term = value.toLowerCase();
+      const filtered = allSystemUsers.filter(u =>
+        u.full_name?.toLowerCase().includes(term) ||
+        u.email?.toLowerCase().includes(term)
+      );
+      setUserSearchResults(filtered);
+      setShowDropdown(true);
     }, 300);
   };
 

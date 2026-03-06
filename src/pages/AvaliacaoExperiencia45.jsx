@@ -191,53 +191,52 @@ export default function AvaliacaoExperiencia45() {
 
   if (saved) {
     return (
-      <GestorLayout currentPage="feedbacks" gestor={gestor}>
-        <div className="flex items-center justify-center py-20">
-          <Card className="border-0 shadow-xl max-w-sm w-full text-center">
-            <CardContent className="py-12 px-8">
-              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-emerald-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Avaliação Enviada!</h2>
-              <p className="text-slate-500 mb-1">Encaminhada para revisão do Admin.</p>
-              <p className="text-sm text-slate-400">Redirecionando...</p>
-            </CardContent>
-          </Card>
-        </div>
-      </GestorLayout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+        <Card className="border-0 shadow-xl max-w-sm w-full text-center">
+          <CardContent className="py-12 px-8">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-10 h-10 text-emerald-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Avaliação Enviada!</h2>
+            <p className="text-slate-500 mb-1">Encaminhada para revisão do Admin.</p>
+            <p className="text-sm text-slate-400">Redirecionando...</p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <GestorLayout currentPage="feedbacks" gestor={gestor}>
-        <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{borderColor: "#F8B137"}} />
-        </div>
-      </GestorLayout>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{borderColor: "#F8B137"}} />
+      </div>
     );
   }
 
   return (
-    <GestorLayout currentPage="feedbacks" gestor={gestor}>
-      <div className="space-y-6 pb-10 max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
-      {/* Header interno */}
-      <div className="flex items-center gap-3">
-        <button onClick={() => window.history.back()} className="p-2 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0">
-          <ArrowLeft className="w-5 h-5 text-slate-600" />
-        </button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Experiência – 45 Dias</h1>
-          <p className="text-xs text-slate-400">EXP_45_DIAS_V1 · Escala 4/3/2/1/NO · 13 itens</p>
-        </div>
-        {totalFilled > 0 && (
-          <div className="flex-shrink-0 text-right">
-            <p className="text-xs text-slate-500">{totalFilled}/13 itens</p>
-            <p className="text-lg font-bold" style={{color: "#F8B137"}}>Média: {average}</p>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-lg border-b-2 shadow-sm" style={{borderColor: "#F8B137"}}>
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
+          <button onClick={() => window.history.back()} className="p-2 hover:bg-slate-100 rounded-lg transition-colors flex-shrink-0">
+            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Experiência – 45 Dias</h1>
+            <p className="text-xs text-slate-400">EXP_45_DIAS_V1 · Escala 4/3/2/1/NO · 13 itens</p>
           </div>
-        )}
+          {totalFilled > 0 && (
+            <div className="flex-shrink-0 text-right">
+              <p className="text-xs text-slate-500">{totalFilled}/13 itens</p>
+              <p className="text-lg font-bold" style={{color: "#F8B137"}}>Média: {average}</p>
+            </div>
+          )}
+        </div>
       </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
 
         {/* Identificação */}
         <Card className="border-0 shadow-sm">

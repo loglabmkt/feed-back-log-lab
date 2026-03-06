@@ -230,7 +230,9 @@ export default function GestorFeedbacks() {
                      key={feedback.id} 
                      className={`flex items-center justify-between p-4 border rounded-lg ${statusDisplay.clickable ? 'hover:bg-slate-50 cursor-pointer hover:border-[#F8B137]' : 'hover:bg-slate-50'} transition-all`}
                      onClick={() => {
-                       if (statusDisplay.clickable) {
+                       if (feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' && feedback.feedback_type === 'qs_45') {
+                         window.location.href = createPageUrl("AvaliacaoQS45") + `?id=${feedback.id}`;
+                       } else if (statusDisplay.clickable) {
                          window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
                        }
                      }}

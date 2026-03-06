@@ -57,11 +57,9 @@ export default function Painel() {
 
       const isAdmin = currentUser.role === 'admin';
 
-      const feedbacksPromise = base44.entities.FeedbackRecord.list('-created_date', 50);
-      const usersPromise = isAdmin ? base44.entities.User.list() : Promise.resolve([]);
+      const feedbacks = await base44.entities.FeedbackRecord.list('-created_date', 50);
 
-      const [feedbacks, users] = await Promise.all([feedbacksPromise, usersPromise]);
-
+      // Admins veem todos os feedbacks; outros filtram pelos seus próprios
       const myFeedbacks = isAdmin 
         ? feedbacks 
         : feedbacks.filter(f => f.manager_id === currentUser.id);
@@ -72,7 +70,7 @@ export default function Painel() {
         emRevisao: myFeedbacks.filter(f => f.workflow_status === 'EM_REVISAO_ADMIN').length,
         aguardandoColaborador: myFeedbacks.filter(f => f.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR').length,
         assinados: myFeedbacks.filter(f => f.workflow_status === 'ASSINADO_COLABORADOR').length,
-        totalUsuarios: users.length
+        totalUsuarios: 0
       });
 
       setRecentFeedbacks(myFeedbacks.slice(0, 5));

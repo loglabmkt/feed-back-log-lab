@@ -227,6 +227,24 @@ export default function Gestores() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deletingManager) return;
+    setDeleting(true);
+    try {
+      // Desvincular todos os colaboradores deste gestor
+      const team = allUsers.filter(u => u.manager_id === deletingManager.id);
+      await Promise.all(team.map(u => base44.entities.Colaborador.update(u.id, { manager_id: null })));
+      // Excluir o gestor
+      await base44.entities.Gestor.delete(deletingManager.id);
+      await loadData();
+      setDeletingManager(null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const filteredManagers = managers.filter(m =>
     m.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     m.email?.toLowerCase().includes(searchTerm.toLowerCase())

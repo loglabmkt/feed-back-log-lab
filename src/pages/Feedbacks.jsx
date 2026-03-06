@@ -270,6 +270,18 @@ export default function Feedbacks() {
                         />
                       </div>
 
+                      {template.feedback_type === 'qs_45' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenDispatch(template)}
+                          className="text-orange-600 border-orange-200 hover:bg-orange-50 gap-1"
+                        >
+                          <Send className="w-3 h-3" />
+                          Disparar
+                        </Button>
+                      )}
+
                       <Link to={createPageUrl("EditarFeedback") + `?id=${template.id}`}>
                         <Button variant="outline" size="icon">
                           <Pencil className="w-4 h-4" />

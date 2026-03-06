@@ -12,6 +12,7 @@ import GestorLayout from "@/components/GestorLayout";
 export default function PainelGestor() {
   const [gestor, setGestor] = useState(null);
   const [feedbacks, setFeedbacks] = useState([]);
+  const [teamCount, setTeamCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

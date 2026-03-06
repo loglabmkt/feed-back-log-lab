@@ -54,20 +54,80 @@ export default function Gestores() {
 
   const loadData = async () => {
     try {
-      const [gestores, colaboradores, companiesData] = await Promise.all([
+      const [gestores, colaboradores, companiesData, usersData] = await Promise.all([
         base44.entities.Gestor.list(),
         base44.entities.Colaborador.list(),
-        base44.entities.Company.list()
+        base44.entities.Company.list(),
+        base44.entities.User.list()
       ]);
 
       setAllUsers(colaboradores);
       setManagers(gestores);
       setCompanies(companiesData);
+      // Guardar todos os Users para busca no modal
+      setAllUsers(prev => ({ colaboradores, users: usersData }));
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Debounce search nos Users
+  const handleUserSearch = (value) => {
+    setUserSearch(value);
+    setSelectedUser(null);
+    setShowDropdown(false);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (!value.trim() || value.length < 2) {
+      setUserSearchResults([]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const users = await base44.entities.User.list();
+        const term = value.toLowerCase();
+        const filtered = users.filter(u =>
+          u.full_name?.toLowerCase().includes(term) ||
+          u.email?.toLowerCase().includes(term)
+        );
+        setUserSearchResults(filtered);
+        setShowDropdown(true);
+      } catch (e) {
+        console.error(e);
+      }
+    }, 300);
+  };
+
+  const handleSelectUser = (user) => {
+    // Verificar se já é gestor ou admin
+    if (user.role === 'admin') {
+      setError("Este usuário já possui perfil de administrador.");
+      setShowDropdown(false);
+      setUserSearch(user.full_name);
+      return;
+    }
+    // Verificar se já é gestor na entidade Gestor
+    const jaGestor = managers.some(m => m.email?.toLowerCase() === user.email?.toLowerCase());
+    if (jaGestor) {
+      setError("Este usuário já possui perfil de gestão.");
+      setShowDropdown(false);
+      setUserSearch(user.full_name);
+      return;
+    }
+
+    setError("");
+    setSelectedUser(user);
+    setUserSearch(user.full_name);
+    setShowDropdown(false);
+    setFormData(prev => ({
+      ...prev,
+      full_name: user.full_name,
+      email: user.email
+    }));
   };
 
   const getInitials = (name) => {

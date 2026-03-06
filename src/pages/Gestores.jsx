@@ -40,6 +40,14 @@ export default function Gestores() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Busca de usuário no modal "Novo Gestor"
+  const [userSearch, setUserSearch] = useState("");
+  const [userSearchResults, setUserSearchResults] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const debounceRef = useRef(null);
+  const dropdownRef = useRef(null);
+
   useEffect(() => {
     loadData();
   }, []);

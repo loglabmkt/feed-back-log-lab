@@ -52,6 +52,8 @@ export default function Gestores() {
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deletingManager, setDeletingManager] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Busca de usuário no modal "Novo Gestor"
   const [userSearch, setUserSearch] = useState("");

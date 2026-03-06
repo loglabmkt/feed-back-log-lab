@@ -187,21 +187,31 @@ export default function Gestores() {
           department: formData.department || null
         });
       } else {
-        const emailExists = managers.some(m => m.email.toLowerCase() === formData.email.toLowerCase());
-        if (emailExists) {
-          setError("Email já cadastrado");
+        if (!selectedUser) {
+          setError("Selecione um usuário da lista de busca");
           setSaving(false);
           return;
         }
 
+        const emailExists = managers.some(m => m.email.toLowerCase() === formData.email.toLowerCase());
+        if (emailExists) {
+          setError("Este usuário já possui perfil de gestão.");
+          setSaving(false);
+          return;
+        }
+
+        // Criar registro na entidade Gestor
         await base44.entities.Gestor.create({
           full_name: formData.full_name,
           email: formData.email,
           company_id: formData.company_id || null,
           department: formData.department || null,
-          is_admin: formData.role === 'admin',
+          is_admin: false,
           status: "active"
         });
+
+        // Atualizar role do usuário na tabela Users para 'admin' não - manter como user
+        // (a entidade Gestor já controla o perfil de gestor)
       }
 
       await loadData();

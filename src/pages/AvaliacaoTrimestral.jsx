@@ -341,6 +341,9 @@ export default function AvaliacaoTrimestral() {
                           <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
                           <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
                         </div>
+                        {evaluatedIds.has(emp.id) && (
+                          <CheckCircle className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+                        )}
                       </button>
                     ))}
                   </div>

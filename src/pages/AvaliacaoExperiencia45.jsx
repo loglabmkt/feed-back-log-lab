@@ -106,23 +106,36 @@ export default function AvaliacaoExperiencia45() {
 
   useEffect(() => { checkAuth(); }, []);
 
+  const [evaluatedIds, setEvaluatedIds] = useState(new Set());
+
   const checkAuth = async () => {
     const session = localStorage.getItem("gestor_session");
     if (!session) { window.location.href = "/gestorlogin"; return; }
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
     try {
-      const [all, templates] = await Promise.all([
-        base44.entities.Colaborador.filter({ status: "active" }),
-        base44.entities.FeedbackTemplate.filter({ feedback_type: "experience_45d", is_active: true })
+      const [myTeam, templates, feedbacks] = await Promise.all([
+        base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),
+        base44.entities.FeedbackTemplate.filter({ feedback_type: "experience_45d", is_active: true }),
+        base44.entities.FeedbackRecord.filter({ manager_id: sessionData.id })
       ]);
-      setAllColaboradores(all);
+      setAllColaboradores(myTeam); // Gestor só vê seu time
+
       if (templates.length > 0) {
         setTemplateId(templates[0].id);
         if (templates[0].exp45_items_config?.length === 13) {
           setItems(templates[0].exp45_items_config);
         }
       }
+
+      const doneStatuses = ["PUBLICADO", "ASSINADO_COLABORADOR", "CONVERSA_REALIZADA", "EM_REVISAO_ADMIN", "APROVADO"];
+      const doneTypes = ["evaluation", "experience_45d"];
+      const evalDone = new Set(
+        feedbacks
+          .filter(f => doneTypes.includes(f.feedback_type) && doneStatuses.includes(f.workflow_status))
+          .map(f => f.employee_id)
+      );
+      setEvaluatedIds(evalDone);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };

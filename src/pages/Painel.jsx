@@ -55,12 +55,12 @@ export default function Painel() {
       
       setUser(currentUser);
 
-      const [feedbacks, users] = await Promise.all([
-        base44.entities.FeedbackRecord.list('-created_date', 50),
-        base44.entities.User.list()
-      ]);
-
       const isAdmin = currentUser.role === 'admin';
+
+      const feedbacksPromise = base44.entities.FeedbackRecord.list('-created_date', 50);
+      const usersPromise = isAdmin ? base44.entities.User.list() : Promise.resolve([]);
+
+      const [feedbacks, users] = await Promise.all([feedbacksPromise, usersPromise]);
 
       const myFeedbacks = isAdmin 
         ? feedbacks 

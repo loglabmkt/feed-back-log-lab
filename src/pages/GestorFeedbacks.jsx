@@ -75,6 +75,19 @@ export default function GestorFeedbacks() {
   };
 
   const handleCreateFeedback = (template) => {
+    // QS-45 tem página própria de preenchimento
+    if (template.feedback_type === 'qs_45') {
+      // Buscar FeedbackRecord já existente para este gestor + template (DISPONIVEL_PARA_GESTOR)
+      const existing = myFeedbacks.find(
+        fb => fb.template_id === template.id && fb.workflow_status === 'DISPONIVEL_PARA_GESTOR'
+      );
+      if (existing) {
+        window.location.href = createPageUrl("AvaliacaoQS45") + `?id=${existing.id}`;
+        return;
+      }
+      alert("Nenhuma avaliação QS-45 disponível para preencher. Aguarde o Admin disparar uma avaliação para você.");
+      return;
+    }
     setSelectedTemplate(template);
     setFormData({
       employee_id: '',

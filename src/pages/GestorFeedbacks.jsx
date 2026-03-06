@@ -290,12 +290,12 @@ export default function GestorFeedbacks() {
                 onValueChange={(value) => setFormData({...formData, employee_id: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um colaborador" />
+                  <SelectValue placeholder="Selecione um colaborador do seu time" />
                 </SelectTrigger>
                 <SelectContent>
                   {colaboradores.length === 0 ? (
                     <div className="p-2 text-sm text-slate-500 text-center">
-                      Nenhum colaborador cadastrado
+                      Nenhum colaborador vinculado ao seu time
                     </div>
                   ) : (
                     colaboradores.map((colab) => (
@@ -307,7 +307,7 @@ export default function GestorFeedbacks() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-slate-500 mt-1">
-                O colaborador será vinculado a você ao enviar o feedback
+                Apenas colaboradores do seu time são listados.
               </p>
             </div>
 

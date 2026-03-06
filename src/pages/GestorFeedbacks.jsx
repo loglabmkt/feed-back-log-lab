@@ -156,62 +156,28 @@ export default function GestorFeedbacks() {
               {templates.length === 0 ? (
                 <p className="text-sm text-slate-400 col-span-3 py-4">Nenhum template ativo disponível.</p>
               ) : templates.map((template) => {
-                const isAvaliacao = template.feedback_type === 'evaluation';
-                const isExp45 = template.feedback_type === 'experience_45d';
                 return (
-                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={(isAvaliacao || isExp45) ? {borderLeft: '4px solid #F8B137'} : {}}>
+                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
                     <CardHeader>
                       <CardTitle className="flex items-start justify-between">
                         <span className="text-base">{template.title}</span>
-                        <Badge className="ml-2" style={(isAvaliacao || isExp45) ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
-                          {template.feedback_type === 'feedback' ? 'Feedback' :
-                           template.feedback_type === 'one_on_one' ? 'One-on-One' :
-                           template.feedback_type === 'experience_45d' ? '45 Dias' : 'Avaliação'}
+                        <Badge className="ml-2" style={{background: '#F8B137', color: '#14141E'}}>
+                          {template.feedback_type === 'feedback' ? 'Feedback' : 'One-on-One'}
                         </Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {isExp45 ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO</p>
-                          <p className="text-xs text-slate-400 mb-4">Média ponderada · Itens "Não Observado" excluídos do cálculo</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("AvaliacaoExperiencia45")}
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Iniciar Avaliação 45 Dias
-                          </Button>
-                        </>
-                      ) : isAvaliacao ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">10 competências (H1–H5 + S1–S5)</p>
-                          <p className="text-xs text-slate-400 mb-4">Escala 1–4 · Soma 10–40 pts · Motor de faixa automático</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("AvaliacaoTrimestral")}
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Iniciar Avaliação
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-sm text-slate-500 mb-4">
-                            {template.checklist_questions?.length || 0} perguntas de validação
-                          </p>
-                          <Button
-                            className="w-full"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => handleCreateFeedback(template)}
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Responder Feedback
-                          </Button>
-                        </>
-                      )}
+                      <p className="text-sm text-slate-500 mb-4">
+                        {template.checklist_questions?.length || 0} perguntas de validação
+                      </p>
+                      <Button
+                        className="w-full"
+                        style={{background: '#F8B137', color: '#14141E'}}
+                        onClick={() => handleCreateFeedback(template)}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Responder Feedback
+                      </Button>
                     </CardContent>
                   </Card>
                 );

@@ -210,6 +210,16 @@ export default function Relatorios() {
     );
   }
 
+  const selectedGestorObj = filterGestorId !== 'all' ? gestores.find(g => g.id === filterGestorId) : null;
+
+  const FEEDBACK_TYPE_OPTIONS = [
+    { value: 'all', label: 'Todos os Tipos' },
+    { value: 'feedback', label: 'Feedback' },
+    { value: 'one_on_one', label: '1:1' },
+    { value: 'evaluation', label: 'Avaliação Trimestral' },
+    { value: 'experience_45d', label: 'Avaliação 45 Dias' },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

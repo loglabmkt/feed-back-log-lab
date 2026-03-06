@@ -46,12 +46,14 @@ export default function Relatorios() {
 
   const loadData = async () => {
     try {
-      const [allUsers, allFeedbacks] = await Promise.all([
-        base44.entities.User.list(),
+      const [gestores, colaboradores, allFeedbacks] = await Promise.all([
+        base44.entities.Gestor.list(),
+        base44.entities.Colaborador.list(),
         base44.entities.FeedbackRecord.list('-created_date')
       ]);
 
-      setUsers(allUsers);
+      // Combinar gestores e colaboradores como "usuários" para os relatórios
+      setUsers([...gestores, ...colaboradores]);
       setFeedbacks(allFeedbacks);
     } catch (e) {
       console.error(e);
@@ -60,8 +62,8 @@ export default function Relatorios() {
     }
   };
 
-  const activeUsers = users.filter(u => u.status === 'active');
-  const managers = users.filter(u => u.role === 'admin');
+  const activeUsers = users.filter(u => u.status === 'active' || !u.status);
+  const managers = users.filter(u => u.is_admin !== undefined); // gestores
   const departments = [...new Set(users.map(u => u.department).filter(Boolean))];
 
   let filteredFeedbacks = feedbacks;

@@ -474,6 +474,10 @@ export default function AcessoPublicoFeedback() {
                 </div>
 
                 <div className="space-y-4">
+                  {selectedFeedback.feedback_type === 'qs_45' ? (
+                    <QS45Content fb={selectedFeedback} showQualitative={false} />
+                  ) : (
+                    <>
                   <div>
                     <p className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</p>
                     <p className="text-slate-600 bg-emerald-50 p-4 rounded-xl border border-emerald-100">
@@ -504,6 +508,8 @@ export default function AcessoPublicoFeedback() {
                         {selectedFeedback.additional_notes}
                       </p>
                     </div>
+                  )}
+                    </>
                   )}
 
                   {selectedFeedback.contestation_reason && (

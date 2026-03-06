@@ -30,6 +30,8 @@ import GestorMetricsPanel from "../components/reports/GestorMetricsPanel";
 
 export default function Relatorios() {
   const [users, setUsers] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
+  const [gestores, setGestores] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -40,6 +42,10 @@ export default function Relatorios() {
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [selectedManager, setSelectedManager] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Filtro inteligente por gestor
+  const [filterGestorId, setFilterGestorId] = useState("all");
+  const [filterFeedbackType, setFilterFeedbackType] = useState("all");
 
   useEffect(() => {
     loadData();

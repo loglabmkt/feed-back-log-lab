@@ -42,7 +42,7 @@ export default function Layout({ children, currentPageName }) {
     '/gestorfeedbacks',
     '/gerenciarfeedback',
     '/avaliacaotrimestral',
-    '/avaliacaoqs45'
+    '/avaliacaoexperiencia45'
   ];
   
   // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)

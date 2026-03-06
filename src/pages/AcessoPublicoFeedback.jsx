@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import QS45Content from "@/components/avaliacao/QS45Content";
 import { 
   Mail, 
   CheckCircle, 
@@ -180,12 +179,12 @@ export default function AcessoPublicoFeedback() {
     const styles = {
       feedback: "bg-blue-50 text-blue-700 border-blue-200",
       one_on_one: "bg-purple-50 text-purple-700 border-purple-200",
-      qs_45: "bg-orange-50 text-orange-700 border-orange-200"
+      evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200"
     };
     const labels = {
       feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      qs_45: "Qualidade de Serviço — 45 Dias"
+      evaluation: "Avaliação de Experiência"
     };
     return (
       <Badge variant="outline" className={styles[type]}>
@@ -474,10 +473,6 @@ export default function AcessoPublicoFeedback() {
                 </div>
 
                 <div className="space-y-4">
-                  {selectedFeedback.feedback_type === 'qs_45' ? (
-                    <QS45Content fb={selectedFeedback} showQualitative={false} />
-                  ) : (
-                    <>
                   <div>
                     <p className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</p>
                     <p className="text-slate-600 bg-emerald-50 p-4 rounded-xl border border-emerald-100">
@@ -509,8 +504,6 @@ export default function AcessoPublicoFeedback() {
                       </p>
                     </div>
                   )}
-                    </>
-                  )}
 
                   {selectedFeedback.contestation_reason && (
                     <div>
@@ -521,7 +514,6 @@ export default function AcessoPublicoFeedback() {
                     </div>
                   )}
                 </div>
-
 
                 {selectedFeedback.validation_status === 'pending' && selectedFeedback.validation_deadline && (
                   <Alert className="bg-amber-50 border-amber-200">

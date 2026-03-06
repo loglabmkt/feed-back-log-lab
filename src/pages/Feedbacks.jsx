@@ -7,19 +7,15 @@ import {
   Pencil,
   Trash2,
   Power,
-  PowerOff,
-  Send,
-  X
+  PowerOff
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +26,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 export default function Feedbacks() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -40,76 +35,54 @@ export default function Feedbacks() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Estado para disparar QS-45 para Gestor/Colaborador
-  const [dispatchTemplate, setDispatchTemplate] = useState(null);
-  const [gestores, setGestores] = useState([]);
-  const [colaboradores, setColaboradores] = useState([]);
-  const [dispatchForm, setDispatchForm] = useState({ gestor_id: '', colaborador_id: '', feedback_date: new Date().toISOString().split('T')[0] });
-  const [dispatching, setDispatching] = useState(false);
-  const [dispatchError, setDispatchError] = useState("");
-
   useEffect(() => {
     loadData();
   }, []);
 
+  const AVALIACAO_TRIMESTRAL_TITLE = "Avaliação de Desempenho Trimestral";
+  const AVALIACAO_EXP45_TITLE = "Avaliação de Experiência – 45 Dias";
+
+  const ensureAvaliacaoTemplate = async (user) => {
+    if (user?.role !== 'admin') return;
+    const [existingTrimestral, existingExp45] = await Promise.all([
+      base44.entities.FeedbackTemplate.filter({ feedback_type: 'evaluation', title: AVALIACAO_TRIMESTRAL_TITLE }),
+      base44.entities.FeedbackTemplate.filter({ feedback_type: 'experience_45d' })
+    ]);
+    const creates = [];
+    if (existingTrimestral.length === 0) {
+      creates.push(base44.entities.FeedbackTemplate.create({
+        title: AVALIACAO_TRIMESTRAL_TITLE,
+        feedback_type: 'evaluation',
+        is_active: true,
+        checklist_questions: [],
+        created_by_admin: user.id
+      }));
+    }
+    if (existingExp45.length === 0) {
+      creates.push(base44.entities.FeedbackTemplate.create({
+        title: AVALIACAO_EXP45_TITLE,
+        feedback_type: 'experience_45d',
+        is_active: true,
+        checklist_questions: [],
+        created_by_admin: user.id
+      }));
+    }
+    if (creates.length > 0) await Promise.all(creates);
+  };
+
   const loadData = async () => {
     try {
-      const [user, allTemplates, gestoresList, colaboradoresList] = await Promise.all([
-        base44.auth.me(),
-        base44.entities.FeedbackTemplate.list('-created_date', 100),
-        base44.entities.Gestor.list(),
-        base44.entities.Colaborador.list()
-      ]);
+      const user = await base44.auth.me();
       setCurrentUser(user);
+
+      await ensureAvaliacaoTemplate(user);
+
+      const allTemplates = await base44.entities.FeedbackTemplate.list('-created_date', 100);
       setTemplates(allTemplates);
-      setGestores(gestoresList.filter(g => g.status === 'active'));
-      setColaboradores(colaboradoresList.filter(c => c.status === 'active'));
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const filteredColaboradores = dispatchForm.gestor_id
-    ? colaboradores.filter(c => c.manager_id === dispatchForm.gestor_id)
-    : colaboradores;
-
-  const handleOpenDispatch = (template) => {
-    setDispatchTemplate(template);
-    setDispatchForm({ gestor_id: '', colaborador_id: '', feedback_date: new Date().toISOString().split('T')[0] });
-    setDispatchError("");
-  };
-
-  const handleDispatch = async () => {
-    if (!dispatchForm.gestor_id || !dispatchForm.colaborador_id) {
-      setDispatchError("Selecione o gestor e o colaborador.");
-      return;
-    }
-    setDispatching(true);
-    setDispatchError("");
-    try {
-      const gestor = gestores.find(g => g.id === dispatchForm.gestor_id);
-      const colaborador = colaboradores.find(c => c.id === dispatchForm.colaborador_id);
-      await base44.entities.FeedbackRecord.create({
-        template_id: dispatchTemplate.id,
-        template_title: dispatchTemplate.title,
-        manager_id: gestor.id,
-        manager_name: gestor.full_name,
-        employee_id: colaborador.id,
-        employee_name: colaborador.full_name,
-        employee_email: colaborador.email,
-        feedback_date: dispatchForm.feedback_date,
-        feedback_type: dispatchTemplate.feedback_type,
-        workflow_status: 'DISPONIVEL_PARA_GESTOR',
-        checklist_questions: dispatchTemplate.checklist_questions || []
-      });
-      setDispatchTemplate(null);
-      alert(`Avaliação QS-45 disparada com sucesso para ${gestor.full_name} avaliar ${colaborador.full_name}.`);
-    } catch (e) {
-      setDispatchError(e.message || "Erro ao disparar avaliação.");
-    } finally {
-      setDispatching(false);
     }
   };
 
@@ -158,12 +131,14 @@ export default function Feedbacks() {
     const styles = {
       feedback: "bg-blue-50 text-blue-700 border-blue-200",
       one_on_one: "bg-purple-50 text-purple-700 border-purple-200",
-      qs_45: "bg-orange-50 text-orange-700 border-orange-200"
+      evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      experience_45d: "bg-orange-50 text-orange-700 border-orange-200"
     };
     const labels = {
       feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      qs_45: "QS-45 · Qualidade de Serviço"
+      evaluation: "Avaliação Trimestral",
+      experience_45d: "Avaliação 45 Dias"
     };
     return (
       <Badge variant="outline" className={styles[type]}>
@@ -270,18 +245,6 @@ export default function Feedbacks() {
                         />
                       </div>
 
-                      {template.feedback_type === 'qs_45' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenDispatch(template)}
-                          className="text-orange-600 border-orange-200 hover:bg-orange-50 gap-1"
-                        >
-                          <Send className="w-3 h-3" />
-                          Disparar
-                        </Button>
-                      )}
-
                       <Link to={createPageUrl("EditarFeedback") + `?id=${template.id}`}>
                         <Button variant="outline" size="icon">
                           <Pencil className="w-4 h-4" />
@@ -304,61 +267,6 @@ export default function Feedbacks() {
           ))
         )}
       </div>
-
-      {/* Dialog Disparar QS-45 */}
-      <Dialog open={!!dispatchTemplate} onOpenChange={() => setDispatchTemplate(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Disparar Avaliação QS-45</DialogTitle>
-            <p className="text-sm text-slate-500">Selecione o gestor e o colaborador (prestador) para esta avaliação.</p>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            {dispatchError && <p className="text-sm text-red-600">{dispatchError}</p>}
-            <div className="space-y-1">
-              <Label>Gestor *</Label>
-              <Select value={dispatchForm.gestor_id} onValueChange={v => setDispatchForm(f => ({ ...f, gestor_id: v, colaborador_id: '' }))}>
-                <SelectTrigger><SelectValue placeholder="Selecione o gestor..." /></SelectTrigger>
-                <SelectContent>
-                  {gestores.map(g => <SelectItem key={g.id} value={g.id}>{g.full_name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label>Colaborador / Prestador *</Label>
-              <Select value={dispatchForm.colaborador_id} onValueChange={v => setDispatchForm(f => ({ ...f, colaborador_id: v }))} disabled={!dispatchForm.gestor_id}>
-                <SelectTrigger><SelectValue placeholder={dispatchForm.gestor_id ? "Selecione o colaborador..." : "Selecione o gestor primeiro"} /></SelectTrigger>
-                <SelectContent>
-                  {filteredColaboradores.length === 0
-                    ? <div className="p-2 text-sm text-slate-500 text-center">Nenhum colaborador vinculado a este gestor</div>
-                    : filteredColaboradores.map(c => <SelectItem key={c.id} value={c.id}>{c.full_name} – {c.position || 'Sem cargo'}</SelectItem>)
-                  }
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label>Data de Referência</Label>
-              <input
-                type="date"
-                className="w-full border rounded-lg px-3 py-2 text-sm"
-                value={dispatchForm.feedback_date}
-                onChange={e => setDispatchForm(f => ({ ...f, feedback_date: e.target.value }))}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDispatchTemplate(null)}>Cancelar</Button>
-            <Button
-              onClick={handleDispatch}
-              disabled={dispatching || !dispatchForm.gestor_id || !dispatchForm.colaborador_id}
-              style={{background: '#F8B137', color: '#14141E'}}
-              className="font-semibold"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              {dispatching ? "Disparando..." : "Confirmar e Disparar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>

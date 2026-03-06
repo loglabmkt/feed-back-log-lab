@@ -73,7 +73,6 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import AvaliacaoQS45 from './pages/AvaliacaoQS45';
 import __Layout from './Layout.jsx';
 
 
@@ -104,7 +103,6 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "AvaliacaoQS45": AvaliacaoQS45,
 }
 
 export const pagesConfig = {

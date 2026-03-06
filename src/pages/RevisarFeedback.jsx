@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { ArrowLeft, CheckCircle, FileDown } from "lucide-react";
-import QS45Content from "@/components/avaliacao/QS45Content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -619,10 +618,10 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
-      {feedback.feedback_type === 'qs_45' ? (
-        <QS45Content fb={feedback} showQualitative={true} />
-      ) : feedback.feedback_type === 'evaluation' ? (
+      {feedback.feedback_type === 'evaluation' ? (
         <AvaliacaoContent fb={feedback} />
+      ) : feedback.feedback_type === 'experience_45d' ? (
+        <Exp45Content fb={feedback} />
       ) : (
         <Card className="border-0 shadow-sm">
           <CardHeader>

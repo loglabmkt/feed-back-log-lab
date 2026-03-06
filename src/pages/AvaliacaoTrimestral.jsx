@@ -161,6 +161,15 @@ export default function AvaliacaoTrimestral() {
         eval_action_2: evalAction2,
         eval_action_3: evalAction3,
       });
+      // Notificar admins por e-mail
+      try {
+        await base44.functions.invoke('notifyAdminNewEvaluation', {
+          managerName: gestor.full_name,
+          employeeName: selectedEmployee.full_name,
+        });
+      } catch (emailErr) {
+        console.error('Erro ao notificar admins:', emailErr);
+      }
       setSaved(true);
       setTimeout(() => { window.location.href = "/gestorfeedbacks"; }, 2500);
     } catch (e) {

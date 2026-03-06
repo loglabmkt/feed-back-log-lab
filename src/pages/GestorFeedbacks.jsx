@@ -175,7 +175,8 @@ export default function GestorFeedbacks() {
                       <CardTitle className="flex items-start justify-between">
                         <span className="text-base">{template.title}</span>
                         <Badge className="ml-2" style={{background: '#F8B137', color: '#14141E'}}>
-                          {template.feedback_type === 'feedback' ? 'Feedback' : 'One-on-One'}
+                          {template.feedback_type === 'feedback' ? 'Feedback' :
+                           template.feedback_type === 'qs_45' ? 'QS-45' : 'One-on-One'}
                         </Badge>
                       </CardTitle>
                     </CardHeader>

@@ -522,6 +522,7 @@ export default function AcessoPublicoFeedback() {
                   )}
                 </div>
 
+
                 {selectedFeedback.validation_status === 'pending' && selectedFeedback.validation_deadline && (
                   <Alert className="bg-amber-50 border-amber-200">
                     <Clock className="h-4 w-4 text-amber-600" />

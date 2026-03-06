@@ -301,9 +301,20 @@ export default function Gestores() {
                       </div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => handleEdit(manager)}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTeamModalManager(manager)}
+                      className="text-xs gap-1.5"
+                    >
+                      <UsersIcon className="w-3.5 h-3.5" />
+                      Meu Time
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(manager)}>
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

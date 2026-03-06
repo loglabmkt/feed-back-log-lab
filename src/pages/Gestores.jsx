@@ -321,31 +321,77 @@ export default function Gestores() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingManager ? 'Editar' : 'Novo'} Gestor</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <UserCheck className="w-5 h-5" style={{color: '#F8B137'}} />
+              {editingManager ? 'Editar Gestor' : 'Promover a Gestor'}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                 {error}
               </div>
             )}
 
+            {/* Busca de usuário — apenas no cadastro novo */}
+            {!editingManager && (
+              <div className="space-y-2">
+                <Label>Buscar Colaborador *</Label>
+                <div className="relative" ref={dropdownRef}>
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    className="pl-10"
+                    placeholder="Busque por nome ou e-mail..."
+                    value={userSearch}
+                    onChange={(e) => handleUserSearch(e.target.value)}
+                    autoComplete="off"
+                  />
+                  {showDropdown && userSearchResults.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {userSearchResults.map(u => (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => handleSelectUser(u)}
+                          className="w-full text-left px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-0"
+                        >
+                          <p className="text-sm font-medium text-slate-900">{u.full_name}</p>
+                          <p className="text-xs text-slate-500">{u.email}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {showDropdown && userSearchResults.length === 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg px-4 py-3 text-sm text-slate-500">
+                      Nenhum usuário encontrado.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Nome e email — read-only ao selecionar usuário no modo novo */}
             <div className="space-y-2">
-              <Label>Nome Completo *</Label>
+              <Label>Nome Completo</Label>
               <Input
                 value={formData.full_name}
-                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                readOnly={!editingManager && !!selectedUser}
+                onChange={(e) => !selectedUser && setFormData({...formData, full_name: e.target.value})}
                 placeholder="Nome do gestor"
+                className={!editingManager && selectedUser ? "bg-slate-50 text-slate-600 cursor-not-allowed" : ""}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Email *</Label>
+              <Label>Email</Label>
               <Input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase()})}
+                readOnly={!editingManager && !!selectedUser}
+                onChange={(e) => !selectedUser && setFormData({...formData, email: e.target.value.toLowerCase()})}
                 placeholder="email@empresa.com"
+                className={!editingManager && selectedUser ? "bg-slate-50 text-slate-600 cursor-not-allowed" : ""}
               />
             </div>
 
@@ -356,7 +402,6 @@ export default function Gestores() {
                   <SelectValue placeholder="Selecione a empresa" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={null}>Sem empresa</SelectItem>
                   {companies.map(c => (
                     <SelectItem key={c.id} value={c.id}>{c.razao_social}</SelectItem>
                   ))}
@@ -373,20 +418,10 @@ export default function Gestores() {
               />
             </div>
 
-            {!editingManager && (
-              <div className="space-y-2">
-                <Label>Nível de Acesso</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Gestor</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label>Nível de Acesso</Label>
+              <Input value="Gestor" readOnly className="bg-slate-50 text-slate-600 cursor-not-allowed" />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
@@ -394,10 +429,10 @@ export default function Gestores() {
             </Button>
             <Button 
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || (!editingManager && !selectedUser)}
               style={{background: '#14141E', color: '#F8B137'}}
             >
-              {saving ? "Salvando..." : "Salvar"}
+              {saving ? "Salvando..." : editingManager ? "Salvar" : "Promover a Gestor"}
             </Button>
           </DialogFooter>
         </DialogContent>

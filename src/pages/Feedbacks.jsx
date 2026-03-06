@@ -305,6 +305,61 @@ export default function Feedbacks() {
         )}
       </div>
 
+      {/* Dialog Disparar QS-45 */}
+      <Dialog open={!!dispatchTemplate} onOpenChange={() => setDispatchTemplate(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Disparar Avaliação QS-45</DialogTitle>
+            <p className="text-sm text-slate-500">Selecione o gestor e o colaborador (prestador) para esta avaliação.</p>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {dispatchError && <p className="text-sm text-red-600">{dispatchError}</p>}
+            <div className="space-y-1">
+              <Label>Gestor *</Label>
+              <Select value={dispatchForm.gestor_id} onValueChange={v => setDispatchForm(f => ({ ...f, gestor_id: v, colaborador_id: '' }))}>
+                <SelectTrigger><SelectValue placeholder="Selecione o gestor..." /></SelectTrigger>
+                <SelectContent>
+                  {gestores.map(g => <SelectItem key={g.id} value={g.id}>{g.full_name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>Colaborador / Prestador *</Label>
+              <Select value={dispatchForm.colaborador_id} onValueChange={v => setDispatchForm(f => ({ ...f, colaborador_id: v }))} disabled={!dispatchForm.gestor_id}>
+                <SelectTrigger><SelectValue placeholder={dispatchForm.gestor_id ? "Selecione o colaborador..." : "Selecione o gestor primeiro"} /></SelectTrigger>
+                <SelectContent>
+                  {filteredColaboradores.length === 0
+                    ? <div className="p-2 text-sm text-slate-500 text-center">Nenhum colaborador vinculado a este gestor</div>
+                    : filteredColaboradores.map(c => <SelectItem key={c.id} value={c.id}>{c.full_name} – {c.position || 'Sem cargo'}</SelectItem>)
+                  }
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>Data de Referência</Label>
+              <input
+                type="date"
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+                value={dispatchForm.feedback_date}
+                onChange={e => setDispatchForm(f => ({ ...f, feedback_date: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDispatchTemplate(null)}>Cancelar</Button>
+            <Button
+              onClick={handleDispatch}
+              disabled={dispatching || !dispatchForm.gestor_id || !dispatchForm.colaborador_id}
+              style={{background: '#F8B137', color: '#14141E'}}
+              className="font-semibold"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {dispatching ? "Disparando..." : "Confirmar e Disparar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

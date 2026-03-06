@@ -77,32 +77,26 @@ export default function Layout({ children, currentPageName }) {
   });
 
   useEffect(() => {
-    if (!isPublicPage) {
+    if (isAdminPage) {
+      // Para páginas admin, verificar autenticação antes de mostrar qualquer coisa
+      const checkAuth = async () => {
+        const isAuthenticated = await base44.auth.isAuthenticated();
+        if (!isAuthenticated) {
+          base44.auth.redirectToLogin(window.location.pathname);
+          return;
+        }
+        const userData = await base44.auth.me();
+        if (!userData) {
+          base44.auth.redirectToLogin(window.location.pathname);
+          return;
+        }
+        setUser(userData);
+      };
+      checkAuth();
+    } else if (!isPublicPage) {
       loadUser();
     }
-  }, [isPublicPage]);
-
-  useEffect(() => {
-    // Se for página admin e não estiver autenticado, redirecionar para login Base44
-    const checkAdminAuth = async () => {
-      if (isAdminPage && !user) {
-        try {
-          const userData = await base44.auth.me();
-          if (!userData) {
-            base44.auth.redirectToLogin(window.location.pathname);
-          } else {
-            setUser(userData);
-          }
-        } catch (e) {
-          base44.auth.redirectToLogin(window.location.pathname);
-        }
-      }
-    };
-    
-    if (!isPublicPage) {
-      checkAdminAuth();
-    }
-  }, [isAdminPage, user, isPublicPage]);
+  }, [isAdminPage, isPublicPage]);
 
   const loadUser = async () => {
     try {

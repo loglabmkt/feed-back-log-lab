@@ -331,6 +331,16 @@ export default function Gestores() {
         )}
       </div>
 
+      {/* Team Modal */}
+      {teamModalManager && (
+        <TeamModal
+          manager={teamModalManager}
+          allColaboradores={allUsers}
+          onClose={() => setTeamModalManager(null)}
+          onSaved={async () => { setTeamModalManager(null); await loadData(); }}
+        />
+      )}
+
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

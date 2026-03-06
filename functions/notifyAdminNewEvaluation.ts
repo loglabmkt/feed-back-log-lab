@@ -54,9 +54,43 @@ Deno.serve(async (req) => {
       })
     );
 
-    await Promise.all(emailPromises);
+    // E-mail de confirmação para o gestor
+    const gestorEmailPromise = managerEmail
+      ? resend.emails.send({
+          from: 'noreply@loglabdigital.com.br',
+          to: managerEmail,
+          subject: `Avaliação enviada – Aguardando validação`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+              <div style="background-color: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6980e7673597ded54b61feca/68c8706a7_LOG-LAB-TECNOLOGIA-QUE-TRANSFORMA-NOVA-BRANCO-LARANJA.png" alt="LogLab" style="height: 48px; margin-bottom: 24px;" />
 
-    return Response.json({ success: true, message: `E-mail enviado para ${ADMIN_EMAILS.length} destinatários` });
+                <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 16px;">Olá, <strong>${managerName}</strong>,</p>
+
+                <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 16px;">
+                  Recebemos o preenchimento da avaliação de nível de serviço de <strong>${employeeName}</strong>.
+                </p>
+
+                <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 16px;">
+                  Conforme o fluxo operacional, os dados serão processados internamente. Favor aguardar a sinalização de conformidade antes de realizar a devolutiva com o prestador de serviço.
+                </p>
+
+                <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 0;">
+                  Você receberá uma nova notificação assim que o processo de conferência for concluído.
+                </p>
+              </div>
+
+              <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 20px;">
+                LogLab Digital – Sistema de Compliance RH
+              </p>
+            </div>
+          `
+        })
+      : Promise.resolve();
+
+    await Promise.all([...adminEmailPromises, gestorEmailPromise]);
+
+    return Response.json({ success: true, message: `E-mails enviados com sucesso` });
   } catch (error) {
     console.error('Erro ao enviar notificação:', error);
     return Response.json({ error: error.message }, { status: 500 });

@@ -53,14 +53,15 @@ export default function Relatorios() {
 
   const loadData = async () => {
     try {
-      const [gestores, colaboradores, allFeedbacks] = await Promise.all([
+      const [gestoresList, colaboradoresList, allFeedbacks] = await Promise.all([
         base44.entities.Gestor.list(),
         base44.entities.Colaborador.list(),
         base44.entities.FeedbackRecord.list('-created_date')
       ]);
 
-      // Combinar gestores e colaboradores como "usuários" para os relatórios
-      setUsers([...gestores, ...colaboradores]);
+      setGestores(gestoresList);
+      setColaboradores(colaboradoresList);
+      setUsers([...gestoresList, ...colaboradoresList]);
       setFeedbacks(allFeedbacks);
     } catch (e) {
       console.error(e);

@@ -90,7 +90,8 @@ export default function Gestores() {
 
     debounceRef.current = setTimeout(() => {
       const term = value.toLowerCase();
-      const filtered = allSystemUsers.filter(u =>
+      // Busca na entidade Colaborador
+      const filtered = allUsers.filter(u =>
         u.full_name?.toLowerCase().includes(term) ||
         u.email?.toLowerCase().includes(term)
       );

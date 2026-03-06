@@ -26,6 +26,7 @@ export default function Gestores() {
   const [managers, setManagers] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
+  const [allSystemUsers, setAllSystemUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDialog, setShowDialog] = useState(false);

@@ -401,6 +401,8 @@ export default function Relatorios() {
         totalFeedbacks={filteredFeedbacks.length}
         loading={loading} 
       />
+      </>
+      )}
     </div>
   );
 }

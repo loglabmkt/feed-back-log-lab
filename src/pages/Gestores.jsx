@@ -57,17 +57,16 @@ export default function Gestores() {
 
   const loadData = async () => {
     try {
-      const [gestores, colaboradores, companiesData, usersData] = await Promise.all([
+      const [gestores, colaboradores, companiesData] = await Promise.all([
         base44.entities.Gestor.list(),
         base44.entities.Colaborador.list(),
-        base44.entities.Company.list(),
-        base44.entities.User.list()
+        base44.entities.Company.list()
       ]);
 
       setAllUsers(colaboradores);
       setManagers(gestores);
       setCompanies(companiesData);
-      setAllSystemUsers(usersData);
+      setAllSystemUsers([]);
     } catch (e) {
       console.error(e);
     } finally {

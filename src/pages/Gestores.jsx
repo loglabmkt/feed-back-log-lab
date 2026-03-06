@@ -101,17 +101,10 @@ export default function Gestores() {
   };
 
   const handleSelectUser = (user) => {
-    // Verificar se já é gestor ou admin
-    if (user.role === 'admin') {
-      setError("Este usuário já possui perfil de administrador.");
-      setShowDropdown(false);
-      setUserSearch(user.full_name);
-      return;
-    }
     // Verificar se já é gestor na entidade Gestor
     const jaGestor = managers.some(m => m.email?.toLowerCase() === user.email?.toLowerCase());
     if (jaGestor) {
-      setError("Este usuário já possui perfil de gestão.");
+      setError("Este colaborador já possui perfil de gestão.");
       setShowDropdown(false);
       setUserSearch(user.full_name);
       return;
@@ -124,7 +117,9 @@ export default function Gestores() {
     setFormData(prev => ({
       ...prev,
       full_name: user.full_name,
-      email: user.email
+      email: user.email,
+      department: user.department || prev.department,
+      company_id: user.company_id || prev.company_id
     }));
   };
 

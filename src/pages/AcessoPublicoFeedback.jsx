@@ -180,12 +180,12 @@ export default function AcessoPublicoFeedback() {
     const styles = {
       feedback: "bg-blue-50 text-blue-700 border-blue-200",
       one_on_one: "bg-purple-50 text-purple-700 border-purple-200",
-      evaluation: "bg-indigo-50 text-indigo-700 border-indigo-200"
+      qs_45: "bg-orange-50 text-orange-700 border-orange-200"
     };
     const labels = {
       feedback: "Feedback Trimestral",
       one_on_one: "1:1",
-      evaluation: "Avaliação de Experiência"
+      qs_45: "Qualidade de Serviço — 45 Dias"
     };
     return (
       <Badge variant="outline" className={styles[type]}>

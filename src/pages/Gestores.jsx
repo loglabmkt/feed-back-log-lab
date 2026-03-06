@@ -364,6 +364,33 @@ export default function Gestores() {
         )}
       </div>
 
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deletingManager} onOpenChange={(open) => !open && setDeletingManager(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Gestor</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deletingManager?.full_name}</strong>?
+              {deletingManager && getSubordinatesCount(deletingManager.id) > 0 && (
+                <span className="block mt-2 text-amber-600 font-medium">
+                  ⚠️ {getSubordinatesCount(deletingManager.id)} colaborador(es) serão desvinculados deste gestor.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Team Modal */}
       {teamModalManager && (
         <TeamModal

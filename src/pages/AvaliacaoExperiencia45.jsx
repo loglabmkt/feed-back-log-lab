@@ -179,16 +179,6 @@ export default function AvaliacaoExperiencia45() {
         exp45_developments: developments,
         exp45_action_plan: actionPlan,
       });
-      // Notificar admins por e-mail
-      try {
-        await base44.functions.invoke('notifyAdminNewEvaluation', {
-          managerName: gestor.full_name,
-          managerEmail: gestor.email,
-          employeeName: selectedEmployee.full_name,
-        });
-      } catch (emailErr) {
-        console.error('Erro ao notificar admins:', emailErr);
-      }
       setSaved(true);
       setTimeout(() => { window.location.href = "/gestorfeedbacks"; }, 2500);
     } catch (e) {

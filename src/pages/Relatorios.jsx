@@ -26,12 +26,9 @@ import MonthlyEvolutionChart from "../components/reports/MonthlyEvolutionChart";
 import TypeDistributionChart from "../components/reports/TypeDistributionChart";
 import ManagerAdherenceTable from "../components/reports/ManagerAdherenceTable";
 import RiskRadar from "../components/reports/RiskRadar";
-import GestorMetricsPanel from "../components/reports/GestorMetricsPanel";
 
 export default function Relatorios() {
   const [users, setUsers] = useState([]);
-  const [colaboradores, setColaboradores] = useState([]);
-  const [gestores, setGestores] = useState([]);
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -43,25 +40,20 @@ export default function Relatorios() {
   const [selectedManager, setSelectedManager] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filtro inteligente por gestor
-  const [filterGestorId, setFilterGestorId] = useState("all");
-  const [filterFeedbackType, setFilterFeedbackType] = useState("all");
-
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
     try {
-      const [gestoresList, colaboradoresList, allFeedbacks] = await Promise.all([
+      const [gestores, colaboradores, allFeedbacks] = await Promise.all([
         base44.entities.Gestor.list(),
         base44.entities.Colaborador.list(),
         base44.entities.FeedbackRecord.list('-created_date')
       ]);
 
-      setGestores(gestoresList);
-      setColaboradores(colaboradoresList);
-      setUsers([...gestoresList, ...colaboradoresList]);
+      // Combinar gestores e colaboradores como "usuários" para os relatórios
+      setUsers([...gestores, ...colaboradores]);
       setFeedbacks(allFeedbacks);
     } catch (e) {
       console.error(e);
@@ -210,16 +202,6 @@ export default function Relatorios() {
     );
   }
 
-  const selectedGestorObj = filterGestorId !== 'all' ? gestores.find(g => g.id === filterGestorId) : null;
-
-  const FEEDBACK_TYPE_OPTIONS = [
-    { value: 'all', label: 'Todos os Tipos' },
-    { value: 'feedback', label: 'Feedback' },
-    { value: 'one_on_one', label: '1:1' },
-    { value: 'evaluation', label: 'Avaliação Trimestral' },
-    { value: 'experience_45d', label: 'Avaliação 45 Dias' },
-  ];
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -246,60 +228,6 @@ export default function Relatorios() {
           </Button>
         </div>
       </div>
-
-      {/* Filtro Inteligente por Gestor */}
-      <Card className="border-0 shadow-sm" style={{ borderLeft: '4px solid #F8B137' }}>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
-            <div className="flex-1 space-y-1">
-              <Label className="text-xs font-semibold text-slate-600">Selecionar Gestor</Label>
-              <Select value={filterGestorId} onValueChange={(v) => { setFilterGestorId(v); setFilterFeedbackType('all'); }}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Selecione um gestor..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">— Visão Geral (todos os gestores)</SelectItem>
-                  {gestores.filter(g => g.status === 'active').sort((a,b) => a.full_name?.localeCompare(b.full_name)).map(g => (
-                    <SelectItem key={g.id} value={g.id}>{g.full_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex-1 space-y-1">
-              <Label className="text-xs font-semibold text-slate-600">Tipo de Avaliação</Label>
-              <Select value={filterFeedbackType} onValueChange={setFilterFeedbackType} disabled={filterGestorId === 'all'}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Todos os tipos" />
-                </SelectTrigger>
-                <SelectContent>
-                  {FEEDBACK_TYPE_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {filterGestorId !== 'all' && (
-              <Button variant="outline" size="sm" onClick={() => { setFilterGestorId('all'); setFilterFeedbackType('all'); }}>
-                Limpar
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Painel de Métricas do Gestor Selecionado */}
-      {filterGestorId !== 'all' && selectedGestorObj && (
-        <GestorMetricsPanel
-          gestor={selectedGestorObj}
-          colaboradores={colaboradores}
-          feedbacks={feedbacks}
-          selectedFeedbackType={filterFeedbackType}
-        />
-      )}
-
-      {/* Visão Geral — só aparece quando nenhum gestor está selecionado */}
-      {filterGestorId === 'all' && (
-      <>
 
       {showFilters && (
         <Card className="border-0 shadow-sm bg-blue-50/50">
@@ -401,8 +329,6 @@ export default function Relatorios() {
         totalFeedbacks={filteredFeedbacks.length}
         loading={loading} 
       />
-      </>
-      )}
     </div>
   );
 }

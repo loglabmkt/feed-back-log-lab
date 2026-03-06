@@ -528,23 +528,26 @@ export default function AvaliacaoTrimestral() {
                 .filter(e => e.full_name.toLowerCase().includes(modalSearch.toLowerCase()))
                 .map(emp => (
                   <button
-                    key={emp.id}
-                    type="button"
-                    onClick={() => { setSelectedEmployee(emp); setShowColabModal(false); setSearchQuery(""); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-amber-50 text-left transition-colors"
+                   key={emp.id}
+                   type="button"
+                   onClick={() => { setSelectedEmployee(emp); setShowColabModal(false); setSearchQuery(""); }}
+                   className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-amber-50 text-left transition-colors"
                   >
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarFallback className="text-xs font-bold text-white bg-slate-400">
-                        {getInitials(emp.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
-                      <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
-                    </div>
-                    {selectedEmployee?.id === emp.id && (
-                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{color: "#F8B137"}} />
-                    )}
+                   <Avatar className="h-8 w-8 flex-shrink-0">
+                     <AvatarFallback className="text-xs font-bold text-white bg-slate-400">
+                       {getInitials(emp.full_name)}
+                     </AvatarFallback>
+                   </Avatar>
+                   <div className="min-w-0 flex-1">
+                     <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
+                     <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
+                   </div>
+                   {evaluatedIds.has(emp.id) && (
+                     <CheckCircle className="w-4 h-4 flex-shrink-0 text-emerald-500" title="Já avaliado" />
+                   )}
+                   {selectedEmployee?.id === emp.id && (
+                     <CheckCircle className="w-4 h-4 flex-shrink-0" style={{color: "#F8B137"}} />
+                   )}
                   </button>
                 ))
               }

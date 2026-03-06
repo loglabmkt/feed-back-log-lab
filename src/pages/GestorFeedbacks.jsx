@@ -55,8 +55,9 @@ export default function GestorFeedbacks() {
       const allTemplates = await base44.entities.FeedbackTemplate.filter({ is_active: true });
       setTemplates(allTemplates);
 
-      // Buscar todos os colaboradores ativos
+      // Buscar apenas o time do gestor
       const allColaboradores = await base44.entities.Colaborador.filter({
+        manager_id: gestorData.id,
         status: 'active'
       });
       setColaboradores(allColaboradores);

@@ -339,6 +339,14 @@ export default function Gestores() {
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(manager)}>
                       <Pencil className="w-4 h-4" />
                     </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => setDeletingManager(manager)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>

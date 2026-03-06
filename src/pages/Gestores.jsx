@@ -65,8 +65,7 @@ export default function Gestores() {
       setAllUsers(colaboradores);
       setManagers(gestores);
       setCompanies(companiesData);
-      // Guardar todos os Users para busca no modal
-      setAllUsers(prev => ({ colaboradores, users: usersData }));
+      setAllSystemUsers(usersData);
     } catch (e) {
       console.error(e);
     } finally {

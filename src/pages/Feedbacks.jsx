@@ -40,6 +40,14 @@ export default function Feedbacks() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Estado para disparar QS-45 para Gestor/Colaborador
+  const [dispatchTemplate, setDispatchTemplate] = useState(null);
+  const [gestores, setGestores] = useState([]);
+  const [colaboradores, setColaboradores] = useState([]);
+  const [dispatchForm, setDispatchForm] = useState({ gestor_id: '', colaborador_id: '', feedback_date: new Date().toISOString().split('T')[0] });
+  const [dispatching, setDispatching] = useState(false);
+  const [dispatchError, setDispatchError] = useState("");
+
   useEffect(() => {
     loadData();
   }, []);

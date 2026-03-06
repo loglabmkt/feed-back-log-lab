@@ -38,10 +38,16 @@ export default function Painel() {
   }, []);
 
   const loadData = async () => {
+    // Verificar autenticação ANTES de qualquer coisa
+    const isAuthenticated = await base44.auth.isAuthenticated();
+    if (!isAuthenticated) {
+      base44.auth.redirectToLogin('/painel');
+      return;
+    }
+
     try {
       const currentUser = await base44.auth.me();
       
-      // Verificar se o usuário está autenticado via Base44
       if (!currentUser) {
         base44.auth.redirectToLogin('/painel');
         return;

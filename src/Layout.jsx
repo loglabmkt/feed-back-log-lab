@@ -41,7 +41,8 @@ export default function Layout({ children, currentPageName }) {
     '/painelgestor',
     '/gestorfeedbacks',
     '/gerenciarfeedback',
-    '/avaliacaotrimestral'
+    '/avaliacaotrimestral',
+    '/avaliacaoexperiencia45'
   ];
   
   // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)

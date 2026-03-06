@@ -35,11 +35,13 @@ export default function PainelGestor() {
       if (!session) return;
 
       const gestorData = JSON.parse(session);
-      const allFeedbacks = await base44.entities.FeedbackRecord.filter({
-        manager_id: gestorData.id
-      });
+      const [allFeedbacks, team] = await Promise.all([
+        base44.entities.FeedbackRecord.filter({ manager_id: gestorData.id }),
+        base44.entities.Colaborador.filter({ manager_id: gestorData.id, status: "active" })
+      ]);
       
       setFeedbacks(allFeedbacks);
+      setTeamCount(team.length);
     } catch (e) {
       console.error(e);
     } finally {

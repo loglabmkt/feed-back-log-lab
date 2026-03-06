@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import QS45Content from "@/components/avaliacao/QS45Content";
 import { 
   Mail, 
   CheckCircle, 

@@ -48,16 +48,14 @@ export default function Colaboradores() {
 
   const loadData = async () => {
     try {
-      const [colaboradores, users, companiesData] = await Promise.all([
+      const [colaboradores, gestores, companiesData] = await Promise.all([
         base44.entities.Colaborador.list(),
-        base44.entities.User.list(),
+        base44.entities.Gestor.list(),
         base44.entities.Company.list()
       ]);
 
-      const managerUsers = users.filter(u => u.role === 'admin');
-
       setEmployees(colaboradores);
-      setManagers(managerUsers);
+      setManagers(gestores);
       setCompanies(companiesData);
     } catch (e) {
       console.error(e);

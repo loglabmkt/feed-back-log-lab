@@ -96,9 +96,8 @@ export default function Relatorios() {
     filteredUsers = filteredUsers.filter(u => u.manager_id === selectedManager);
   }
 
-  // Só considera "em risco" se houver feedbacks no sistema E o usuário não tiver feedback recente
-  const usersAtRisk = filteredFeedbacks.length === 0 ? [] : filteredUsers.filter(u => {
-    if (!u.last_feedback_date) return false;
+  const usersAtRisk = filteredUsers.filter(u => {
+    if (!u.last_feedback_date) return true;
     const daysSince = differenceInDays(new Date(), new Date(u.last_feedback_date));
     return daysSince > 90;
   });
@@ -128,8 +127,7 @@ export default function Relatorios() {
     complianceRate
   };
 
-  // Só calcula aderência se houver feedbacks no sistema
-  const managerAdherence = filteredFeedbacks.length === 0 ? [] : managers.map(manager => {
+  const managerAdherence = managers.map(manager => {
     const teamMembers = filteredUsers.filter(u => u.manager_id === manager.id);
     const teamFeedbacks = filteredFeedbacks.filter(f => f.manager_id === manager.id);
     const teamWithFeedback = teamMembers.filter(member => {
@@ -150,7 +148,7 @@ export default function Relatorios() {
       adherence: adherenceRate,
       atRisk: teamMembers.length - teamWithFeedback.length
     };
-  }).filter(m => m.team > 0 && m.feedbacks > 0);
+  }).filter(m => m.team > 0);
 
   const periodMonths = parseInt(period);
   const monthlyData = [];

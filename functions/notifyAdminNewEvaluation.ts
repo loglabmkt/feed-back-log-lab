@@ -11,13 +11,14 @@ const ADMIN_EMAILS = [
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { managerName, employeeName } = await req.json();
+    const { managerName, managerEmail, employeeName } = await req.json();
 
     if (!managerName || !employeeName) {
       return Response.json({ error: 'managerName e employeeName são obrigatórios' }, { status: 400 });
     }
 
-    const emailPromises = ADMIN_EMAILS.map(email =>
+    // E-mail para os admins
+    const adminEmailPromises = ADMIN_EMAILS.map(email =>
       resend.emails.send({
         from: 'noreply@loglabdigital.com.br',
         to: email,

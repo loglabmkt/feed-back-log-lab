@@ -287,7 +287,7 @@ export default function AvaliacaoExperiencia45() {
                   />
                 </div>
                 <Button type="button" variant="outline" onClick={() => { setModalSearch(""); setShowColabModal(true); }} className="flex-shrink-0 gap-2">
-                  <Users className="w-4 h-4" /> Ver todos
+                  <Users className="w-4 h-4" /> Meu Time
                 </Button>
               </div>
 

@@ -69,18 +69,30 @@ export default function AvaliacaoTrimestral() {
 
   useEffect(() => { checkAuth(); }, []);
 
+  const [evaluatedIds, setEvaluatedIds] = useState(new Set());
+
   const checkAuth = async () => {
     const session = localStorage.getItem("gestor_session");
     if (!session) { window.location.href = "/gestorlogin"; return; }
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
     try {
-      const [emps, all] = await Promise.all([
+      const [emps, feedbacks] = await Promise.all([
         base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),
-        base44.entities.Colaborador.filter({ status: "active" })
+        base44.entities.FeedbackRecord.filter({ manager_id: sessionData.id })
       ]);
       setEmployees(emps);
-      setAllColaboradores(all);
+      setAllColaboradores(emps); // Gestor só vê seu time
+
+      // Colaboradores já avaliados (trimestral ou 45d) com status concluído/assinado
+      const doneStatuses = ["PUBLICADO", "ASSINADO_COLABORADOR", "CONVERSA_REALIZADA", "EM_REVISAO_ADMIN", "APROVADO"];
+      const doneTypes = ["evaluation", "experience_45d"];
+      const evalDone = new Set(
+        feedbacks
+          .filter(f => doneTypes.includes(f.feedback_type) && doneStatuses.includes(f.workflow_status))
+          .map(f => f.employee_id)
+      );
+      setEvaluatedIds(evalDone);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };

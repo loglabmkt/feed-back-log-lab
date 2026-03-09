@@ -17,27 +17,27 @@ import { ptBR } from "date-fns/locale";
 
 
 const DEFAULT_ITEMS = [
-  { id: "e1",  label: "1 – Assimilação / Rapidez",          description: "Velocidade de aprendizado das rotinas, processos e ferramentas da função" },
-  { id: "e2",  label: "2 – Cooperação",                      description: "Disposição para colaborar com colegas, líderes e demais áreas" },
-  { id: "e3",  label: "3 – Empenho / Entusiasmo",            description: "Motivação e energia aplicadas nas atividades do dia a dia" },
-  { id: "e4",  label: "4 – Qualidade",                       description: "Padrão de qualidade das entregas e atenção aos detalhes" },
-  { id: "e5",  label: "5 – Articulação / Equipe",            description: "Capacidade de se integrar e comunicar bem dentro da equipe" },
-  { id: "e6",  label: "6 – Superação de Obstáculos",         description: "Resiliência e criatividade diante de dificuldades e imprevistos" },
-  { id: "e7",  label: "7 – Conclusividade",                  description: "Capacidade de concluir tarefas e entregar resultados completos" },
-  { id: "e8",  label: "8 – Agregação de Valor",              description: "Contribuição efetiva para o time além do escopo básico da função" },
-  { id: "e9",  label: "9 – Conhecimento Técnico",            description: "Domínio técnico exigido para a função no período de experiência" },
-  { id: "e10", label: "10 – Geração de Soluções",            description: "Proatividade na identificação e proposição de soluções práticas" },
-  { id: "e11", label: "11 – Organização / Gestão",           description: "Organização do trabalho, priorização e gestão do próprio tempo" },
-  { id: "e12", label: "12 – Auto-motivação",                 description: "Iniciativa e autonomia sem necessidade de supervisão constante" },
-  { id: "e13", label: "13 – Pontualidade / Compromissos",    description: "Cumprimento de horários, prazos e compromissos assumidos" },
+  { id: "e1",  label: "1",  description: "Assimilação do escopo das atividades contratadas com facilidade e rapidez." },
+  { id: "e2",  label: "2",  description: "Atuação colaborativa com a equipe, sem necessidade de solicitação expressa." },
+  { id: "e3",  label: "3",  description: "Empenho, envolvimento e comprometimento na execução dos serviços." },
+  { id: "e4",  label: "4",  description: "Elevado nível de qualidade na entrega dos resultados acordados." },
+  { id: "e5",  label: "5",  description: "Articulação com outros prestadores, empresas do ecossistema e parceiros." },
+  { id: "e6",  label: "6",  description: "Superação de obstáculos, identificando alternativas de solução." },
+  { id: "e7",  label: "7",  description: "Conclusividade e comprometimento com os resultados finais." },
+  { id: "e8",  label: "8",  description: "Atuação que agrega valor ao projeto e às entregas ao cliente." },
+  { id: "e9",  label: "9",  description: "Conhecimento técnico adequado e busca por atualização." },
+  { id: "e10", label: "10", description: "Agilidade na identificação e geração de soluções para problemas." },
+  { id: "e11", label: "11", description: "Organização das atividades e gestão de documentos/informações." },
+  { id: "e12", label: "12", description: "Iniciativa e motivação para entregar acima do mínimo esperado." },
+  { id: "e13", label: "13", description: "Cumprimento de prazos acordados e compromissos assumidos." },
 ];
 
 const SCALE = [
-  { value: 4,    label: "4",  description: "Acima do esperado",         cls: "border-emerald-500 bg-emerald-50 text-emerald-700" },
-  { value: 3,    label: "3",  description: "Dentro do esperado",        cls: "border-blue-500 bg-blue-50 text-blue-700" },
-  { value: 2,    label: "2",  description: "Abaixo do esperado",        cls: "border-amber-500 bg-amber-50 text-amber-700" },
-  { value: 1,    label: "1",  description: "Muito abaixo",              cls: "border-red-500 bg-red-50 text-red-700" },
-  { value: "NO", label: "NO", description: "Não Observado",             cls: "border-slate-400 bg-slate-100 text-slate-600" },
+  { value: 4,    label: "4",  description: "Referência / Supera",   cls: "border-emerald-500 bg-emerald-50 text-emerald-700" },
+  { value: 3,    label: "3",  description: "Entrega o esperado",    cls: "border-blue-500 bg-blue-50 text-blue-700" },
+  { value: 2,    label: "2",  description: "Em desenvolvimento",    cls: "border-amber-500 bg-amber-50 text-amber-700" },
+  { value: 1,    label: "1",  description: "Crítico",               cls: "border-red-500 bg-red-50 text-red-700" },
+  { value: "NO", label: "NO", description: "Não Observado",         cls: "border-slate-400 bg-slate-100 text-slate-600" },
 ];
 
 function ItemRow({ item, score, onScoreChange, hasError }) {

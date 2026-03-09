@@ -337,6 +337,7 @@ export default function Layout({ children, currentPageName }) {
               {currentPageName === 'RevisarFeedback' && 'Revisar Feedback'}
               {currentPageName === 'VisualizarFeedback' && 'Visualizar Feedback'}
               {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
+              {currentPageName === 'AvaliacaoQualidadeServico90' && 'Avaliação de Qualidade de Serviço 90 Dias'}
             </h2>
           </div>
         </header>

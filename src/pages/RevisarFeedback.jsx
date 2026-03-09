@@ -286,6 +286,9 @@ export default function RevisarFeedback() {
   const [approving, setApproving] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [error, setError] = useState("");
+  const [showCalibragem, setShowCalibragem] = useState(false);
+  const [calibragemText, setCalibragemText] = useState("");
+  const [savingCalibragem, setSavingCalibragem] = useState(false);
 
   useEffect(() => {
     loadData();

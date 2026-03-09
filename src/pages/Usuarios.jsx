@@ -107,14 +107,16 @@ export default function Usuarios() {
 
   const handleEdit = (user) => {
     setEditingUser(user);
+    const isGestor = gestores.some(g => g.email?.toLowerCase() === user.email?.toLowerCase());
     setFormData({
       manager_id: user.manager_id || "",
       department: user.department || "",
       position: user.position || "",
-      admission_date: user.admission_date ? format(new Date(user.admission_date), 'yyyy-MM-dd') : "", // Format for input type="date"
-      status: user.status || "active"
+      admission_date: user.admission_date ? format(new Date(user.admission_date), 'yyyy-MM-dd') : "",
+      status: user.status || "active",
+      is_manager: isGestor
     });
-    setError(""); // Clear previous errors
+    setError("");
     setShowDialog(true);
   };
 

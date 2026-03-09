@@ -212,32 +212,36 @@ export default function ValidarFeedback() {
           </CardHeader>
         </Card>
 
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6 space-y-6">
-            <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
-              <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
-              <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
-              </div>
-            </div>
-
-            {feedback.action_plan && (
+        {feedback.feedback_type === 'experience_90d' ? (
+          <Qs90Content fb={feedback} isInternal={false} />
+        ) : (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-6 space-y-6">
               <div>
-                <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
-                <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
+                <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
+
+              <div>
+                <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
+                <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
+                </div>
+              </div>
+
+              {feedback.action_plan && (
+                <div>
+                  <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
+                  <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="border-0 shadow-sm" style={{borderLeft: '4px solid #F8B137'}}>
           <CardHeader>

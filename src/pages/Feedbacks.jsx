@@ -203,9 +203,36 @@ export default function Feedbacks() {
                       <h3 className="text-lg font-semibold text-slate-900">{template.title}</h3>
                       {getTypeBadge(template.feedback_type)}
                     </div>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-500 mb-3">
                       {template.checklist_questions?.length || 0} perguntas no checklist
                     </p>
+                    {isAdmin && (() => {
+                      const stats = getUsageStats(template.id);
+                      return stats.total > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600 font-medium">
+                            Total: {stats.total}
+                          </span>
+                          {stats.pending > 0 && (
+                            <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-medium">
+                              Pendente: {stats.pending}
+                            </span>
+                          )}
+                          {stats.inReview > 0 && (
+                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+                              Revisão: {stats.inReview}
+                            </span>
+                          )}
+                          {stats.done > 0 && (
+                            <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 font-medium">
+                              Concluído: {stats.done}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">Nenhum uso registrado</span>
+                      );
+                    })()}
                   </div>
 
                   {isAdmin && (

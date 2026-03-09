@@ -212,7 +212,7 @@ export default function AvaliacaoTrimestral() {
           </button>
           <div className="flex-1 min-w-0">
             <h1 className="text-lg font-bold text-slate-900 leading-tight">Avaliação de Desempenho Trimestral</h1>
-            <p className="text-xs text-slate-400">AVAL_TRIMESTRAL_V1 · Escala par 1–4 · Soma 10–40 pontos</p>
+            <p className="text-xs text-slate-400">LOGLAB_NS_TRIMESTRAL · Escala par 1–4 (sem ponto neutro) · Soma simples 10–40 pontos</p>
           </div>
           {filledCount > 0 && (
             <div className="flex-shrink-0 text-right">

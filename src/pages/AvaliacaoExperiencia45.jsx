@@ -224,8 +224,8 @@ export default function AvaliacaoExperiencia45() {
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Experiência – 45 Dias</h1>
-            <p className="text-xs text-slate-400">EXP_45_DIAS_V1 · Escala 4/3/2/1/NO · 13 itens</p>
+            <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Qualidade de Serviço — 45 Dias</h1>
+            <p className="text-xs text-slate-400">Log Lab Digital · Escala: 4=Referência · 3=Entrega o esperado · 2=Em desenvolvimento · 1=Crítico · NO=Não Observado</p>
           </div>
           {totalFilled > 0 && (
             <div className="flex-shrink-0 text-right">
@@ -341,7 +341,7 @@ export default function AvaliacaoExperiencia45() {
               <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm" style={{background: "#F8B137", color: "#14141E"}}>13</div>
               <div>
                 <CardTitle className="text-base font-bold text-slate-900">Itens de Avaliação</CardTitle>
-                <p className="text-sm text-slate-500">Escala: 4 = Acima do esperado · 3 = Dentro · 2 = Abaixo · 1 = Muito abaixo · NO = Não Observado</p>
+                <p className="text-sm text-slate-500">Escala: 4 = Referência/Supera · 3 = Entrega o esperado · 2 = Em desenvolvimento · 1 = Crítico · NO = Não Observado</p>
               </div>
               <div className="ml-auto text-right">
                 <p className="text-xs text-slate-400">Preenchidos</p>

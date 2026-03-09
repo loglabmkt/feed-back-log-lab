@@ -43,7 +43,8 @@ export default function Layout({ children, currentPageName }) {
     '/gerenciarfeedback',
     '/avaliacaotrimestral',
     '/avaliacaoexperiencia45',
-    '/avaliacaoqualidadeservico90'
+    '/avaliacaoqualidadeservico90',
+    '/registro11'
   ];
   
   // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)
@@ -338,6 +339,7 @@ export default function Layout({ children, currentPageName }) {
               {currentPageName === 'VisualizarFeedback' && 'Visualizar Feedback'}
               {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
               {currentPageName === 'AvaliacaoQualidadeServico90' && 'Avaliação de Qualidade de Serviço 90 Dias'}
+              {currentPageName === 'Registro11' && 'Registro de 1:1'}
             </h2>
           </div>
         </header>

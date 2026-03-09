@@ -192,6 +192,12 @@ export default function AvaliacaoQualidadeServico90() {
 
   const getInitials = (name) => name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "?";
 
+  const handleMarkGuiaAsRead = () => {
+    localStorage.setItem(GUIA_READ_KEY_90, "true");
+    setShowGuia(false);
+    setIsFirstTimeGuia(false);
+  };
+
   if (saved) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">

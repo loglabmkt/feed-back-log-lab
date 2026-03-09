@@ -190,7 +190,7 @@ export default function CriarFeedback() {
           </CardContent>
         </Card>
 
-        {formData.feedback_type !== "experience_45d" && <Card className="border-0 shadow-sm">
+        {formData.feedback_type !== "experience_45d" && (<Card className="border-0 shadow-sm">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>

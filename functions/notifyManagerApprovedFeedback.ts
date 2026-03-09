@@ -49,10 +49,10 @@ Deno.serve(async (req) => {
             </div>
 
             <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-              <p style="margin: 0; font-size: 16px;">Olá, <strong>${managerName}</strong>,</p>
+              <p style="margin: 0; font-size: 16px;">Olá, <strong>${manager_name}</strong>,</p>
               
               <p style="margin: 15px 0; font-size: 15px;">
-                A avaliação de nível de serviço referente ao prestador <strong>${providerName}</strong> foi validada internamente pela contratante.
+                A avaliação de nível de serviço referente ao prestador <strong>${employee_name}</strong> foi validada internamente pela contratante.
               </p>
 
               <p style="margin: 15px 0; font-size: 15px; font-weight: 600; color: #F8B137;">

@@ -30,6 +30,7 @@ import {
 export default function Feedbacks() {
   const [currentUser, setCurrentUser] = useState(null);
   const [templates, setTemplates] = useState([]);
+  const [feedbackRecords, setFeedbackRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState(null);
@@ -44,13 +45,25 @@ export default function Feedbacks() {
       const user = await base44.auth.me();
       setCurrentUser(user);
 
-      const allTemplates = await base44.entities.FeedbackTemplate.list('-created_date', 100);
+      const [allTemplates, records] = await Promise.all([
+        base44.entities.FeedbackTemplate.list('-created_date', 100),
+        base44.entities.FeedbackRecord.list('-created_date', 500)
+      ]);
       setTemplates(allTemplates);
+      setFeedbackRecords(records);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getUsageStats = (templateId) => {
+    const records = feedbackRecords.filter(r => r.template_id === templateId);
+    const pending = records.filter(r => ["DISPONIVEL_PARA_GESTOR", "EM_REVISAO_ADMIN"].includes(r.workflow_status)).length;
+    const inReview = records.filter(r => ["APROVADO", "CONVERSA_AGENDADA", "CONVERSA_REALIZADA"].includes(r.workflow_status)).length;
+    const done = records.filter(r => ["PUBLICADO", "ASSINADO_COLABORADOR"].includes(r.workflow_status)).length;
+    return { total: records.length, pending, inReview, done };
   };
 
   const handleToggleActive = async (template) => {

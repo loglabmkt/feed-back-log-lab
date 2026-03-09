@@ -189,6 +189,12 @@ export default function CriarFeedback() {
                 <span>Os 13 itens de avaliação serão criados automaticamente com os critérios padrão. Você poderá editá-los depois em "Editar".</span>
               </div>
               )}
+              {formData.feedback_type === "experience_90d" && (
+              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+                <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span><strong>Instrumento Decisório.</strong> Contém os 13 itens do instrumento LOGLAB_QS_90, Bloco 14 (Comentários – uso interno) e Bloco 15 (Decisão Contratual). Blocos 14 e 15 são bloqueados para o Prestador de Serviços.</span>
+              </div>
+              )}
             </div>
           </CardContent>
         </Card>

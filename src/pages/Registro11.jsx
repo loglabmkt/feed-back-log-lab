@@ -125,8 +125,24 @@ export default function Registro11() {
             <h1 className="text-xl font-bold text-slate-900 leading-tight">Registro de 1:1 — Conversa de Alinhamento</h1>
             <p className="text-xs text-slate-400">Log Lab Digital · Bimestral · Qualitativo · LGPD Compliant</p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowGuia(true)}
+            className="flex-shrink-0 gap-2 text-xs"
+          >
+            <BookOpen className="w-4 h-4" style={{ color: "#F8B137" }} />
+            Guia do Gestor
+          </Button>
         </div>
       </div>
+
+      <GuiaGestor11
+        open={showGuia}
+        onClose={() => setShowGuia(false)}
+        onMarkAsRead={() => { setGuiaRead(true); setShowGuia(false); }}
+        isFirstTime={!guiaRead}
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
 

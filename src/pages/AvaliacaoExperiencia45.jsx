@@ -252,6 +252,16 @@ export default function AvaliacaoExperiencia45() {
             <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Qualidade de Serviço — 45 Dias</h1>
             <p className="text-xs text-slate-400">Log Lab Digital · Escala: 4=Referência · 3=Entrega o esperado · 2=Em desenvolvimento · 1=Crítico · NO=Não Observado</p>
           </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => { setIsFirstTimeGuia(false); setShowGuia(true); }}
+            className="flex-shrink-0 gap-1.5 font-bold text-xs shadow-sm"
+            style={{ background: "#F8B137", color: "#14141E" }}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Guia do Gestor
+          </Button>
           {totalFilled > 0 && (
             <div className="flex-shrink-0 text-right">
               <p className="text-xs text-slate-500">{totalFilled}/13 itens</p>

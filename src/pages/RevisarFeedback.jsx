@@ -460,76 +460,164 @@ export default function RevisarFeedback() {
 
       } else if (feedback.feedback_type === 'experience_90d') {
         // ── Avaliação QS 90 Dias ───────────────────────────────────────────────
-        const QS90_SL = { 4: "Acima do esperado", 3: "Dentro do esperado", 2: "Abaixo do esperado", 1: "Muito abaixo", "NO": "Não Observado" };
+        const QS90_SL = { 4: "Referência / Supera", 3: "Entrega o esperado", 2: "Em desenvolvimento", 1: "Crítico", "NO": "Não Observado" };
         const QS90_ITEMS = [
-          { id: "e1",  label: "1 – Assimilação / Rapidez" },
-          { id: "e2",  label: "2 – Cooperação" },
-          { id: "e3",  label: "3 – Empenho / Entusiasmo" },
-          { id: "e4",  label: "4 – Qualidade" },
-          { id: "e5",  label: "5 – Articulação / Equipe" },
-          { id: "e6",  label: "6 – Superação de Obstáculos" },
-          { id: "e7",  label: "7 – Conclusividade" },
-          { id: "e8",  label: "8 – Agregação de Valor" },
-          { id: "e9",  label: "9 – Conhecimento Técnico" },
-          { id: "e10", label: "10 – Geração de Soluções" },
-          { id: "e11", label: "11 – Organização / Gestão" },
-          { id: "e12", label: "12 – Auto-motivação" },
-          { id: "e13", label: "13 – Pontualidade / Compromissos" },
+          { id: "q1",  num: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
+          { id: "q2",  num: "2",  description: "Atua de forma colaborativa com outras empresas e pares, contribuindo sem necessidade de solicitação expressa." },
+          { id: "q3",  num: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
+          { id: "q4",  num: "4",  description: "Apresenta elevado nível de qualidade na execução e nos resultados das entregas." },
+          { id: "q5",  num: "5",  description: "Articula-se com facilidade com membros de sua equipe, demais áreas e parceiros externos para gerar resultados." },
+          { id: "q6",  num: "6",  description: "Supera obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
+          { id: "q7",  num: "7",  description: "Conduz atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
+          { id: "q8",  num: "8",  description: "A atuação agrega valor ao projeto e às entregas da equipe." },
+          { id: "q9",  num: "9",  description: "A empresa demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
+          { id: "q10", num: "10", description: "O responsável técnico é ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
+          { id: "q11", num: "11", description: "A empresa organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
+          { id: "q12", num: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
+          { id: "q13", num: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
         ];
-        const QS90_DECISION = { continuidade: "Continuidade do Contrato", continuidade_melhoria: "Continuidade com Plano de Melhoria", encerramento: "ENCERRAMENTO CONTRATUAL" };
+        const QS90_DECISION_LABELS = {
+          continuidade: "Continuidade contratual recomendada.",
+          continuidade_melhoria: "Continuidade contratual recomendada com plano de melhoria de serviço acordado.",
+          encerramento: "Encerramento contratual recomendado."
+        };
         const scores90 = feedback.qs90_scores || {};
         const avg90 = feedback.qs90_average;
 
-        checkPage(20);
+        // Resultado
+        checkPage(24);
         doc.setFillColor(248, 177, 54);
         doc.rect(margin, y - 1, contentW, 0.5, "F");
         y += 4;
-        addText("RESULTADO DA AVALIAÇÃO QS 90 DIAS", margin, 9, "bold", [100, 100, 120]);
+        addText("RESULTADO — AVALIAÇÃO DE QUALIDADE DE SERVIÇO 90 DIAS", margin, 9, "bold", [100, 100, 120]);
         y += 1;
-        addText(`Média: ${avg90 ? Number(avg90).toFixed(2) : "—"}/4,00   |   Itens: ${Object.keys(scores90).length}/13`, margin, 11, "bold", [20, 20, 30]);
-        if (feedback.qs90_decision) {
-          const decisionColor = feedback.qs90_decision === 'encerramento' ? [180, 30, 30] : [20, 20, 30];
-          addText(`Decisão: ${QS90_DECISION[feedback.qs90_decision] || feedback.qs90_decision}`, margin, 10, "bold", decisionColor);
-        }
-        y += 4;
 
+        // Caixas de resultado
+        doc.setFillColor(255, 251, 235);
+        doc.roundedRect(margin, y - 1, 65, 18, 2, 2, "F");
+        doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.setTextColor(180, 120, 0);
+        doc.text("Média Aritmética", margin + 3, y + 4);
+        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(248, 177, 54);
+        doc.text(`${avg90 ? Number(avg90).toFixed(2) : "—"}`, margin + 3, y + 12);
+        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(180, 180, 180);
+        doc.text("/4,00", margin + 3 + (avg90 ? 16 : 10), y + 12);
+
+        doc.setFillColor(248, 248, 250);
+        doc.roundedRect(margin + 70, y - 1, 55, 18, 2, 2, "F");
+        doc.setFontSize(8); doc.setFont("helvetica", "normal"); doc.setTextColor(100, 100, 120);
+        doc.text("Itens Avaliados", margin + 73, y + 4);
+        doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+        doc.text(`${Object.keys(scores90).length}`, margin + 73, y + 12);
+        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(180, 180, 180);
+        doc.text("/13", margin + 73 + 8, y + 12);
+        y += 23;
+
+        doc.setFontSize(7); doc.setFont("helvetica", "italic"); doc.setTextColor(160, 160, 160);
+        doc.text('* Fórmula: Σ notas ÷ (13 − contagem de "Não Observado")', margin, y);
+        y += 8;
+
+        // Cabeçalho Itens
         checkPage(20);
         doc.setFillColor(20, 20, 30);
-        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.rect(margin, y - 1, contentW, 9, "F");
         doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(249, 177, 54);
-        doc.text("ITENS DE AVALIAÇÃO — 90 DIAS", margin + 3, y + 4);
-        y += 12;
+        doc.text("ITENS DE AVALIAÇÃO — 90 DIAS", margin + 3, y + 4.5);
+        y += 13;
 
         QS90_ITEMS.forEach(item => {
-          checkPage(14);
           const score = scores90[item.id];
-          const scoreColorsQS = { 4: [209,250,229], 3: [219,234,254], 2: [255,251,235], 1: [254,226,226], "NO": [245,245,245] };
-          const sc = scoreColorsQS[score] || [245,245,245];
-          doc.setFillColor(...sc);
-          doc.roundedRect(margin, y - 4, contentW, 10, 1, 1, "F");
-          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
-          doc.text(item.label, margin + 3, y + 1);
-          if (score !== undefined) {
-            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
-            doc.text(`${score} – ${QS90_SL[score] || ""}`, pageW - margin - 3, y + 1, { align: "right" });
+          const descLines = doc.splitTextToSize(`${item.num}. ${item.description}`, contentW - 55);
+          const rowH = Math.max(12, descLines.length * 5 + 6);
+          checkPage(rowH + 3);
+
+          const scoreColorsQS = { 4: [209,250,229], 3: [219,234,254], 2: [255,251,235], 1: [254,226,226], "NO": [248,248,248] };
+          doc.setFillColor(255, 255, 255);
+          doc.roundedRect(margin, y - 3, contentW, rowH, 1, 1, "F");
+          doc.setDrawColor(230, 230, 235);
+          doc.roundedRect(margin, y - 3, contentW, rowH, 1, 1, "S");
+
+          // Descrição
+          doc.setFontSize(8.5); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+          doc.text(descLines[0], margin + 3, y + 2);
+          if (descLines.length > 1) {
+            doc.setFont("helvetica", "normal");
+            descLines.slice(1).forEach((line, li) => {
+              doc.text(line, margin + 3, y + 2 + (li + 1) * 5);
+            });
           }
-          y += 11;
+
+          // Badge nota
+          if (score !== undefined) {
+            const sc = scoreColorsQS[score] || [248, 248, 248];
+            const badgeLabel = `${score} – ${QS90_SL[score] || ""}`;
+            const badgeW = 48;
+            const badgeX = pageW - margin - badgeW;
+            const badgeY = y - 1 + (rowH - 8) / 2;
+            doc.setFillColor(...sc);
+            doc.roundedRect(badgeX, badgeY, badgeW, 8, 3, 3, "F");
+            doc.setFontSize(7); doc.setFont("helvetica", "bold");
+            const textColors = { 4: [5,100,50], 3: [30,60,150], 2: [130,80,0], 1: [150,20,20], "NO": [80,80,90] };
+            const tc = textColors[score] || [60,60,60];
+            doc.setTextColor(...tc);
+            doc.text(badgeLabel, badgeX + badgeW / 2, badgeY + 5.5, { align: "center" });
+          }
+          y += rowH + 2;
         });
 
-        if (feedback.qs90_strengths || feedback.qs90_improvements || feedback.qs90_decision_justification) {
-          y += 2;
-          [[feedback.qs90_strengths, "Pontos Fortes", [209,250,229]], [feedback.qs90_improvements, "Pontos de Melhoria", [255,251,235]], [feedback.qs90_decision_justification, "Justificativa da Decisão", [219,234,254]]].forEach(([val, lbl, bg]) => {
+        // Bloco 14 — Comentários Qualitativos
+        if (feedback.qs90_strengths || feedback.qs90_improvements) {
+          y += 4;
+          checkPage(20);
+          doc.setFillColor(99, 102, 241);
+          doc.rect(margin, y - 1, 3, 14, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(99, 102, 241);
+          doc.text("BLOCO 14 – COMENTÁRIOS QUALITATIVOS (USO INTERNO)", margin + 6, y + 5);
+          y += 14;
+
+          [[feedback.qs90_strengths, "Pontos Fortes Observados nas Entregas", [209,250,229]], [feedback.qs90_improvements, "Pontos de Melhoria na Qualidade do Serviço", [255,251,235]]].forEach(([val, lbl, bg]) => {
             if (!val) return;
             checkPage(20);
-            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 100, 120);
-            doc.text(lbl.toUpperCase(), margin, y); y += 4;
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+            doc.text(lbl, margin, y); y += 5;
             const lines = doc.splitTextToSize(val, contentW - 6);
             doc.setFillColor(...bg);
-            doc.roundedRect(margin, y - 2, contentW, lines.length * 5 + 4, 1, 1, "F");
+            doc.roundedRect(margin, y - 2, contentW, lines.length * 5 + 6, 2, 2, "F");
             doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
-            doc.text(lines, margin + 3, y + 2);
-            y += lines.length * 5 + 8;
+            doc.text(lines, margin + 3, y + 3);
+            y += lines.length * 5 + 10;
           });
+        }
+
+        // Bloco 15 — Decisão Contratual
+        if (feedback.qs90_decision) {
+          y += 2;
+          checkPage(20);
+          const isEnc = feedback.qs90_decision === 'encerramento';
+          doc.setFillColor(isEnc ? 220 : 248, isEnc ? 38 : 177, isEnc ? 38 : 54);
+          doc.rect(margin, y - 1, 3, 14, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(isEnc ? 180 : 80, isEnc ? 30 : 80, isEnc ? 30 : 0);
+          doc.text("BLOCO 15 – DECISÃO CONTRATUAL (USO INTERNO)", margin + 6, y + 5);
+          y += 14;
+
+          const decisionText = QS90_DECISION_LABELS[feedback.qs90_decision] || feedback.qs90_decision;
+          const decLines = doc.splitTextToSize(decisionText, contentW - 6);
+          doc.setFillColor(isEnc ? 254 : 255, isEnc ? 226 : 251, isEnc ? 226 : 235);
+          doc.roundedRect(margin, y - 2, contentW, decLines.length * 5 + 6, 2, 2, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(isEnc ? 150 : 120, isEnc ? 20 : 80, isEnc ? 20 : 0);
+          doc.text(decLines, margin + 3, y + 3);
+          y += decLines.length * 5 + 10;
+
+          if (feedback.qs90_decision_justification) {
+            checkPage(20);
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+            doc.text("Justificativa da Decisão Contratual", margin, y); y += 5;
+            const jLines = doc.splitTextToSize(feedback.qs90_decision_justification, contentW - 6);
+            doc.setFillColor(245, 245, 250);
+            doc.roundedRect(margin, y - 2, contentW, jLines.length * 5 + 6, 2, 2, "F");
+            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+            doc.text(jLines, margin + 3, y + 3);
+            y += jLines.length * 5 + 8;
+          }
         }
 
       } else if (feedback.feedback_type === 'one_on_one') {

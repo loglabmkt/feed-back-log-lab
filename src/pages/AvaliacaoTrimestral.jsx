@@ -268,6 +268,22 @@ export default function AvaliacaoTrimestral() {
               </div>
             </div>
 
+            {/* Função/Serviço Contratado */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Função / Serviço Contratado *</label>
+              <Input
+                value={serviceFunction}
+                onChange={(e) => setServiceFunction(e.target.value)}
+                placeholder="Ex: Desenvolvedor Full-Stack, Analista de Suporte..."
+                className={submitAttempted && !serviceFunction.trim() ? "border-red-400" : ""}
+              />
+              {submitAttempted && !serviceFunction.trim() && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" /> Campo obrigatório.
+                </p>
+              )}
+            </div>
+
             {/* Date (auto) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">

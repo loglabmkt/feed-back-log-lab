@@ -648,13 +648,30 @@ export default function Usuarios() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right flex items-center justify-end gap-1">
+                <Shield className="w-3.5 h-3.5" />
+                Gestor
+              </Label>
+              <div className="col-span-3 flex items-center gap-3">
+                <Switch
+                  checked={formData.is_manager}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_manager: checked })}
+                />
+                <span className="text-sm text-slate-600">
+                  {formData.is_manager ? "Habilitado como Gestor" : "Não é Gestor"}
+                </span>
+              </div>
+            </div>
+
             {error && <p className="text-red-500 text-sm col-span-full">{error}</p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button onClick={handleSave} disabled={saving} style={{background: '#F8B137', color: '#14141E'}}>
               {saving ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>

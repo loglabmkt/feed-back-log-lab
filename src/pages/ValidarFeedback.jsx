@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { CheckCircle, Shield, AlertCircle, Send } from "lucide-react";
+import Qs90Content from "@/components/feedback/Qs90Content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

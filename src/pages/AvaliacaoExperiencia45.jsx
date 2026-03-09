@@ -106,6 +106,8 @@ export default function AvaliacaoExperiencia45() {
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState(null);
   const [items, setItems] = useState(DEFAULT_ITEMS);
+  const [showGuia, setShowGuia] = useState(false);
+  const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
 
   useEffect(() => { checkAuth(); }, []);
 

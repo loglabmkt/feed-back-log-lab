@@ -106,14 +106,20 @@ export default function CriarFeedback() {
     try {
       const currentUser = await base44.auth.me();
 
-      await base44.entities.FeedbackTemplate.create({
+      const payload = {
         title: formData.title,
         feedback_type: formData.feedback_type,
         checklist_questions: formData.checklist_questions,
         is_active: false,
         created_by_admin: currentUser.id
-      });
+      };
 
+      // Se for Avaliação 45 Dias, salva os 13 itens padrão editáveis
+      if (formData.feedback_type === "experience_45d") {
+        payload.exp45_items_config = DEFAULT_EXP45_ITEMS;
+      }
+
+      await base44.entities.FeedbackTemplate.create(payload);
       navigate(createPageUrl("Feedbacks"));
     } catch (e) {
       setError(e.message || "Erro ao criar feedback");

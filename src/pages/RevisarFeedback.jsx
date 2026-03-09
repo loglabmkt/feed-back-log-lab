@@ -1033,6 +1033,30 @@ export default function RevisarFeedback() {
         </Card>
       )}
 
+      {/* Bloco de Calibragem — aparece sempre que houver nota salva */}
+      {feedback.admin_director_notes && (
+        <Card className="border-0 shadow-sm" style={{borderLeft: '4px solid #8B5CF6', background: '#faf5ff'}}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2" style={{color: '#7C3AED'}}>
+              <SlidersHorizontal className="w-4 h-4" />
+              Calibragem do Administrador
+            </CardTitle>
+            <p className="text-xs text-purple-400">Comentário interno — visível para o gestor após aprovação</p>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 bg-white rounded-xl border border-purple-100 whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+              {feedback.admin_director_notes}
+            </div>
+            <button
+              onClick={() => { setCalibragemText(feedback.admin_director_notes); setShowCalibragem(true); }}
+              className="mt-2 text-xs text-purple-500 hover:text-purple-700 underline"
+            >
+              Editar comentário
+            </button>
+          </CardContent>
+        </Card>
+      )}
+
       {feedback.workflow_status === 'EM_REVISAO_ADMIN' ? (
         <>
           <Alert className="bg-blue-50 border-blue-200 mb-6">
@@ -1041,7 +1065,7 @@ export default function RevisarFeedback() {
             </AlertDescription>
           </Alert>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 flex-wrap">
             <Button
               variant="outline"
               onClick={handleGeneratePdf}
@@ -1050,6 +1074,14 @@ export default function RevisarFeedback() {
             >
               <FileDown className="w-4 h-4 mr-2" />
               {generatingPdf ? "Gerando PDF..." : "Gerar PDF"}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => { setCalibragemText(feedback.admin_director_notes || ""); setShowCalibragem(true); }}
+              className="font-semibold border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Calibragem
             </Button>
             <Button 
               onClick={handleApprove}
@@ -1076,7 +1108,7 @@ export default function RevisarFeedback() {
               <strong>Feedback em conformidade:</strong> Disponibilizado para o gestor enviar ao colaborador após conversa pessoalmente.
             </AlertDescription>
           </Alert>
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-3">
             <Button
               variant="outline"
               onClick={handleGeneratePdf}
@@ -1086,9 +1118,51 @@ export default function RevisarFeedback() {
               <FileDown className="w-4 h-4 mr-2" />
               {generatingPdf ? "Gerando PDF..." : "Gerar PDF"}
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => { setCalibragemText(feedback.admin_director_notes || ""); setShowCalibragem(true); }}
+              className="font-semibold border-purple-300 text-purple-700 hover:bg-purple-50"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Calibragem
+            </Button>
           </div>
         </>
       )}
+
+      {/* Dialog de Calibragem */}
+      <Dialog open={showCalibragem} onOpenChange={setShowCalibragem}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-purple-700">
+              <SlidersHorizontal className="w-5 h-5" />
+              Calibragem do Administrador
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-slate-500 mb-3">
+            Registre um comentário de calibragem sobre este feedback. Este comentário ficará visível para o gestor na linha do tempo após a aprovação.
+          </p>
+          <Textarea
+            value={calibragemText}
+            onChange={(e) => setCalibragemText(e.target.value)}
+            placeholder="Ex: Atenção ao peso das hard skills H3 e H4 em relação ao contexto do projeto atual. Considere reforçar o plano de ação para os próximos 30 dias..."
+            className="min-h-[130px] resize-none"
+            autoFocus
+          />
+          <div className="flex justify-end gap-3 mt-2">
+            <Button variant="outline" onClick={() => setShowCalibragem(false)}>Cancelar</Button>
+            <Button
+              onClick={handleSaveCalibragem}
+              disabled={savingCalibragem || !calibragemText.trim()}
+              style={{background: '#8B5CF6', color: 'white'}}
+              className="font-semibold"
+            >
+              <MessageSquareDiff className="w-4 h-4 mr-2" />
+              {savingCalibragem ? "Salvando..." : "Salvar Calibragem"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

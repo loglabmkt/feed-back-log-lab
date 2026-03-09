@@ -44,6 +44,8 @@ import { format, differenceInDays } from "date-fns";
 export default function Usuarios() {
   const [users, setUsers] = useState([]);
   const [managers, setManagers] = useState([]);
+  const [gestores, setGestores] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");

@@ -396,15 +396,15 @@ export default function AvaliacaoExperiencia45() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold text-slate-500 uppercase tracking-wide">
-              Seção 14 – Comentários Qualitativos
+              Seção 2 – Comentários Qualitativos (Uso Interno)
             </CardTitle>
-            <p className="text-sm text-slate-500">Campos obrigatórios. Visíveis apenas para Gestor e Admin (não serão exibidos ao colaborador).</p>
+            <p className="text-sm text-slate-500">Campos obrigatórios. Visíveis apenas para o Contratante (Admin/RH) e Gestor. Bloqueado para o Prestador de Serviços.</p>
           </CardHeader>
           <CardContent className="space-y-5">
             {[
-              { label: "Pontos Fortes", value: strengths, onChange: setStrengths, placeholder: "Descreva os principais pontos fortes observados no período de experiência..." },
-              { label: "Pontos de Desenvolvimento", value: developments, onChange: setDevelopments, placeholder: "Aponte os comportamentos e competências que precisam ser desenvolvidos..." },
-              { label: "Plano de Ação", value: actionPlan, onChange: setActionPlan, placeholder: "Defina ações concretas para o desenvolvimento do colaborador..." },
+              { label: "Pontos Fortes Observados nas Entregas", value: strengths, onChange: setStrengths, placeholder: "Descreva os principais pontos fortes observados nas entregas do prestador de serviços..." },
+              { label: "Pontos de Melhoria na Qualidade do Serviço", value: developments, onChange: setDevelopments, placeholder: "Aponte os aspectos que precisam ser melhorados na qualidade do serviço prestado..." },
+              { label: "Plano de Ação / Alinhamento de Expectativas", value: actionPlan, onChange: setActionPlan, placeholder: "Defina ações concretas e alinhamentos de expectativas para o próximo período..." },
             ].map(({ label, value, onChange, placeholder }) => (
               <div key={label} className="space-y-1.5">
                 <label className="text-sm font-bold text-slate-700 flex items-center gap-1">

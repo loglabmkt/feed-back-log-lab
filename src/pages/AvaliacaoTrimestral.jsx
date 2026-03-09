@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, Calendar, ClipboardList, ChevronRight, Search, Users
+  User, Calendar, ClipboardList, ChevronRight, Search, Users, BookOpen
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";

@@ -31,6 +31,8 @@ export default function Registro11() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState(null);
+  const [showGuia, setShowGuia] = useState(false);
+  const [guiaRead, setGuiaRead] = useState(false);
 
   useEffect(() => { checkAuth(); }, []);
 

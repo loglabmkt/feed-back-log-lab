@@ -158,20 +158,36 @@ export default function GestorFeedbacks() {
               ) : templates.map((template) => {
                 const isAvaliacao = template.feedback_type === 'evaluation';
                 const isExp45 = template.feedback_type === 'experience_45d';
+                const isExp90 = template.feedback_type === 'experience_90d';
+                const isSpecial = isAvaliacao || isExp45 || isExp90;
                 return (
-                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={(isAvaliacao || isExp45) ? {borderLeft: '4px solid #F8B137'} : {}}>
+                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>
                       <CardTitle className="flex items-start justify-between">
                         <span className="text-base">{template.title}</span>
-                        <Badge className="ml-2" style={(isAvaliacao || isExp45) ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
+                        <Badge className="ml-2" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
                           {template.feedback_type === 'feedback' ? 'Feedback' :
                            template.feedback_type === 'one_on_one' ? 'One-on-One' :
-                           template.feedback_type === 'experience_45d' ? '45 Dias' : 'Avaliação'}
+                           template.feedback_type === 'experience_45d' ? '45 Dias' :
+                           template.feedback_type === 'experience_90d' ? '90 Dias' : 'Avaliação'}
                         </Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {isExp45 ? (
+                      {isExp90 ? (
+                        <>
+                          <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO · Instrumento Decisório</p>
+                          <p className="text-xs text-slate-400 mb-4">Inclui Decisão Contratual · Blocos 14 e 15 de uso interno</p>
+                          <Button
+                            className="w-full font-bold"
+                            style={{background: '#F8B137', color: '#14141E'}}
+                            onClick={() => window.location.href = createPageUrl("AvaliacaoQualidadeServico90")}
+                          >
+                            <BarChart3 className="w-4 h-4 mr-2" />
+                            Iniciar Avaliação 90 Dias
+                          </Button>
+                        </>
+                      ) : isExp45 ? (
                         <>
                           <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO</p>
                           <p className="text-xs text-slate-400 mb-4">Média ponderada · Itens "Não Observado" excluídos do cálculo</p>

@@ -75,6 +75,7 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
+import ConfirmarFeedback from './pages/ConfirmarFeedback';
 import __Layout from './Layout.jsx';
 
 
@@ -107,6 +108,7 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
+    "ConfirmarFeedback": ConfirmarFeedback,
 }
 
 export const pagesConfig = {

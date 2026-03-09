@@ -247,6 +247,16 @@ export default function AvaliacaoQualidadeServico90() {
               Instrumento Decisório · Escala: 4=Referência · 3=Entrega o esperado · 2=Em desenvolvimento · 1=Crítico · NO=Não Observado
             </p>
           </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => { setIsFirstTimeGuia(false); setShowGuia(true); }}
+            className="flex-shrink-0 gap-1.5 font-bold text-xs shadow-sm"
+            style={{ background: "#F8B137", color: "#14141E" }}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Guia do Gestor
+          </Button>
           {totalFilled > 0 && (
             <div className="flex-shrink-0 text-right">
               <p className="text-xs text-slate-500">{totalFilled}/13 itens</p>

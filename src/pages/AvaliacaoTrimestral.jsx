@@ -82,6 +82,14 @@ export default function AvaliacaoTrimestral() {
     if (!session) { window.location.href = "/gestorlogin"; return; }
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
+
+    // Mostrar guia automaticamente se não foi lido
+    const alreadyRead = localStorage.getItem(GUIA_READ_KEY);
+    if (!alreadyRead) {
+      setIsFirstTimeGuia(true);
+      setShowGuia(true);
+    }
+
     try {
       const [emps, feedbacks] = await Promise.all([
         base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),

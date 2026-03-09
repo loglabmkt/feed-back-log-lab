@@ -337,9 +337,7 @@ export default function RevisarFeedback() {
 
       // Enviar notificação ao gestor
       base44.functions.invoke("notifyManagerApprovedFeedback", {
-        managerEmail: feedback.manager_email || "",
-        managerName: feedback.manager_name || "Gestor",
-        providerName: feedback.employee_name || "Prestador"
+        feedbackId: feedback.id
       }).catch(() => {});
 
       navigate(createPageUrl("Respostas"));

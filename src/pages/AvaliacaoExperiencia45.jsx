@@ -118,6 +118,13 @@ export default function AvaliacaoExperiencia45() {
     if (!session) { window.location.href = "/gestorlogin"; return; }
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
+
+    const alreadyRead = localStorage.getItem(GUIA_READ_KEY_45);
+    if (!alreadyRead) {
+      setIsFirstTimeGuia(true);
+      setShowGuia(true);
+    }
+
     try {
       const [myTeam, templates, feedbacks] = await Promise.all([
         base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),

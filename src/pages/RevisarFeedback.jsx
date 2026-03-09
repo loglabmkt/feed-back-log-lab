@@ -619,6 +619,16 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
+      {/* Alerta impedimento crítico 1:1 */}
+      {feedback.feedback_type === 'one_on_one' && feedback.has_critical_impediment && (
+        <Alert className="bg-red-50 border-2 border-red-600">
+          <AlertTriangle className="h-5 w-5 text-red-600" />
+          <AlertDescription className="text-red-800 font-bold text-base">
+            🚨 IMPEDIMENTO CRÍTICO — O Gestor sinalizou um impedimento crítico à execução neste 1:1. Análise imediata necessária.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Alerta crítico de encerramento contratual para o Admin */}
       {feedback.feedback_type === 'experience_90d' && feedback.qs90_decision === 'encerramento' && (
         <Alert className="bg-red-50 border-2 border-red-600">
@@ -635,6 +645,23 @@ export default function RevisarFeedback() {
         <Exp45Content fb={feedback} />
       ) : feedback.feedback_type === 'experience_90d' ? (
         <Qs90Content fb={feedback} isInternal={true} />
+      ) : feedback.feedback_type === 'one_on_one' ? (
+        <Card className="border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold" style={{background: '#14141E'}}>1:1</div>
+              Registro da Conversa de Alinhamento
+            </CardTitle>
+            <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+              🔒 Uso interno — Bloqueado para visualização pelo Prestador (LGPD)
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+              {feedback.one_on_one_notes || <span className="text-slate-400 italic">Nenhum registro informado.</span>}
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <Card className="border-0 shadow-sm">
           <CardHeader>

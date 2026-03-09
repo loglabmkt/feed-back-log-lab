@@ -12,13 +12,30 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { managerEmail, managerName, providerName } = await req.json();
+    const { feedbackId } = await req.json();
 
-    if (!managerEmail || !managerName || !providerName) {
+    if (!feedbackId) {
       return Response.json({ 
-        error: 'Missing required parameters: managerEmail, managerName, providerName' 
+        error: 'Missing required parameter: feedbackId' 
       }, { status: 400 });
     }
+
+    // Buscar o feedback para pegar manager_id e employee_name
+    const feedbacks = await base44.asServiceRole.entities.FeedbackRecord.filter({ id: feedbackId });
+    if (!feedbacks || feedbacks.length === 0) {
+      return Response.json({ error: 'Feedback not found' }, { status: 404 });
+    }
+
+    const feedback = feedbacks[0];
+    const { manager_id, manager_name, employee_name } = feedback;
+
+    // Buscar o gestor para pegar o email
+    const gestores = await base44.asServiceRole.entities.Gestor.filter({ id: manager_id });
+    if (!gestores || gestores.length === 0) {
+      return Response.json({ error: 'Manager not found' }, { status: 404 });
+    }
+
+    const managerEmail = gestores[0].email;
 
     const result = await resend.emails.send({
       from: 'noreply@loglabdigital.com.br',

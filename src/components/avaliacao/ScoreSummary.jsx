@@ -6,7 +6,7 @@ export const BANDS = {
   immediate_action: {
     key: "immediate_action",
     label: "Ação Imediata",
-    range: "10 – 15",
+    range: "10 – 15 pts",
     action: "Plano de melhoria estruturado (PIP) com acompanhamento quinzenal e metas claras.",
     bg: "bg-red-50",
     border: "border-red-300",
@@ -18,7 +18,7 @@ export const BANDS = {
   attention: {
     key: "attention",
     label: "Atenção",
-    range: "16 – 22",
+    range: "16 – 22 pts",
     action: "Identificar gargalos específicos. 1:1 focado em desenvolvimento e suporte ativo do gestor.",
     bg: "bg-amber-50",
     border: "border-amber-300",
@@ -30,7 +30,7 @@ export const BANDS = {
   adequate: {
     key: "adequate",
     label: "Adequado",
-    range: "23 – 32",
+    range: "23 – 32 pts",
     action: "Prestador entrega dentro do esperado. Manter consistência e explorar evolução gradual.",
     bg: "bg-blue-50",
     border: "border-blue-300",
@@ -42,7 +42,7 @@ export const BANDS = {
   reference: {
     key: "reference",
     label: "Referência",
-    range: "33 – 40",
+    range: "33 – 40 pts",
     action: "Explorar protagonismo, escopo ampliado, projetos estratégicos e renovação contratual diferenciada.",
     bg: "bg-emerald-50",
     border: "border-emerald-300",

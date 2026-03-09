@@ -21,28 +21,28 @@ import ScoreSummary, { getBandKey, BANDS } from "@/components/avaliacao/ScoreSum
 // ─── Criteria definitions ────────────────────────────────────────────────────
 
 const HARD_SKILLS = [
-  { id: "h1", label: "H1 – Conhecimento Técnico", description: "Domínio das ferramentas, processos e métodos exigidos pela função" },
-  { id: "h2", label: "H2 – Qualidade das Entregas", description: "Precisão, completude e conformidade com o padrão esperado nas entregas" },
-  { id: "h3", label: "H3 – Produtividade", description: "Volume e eficiência na conclusão das tarefas atribuídas no período" },
-  { id: "h4", label: "H4 – Gestão de Informações", description: "Organização, registro e uso adequado de dados e informações relevantes" },
-  { id: "h5", label: "H5 – Cumprimento de Prazos", description: "Pontualidade e comprometimento com os deadlines acordados com a equipe" },
+  { id: "h1", label: "H1 – Qualidade Técnica das Entregas", description: "O código/produto entregue tem qualidade, causa pouco retrabalho e atende os critérios de aceite?" },
+  { id: "h2", label: "H2 – Cumprimento de Prazo e Acordos", description: "As sprints e marcos de projeto foram respeitados? Comunicou antecipadamente impedimentos?" },
+  { id: "h3", label: "H3 – Domínio de Ferramentas e Processos", description: "Domina as stacks, metodologias e processos internos da Loglab sem suporte básico recorrente?" },
+  { id: "h4", label: "H4 – Resolução de Problemas Técnicos", description: "Diagnostica e resolve bugs/desafios com autonomia ou escala de forma estruturada quando necessário?" },
+  { id: "h5", label: "H5 – Organização e Gestão do Próprio Trabalho", description: "Prioriza tarefas com lógica, usa as ferramentas da Loglab (Azure DevOps, ServiceNow, Expense, GLPI) e mantém visibilidade do fluxo?" },
 ];
 
 const SOFT_SKILLS = [
-  { id: "s1", label: "S1 – Comunicação", description: "Clareza, objetividade e assertividade na comunicação com colegas e líderes" },
-  { id: "s2", label: "S2 – Trabalho em Equipe", description: "Colaboração, apoio mútuo e contribuição positiva ao desempenho do grupo" },
-  { id: "s3", label: "S3 – Proatividade", description: "Iniciativa na identificação de problemas e proposição de soluções sem ser solicitado" },
-  { id: "s4", label: "S4 – Adaptabilidade", description: "Flexibilidade e resiliência diante de mudanças de prioridade ou novos cenários" },
-  { id: "s5", label: "S5 – Responsabilidade", description: "Comprometimento, accountability e integridade em relação aos resultados" },
+  { id: "s1", label: "S1 – Proatividade e Iniciativa", description: "Antecipa problemas, propõe melhorias e não espera ser acionado para agir?" },
+  { id: "s2", label: "S2 – Comunicação Assertiva", description: "Comunica riscos, bloqueios e andamento de forma clara e tempestiva para o time e stakeholders?" },
+  { id: "s3", label: "S3 – Colaboração e Integração com Outros Prestadores", description: "Contribui com as empresas, compartilha conhecimento e apoia seus pares sem prejudicar suas próprias entregas?" },
+  { id: "s4", label: "S4 – Adaptabilidade e Gestão de Pressão", description: "Mantém qualidade e equilíbrio emocional em mudanças de escopo, prazos curtos ou crises de projeto?" },
+  { id: "s5", label: "S5 – Responsabilidade e Comprometimento", description: "Cumpre combinados, participa dos rituais da equipe e assume a responsabilidade sobre suas entregas e resultados?" },
 ];
 
 const ALL_CRITERIA = [...HARD_SKILLS, ...SOFT_SKILLS];
 
 const BANDS_MAP = {
-  immediate_action: "Alerta de PIP – Plano de Melhoria de Performance",
-  attention: "Sugerir 1:1 focado em suporte e acompanhamento",
-  adequate: "Sugerir manutenção e evolução contínua",
-  reference: "Sugerir plano de carreira acelerado / Promoção",
+  immediate_action: "Plano de melhoria estruturado (PIP) com acompanhamento quinzenal e metas claras.",
+  attention: "Identificar gargalos específicos. 1:1 focado em desenvolvimento e suporte ativo do gestor.",
+  adequate: "Prestador entrega dentro do esperado. Manter consistência e explorar evolução gradual.",
+  reference: "Explorar protagonismo, escopo ampliado, projetos estratégicos e renovação contratual diferenciada.",
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────

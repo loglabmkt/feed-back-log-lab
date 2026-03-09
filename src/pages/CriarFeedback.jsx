@@ -167,18 +167,25 @@ export default function CriarFeedback() {
             <div className="space-y-2">
               <Label>Tipo de Ritual *</Label>
               <Select 
-                value={formData.feedback_type} 
-                onValueChange={(value) => setFormData({...formData, feedback_type: value})}
+              value={formData.feedback_type} 
+              onValueChange={handleTypeChange}
               >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="feedback">Feedback Trimestral</SelectItem>
-                  <SelectItem value="one_on_one">1:1</SelectItem>
-                  <SelectItem value="evaluation">Avaliação de Experiência</SelectItem>
-                </SelectContent>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="feedback">Feedback Trimestral</SelectItem>
+                <SelectItem value="one_on_one">1:1</SelectItem>
+                <SelectItem value="evaluation">Avaliação Trimestral</SelectItem>
+                <SelectItem value="experience_45d">Avaliação 45 Dias</SelectItem>
+              </SelectContent>
               </Select>
+              {formData.feedback_type === "experience_45d" && (
+              <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-800">
+                <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>Os 13 itens de avaliação serão criados automaticamente com os critérios padrão. Você poderá editá-los depois em "Editar".</span>
+              </div>
+              )}
             </div>
           </CardContent>
         </Card>

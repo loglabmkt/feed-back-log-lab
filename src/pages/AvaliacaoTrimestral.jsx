@@ -185,6 +185,14 @@ export default function AvaliacaoTrimestral() {
     } finally { setSaving(false); }
   };
 
+  // ─── Guia handlers ───────────────────────────────────────────────────────────
+
+  const handleMarkGuiaAsRead = () => {
+    localStorage.setItem(GUIA_READ_KEY, "true");
+    setShowGuia(false);
+    setIsFirstTimeGuia(false);
+  };
+
   // ─── Helpers ─────────────────────────────────────────────────────────────────
 
   const getInitials = (name) => name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) || "?";

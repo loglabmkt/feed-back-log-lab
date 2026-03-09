@@ -84,10 +84,14 @@ export default function Usuarios() {
 
   const loadUsers = async () => {
     try {
-      const allUsers = await base44.entities.User.list();
+      const [allUsers, gestoresData, companiesData] = await Promise.all([
+        base44.entities.User.list(),
+        base44.entities.Gestor.list(),
+        base44.entities.Company.list()
+      ]);
       setUsers(allUsers);
-      // A user is considered a manager if they have the 'admin' role or if any other user has them as a manager.
-      // Filter out inactive users from the potential managers list
+      setGestores(gestoresData);
+      setCompanies(companiesData);
       const activeUsers = allUsers.filter(u => u.status === 'active');
       const potentialManagers = activeUsers.filter(u => 
         u.role === 'admin' || activeUsers.some(subordinate => subordinate.manager_id === u.id)

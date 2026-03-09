@@ -874,7 +874,7 @@ export default function RevisarFeedback() {
       <div>
         <Button 
           variant="ghost" 
-          onClick={() => navigate(createPageUrl("Feedbacks"))}
+          onClick={() => navigate(-1)}
           className="mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

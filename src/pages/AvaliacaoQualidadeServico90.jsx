@@ -9,8 +9,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, ClipboardList, Search, Users, AlertTriangle, Lock
+  User, ClipboardList, Search, Users, AlertTriangle, Lock, BookOpen
 } from "lucide-react";
+import GuiaGestor90Dias from "@/components/avaliacao/GuiaGestor90Dias";
+
+const GUIA_READ_KEY_90 = "guia_90dias_lido";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 

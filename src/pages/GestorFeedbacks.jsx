@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, BarChart3 } from "lucide-react";
+import { Plus, BarChart3, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -159,7 +159,8 @@ export default function GestorFeedbacks() {
                 const isAvaliacao = template.feedback_type === 'evaluation';
                 const isExp45 = template.feedback_type === 'experience_45d';
                 const isExp90 = template.feedback_type === 'experience_90d';
-                const isSpecial = isAvaliacao || isExp45 || isExp90;
+                const is11 = template.feedback_type === 'one_on_one';
+                const isSpecial = isAvaliacao || isExp45 || isExp90 || is11;
                 return (
                   <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>

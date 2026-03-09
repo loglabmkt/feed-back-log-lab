@@ -114,6 +114,8 @@ export default function AvaliacaoQualidadeServico90() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [templateId, setTemplateId] = useState(null);
+  const [showGuia, setShowGuia] = useState(false);
+  const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -122,6 +124,12 @@ export default function AvaliacaoQualidadeServico90() {
     if (!session) { window.location.href = "/gestorlogin"; return; }
     const sessionData = JSON.parse(session);
     setGestor(sessionData);
+
+    const alreadyRead = localStorage.getItem(GUIA_READ_KEY_90);
+    if (!alreadyRead) {
+      setIsFirstTimeGuia(true);
+      setShowGuia(true);
+    }
     try {
       const [myTeam, templates] = await Promise.all([
         base44.entities.Colaborador.filter({ manager_id: sessionData.id, status: "active" }),

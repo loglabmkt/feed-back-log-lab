@@ -279,6 +279,24 @@ export default function GerenciarFeedback() {
           </CardContent>
         </Card>
 
+        {/* Calibragem do Administrador — exibida ao gestor após aprovação */}
+        {feedback.admin_director_notes && (
+          <Card className="border-0 shadow-sm" style={{borderLeft: '4px solid #8B5CF6', background: '#faf5ff'}}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold flex items-center gap-2" style={{color: '#7C3AED'}}>
+                <SlidersHorizontal className="w-4 h-4" />
+                Calibragem do Administrador
+              </CardTitle>
+              <p className="text-xs text-purple-400">Comentário do administrador sobre este feedback</p>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 bg-white rounded-xl border border-purple-100 whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+                {feedback.admin_director_notes}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stepper de Ações */}
         <Card className="border-0 shadow-sm">
           <CardHeader>

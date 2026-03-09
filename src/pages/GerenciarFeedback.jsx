@@ -7,7 +7,8 @@ import {
   Calendar, 
   CheckCircle2, 
   MessageSquare, 
-  Send 
+  Send,
+  SlidersHorizontal
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

@@ -335,6 +335,13 @@ export default function RevisarFeedback() {
         admin_approved_date: new Date().toISOString()
       });
 
+      // Enviar notificação ao gestor
+      base44.functions.invoke("notifyManagerApprovedFeedback", {
+        managerEmail: feedback.manager_email || "",
+        managerName: feedback.manager_name || "Gestor",
+        providerName: feedback.employee_name || "Prestador"
+      }).catch(() => {});
+
       navigate(createPageUrl("Respostas"));
     } catch (e) {
       setError(e.message || "Erro ao aprovar feedback");

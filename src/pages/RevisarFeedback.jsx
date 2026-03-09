@@ -619,10 +619,22 @@ export default function RevisarFeedback() {
         </CardContent>
       </Card>
 
+      {/* Alerta crítico de encerramento contratual para o Admin */}
+      {feedback.feedback_type === 'experience_90d' && feedback.qs90_decision === 'encerramento' && (
+        <Alert className="bg-red-50 border-2 border-red-600">
+          <AlertTriangle className="h-5 w-5 text-red-600" />
+          <AlertDescription className="text-red-800 font-bold text-base">
+            ⚠️ ATENÇÃO ADMINISTRADOR — O Gestor recomendou ENCERRAMENTO CONTRATUAL para este prestador de serviços. Revise com atenção antes de aprovar.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {feedback.feedback_type === 'evaluation' ? (
         <AvaliacaoContent fb={feedback} />
       ) : feedback.feedback_type === 'experience_45d' ? (
         <Exp45Content fb={feedback} />
+      ) : feedback.feedback_type === 'experience_90d' ? (
+        <Qs90Content fb={feedback} isInternal={true} />
       ) : (
         <Card className="border-0 shadow-sm">
           <CardHeader>

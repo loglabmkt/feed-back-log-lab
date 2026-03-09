@@ -70,6 +70,8 @@ export default function AvaliacaoTrimestral() {
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showGuia, setShowGuia] = useState(false);
+  const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
 
   useEffect(() => { checkAuth(); }, []);
 

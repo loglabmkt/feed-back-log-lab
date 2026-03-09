@@ -343,6 +343,22 @@ export default function RevisarFeedback() {
     }
   };
 
+  const handleSaveCalibragem = async () => {
+    if (!calibragemText.trim()) return;
+    setSavingCalibragem(true);
+    try {
+      await base44.entities.FeedbackRecord.update(feedback.id, {
+        admin_director_notes: calibragemText.trim()
+      });
+      setFeedback(prev => ({ ...prev, admin_director_notes: calibragemText.trim() }));
+      setShowCalibragem(false);
+    } catch (e) {
+      setError(e.message || "Erro ao salvar calibragem");
+    } finally {
+      setSavingCalibragem(false);
+    }
+  };
+
   const handleGeneratePdf = async () => {
     setGeneratingPdf(true);
     try {

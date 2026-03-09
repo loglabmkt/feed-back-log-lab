@@ -74,6 +74,7 @@ import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
+import Registro11 from './pages/Registro11';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +106,7 @@ export const PAGES = {
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
+    "Registro11": Registro11,
 }
 
 export const pagesConfig = {

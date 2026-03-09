@@ -321,8 +321,6 @@ export default function Relatorios() {
 
       <ManagerAdherenceTable managerAdherence={managerAdherence} loading={loading} />
 
-      <RiskRadar usersAtRisk={usersAtRisk} loading={loading} />
-
       <TypeDistributionChart 
         typeDistribution={typeDistribution} 
         totalFeedbacks={filteredFeedbacks.length}

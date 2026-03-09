@@ -388,7 +388,182 @@ export default function RevisarFeedback() {
       addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? format(new Date(feedback.feedback_date), "dd/MM/yyyy") : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
       y += 4;
 
-      if (feedback.feedback_type === 'evaluation') {
+      if (feedback.feedback_type === 'experience_45d') {
+        // ── Avaliação 45 Dias ──────────────────────────────────────────────────
+        const EXP45 = [
+          { id: "e1",  label: "1 – Assimilação / Rapidez" },
+          { id: "e2",  label: "2 – Cooperação" },
+          { id: "e3",  label: "3 – Empenho / Entusiasmo" },
+          { id: "e4",  label: "4 – Qualidade" },
+          { id: "e5",  label: "5 – Articulação / Equipe" },
+          { id: "e6",  label: "6 – Superação de Obstáculos" },
+          { id: "e7",  label: "7 – Conclusividade" },
+          { id: "e8",  label: "8 – Agregação de Valor" },
+          { id: "e9",  label: "9 – Conhecimento Técnico" },
+          { id: "e10", label: "10 – Geração de Soluções" },
+          { id: "e11", label: "11 – Organização / Gestão" },
+          { id: "e12", label: "12 – Auto-motivação" },
+          { id: "e13", label: "13 – Pontualidade / Compromissos" },
+        ];
+        const EXP45_SL = { 4: "Acima do esperado", 3: "Dentro do esperado", 2: "Abaixo do esperado", 1: "Muito abaixo", "NO": "Não Observado" };
+        const scores45 = feedback.exp45_scores || {};
+        const avg45 = feedback.exp45_average;
+
+        checkPage(20);
+        doc.setFillColor(248, 177, 54);
+        doc.rect(margin, y - 1, contentW, 0.5, "F");
+        y += 4;
+        addText("RESULTADO DA AVALIAÇÃO 45 DIAS", margin, 9, "bold", [100, 100, 120]);
+        y += 1;
+        addText(`Média Ponderada: ${avg45 ? Number(avg45).toFixed(2) : "—"}/4,00   |   Itens Avaliados: ${Object.keys(scores45).length}/13`, margin, 11, "bold", [20, 20, 30]);
+        y += 4;
+
+        checkPage(20);
+        doc.setFillColor(20, 20, 30);
+        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(249, 177, 54);
+        doc.text("ITENS DE AVALIAÇÃO DE QUALIDADE — 45 DIAS", margin + 3, y + 4);
+        y += 12;
+
+        EXP45.forEach(item => {
+          checkPage(14);
+          const score = scores45[item.id];
+          const scoreColors45 = { 4: [209,250,229], 3: [219,234,254], 2: [255,251,235], 1: [254,226,226], "NO": [245,245,245] };
+          const sc = scoreColors45[score] || [245,245,245];
+          doc.setFillColor(...sc);
+          doc.roundedRect(margin, y - 4, contentW, 10, 1, 1, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+          doc.text(item.label, margin + 3, y + 1);
+          if (score !== undefined) {
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+            doc.text(`${score} – ${EXP45_SL[score] || ""}`, pageW - margin - 3, y + 1, { align: "right" });
+          }
+          y += 11;
+        });
+
+        if (feedback.exp45_strengths || feedback.exp45_developments || feedback.exp45_action_plan) {
+          y += 2;
+          addText("COMENTÁRIOS QUALITATIVOS (INTERNO – GESTOR/ADMIN)", margin, 9, "bold", [100, 100, 120]);
+          [[feedback.exp45_strengths, "Pontos Fortes", [209,250,229]], [feedback.exp45_developments, "Pontos de Desenvolvimento", [255,251,235]], [feedback.exp45_action_plan, "Plano de Ação", [219,234,254]]].forEach(([val, lbl, bg]) => {
+            if (!val) return;
+            checkPage(20);
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 100, 120);
+            doc.text(lbl.toUpperCase(), margin, y); y += 4;
+            const lines = doc.splitTextToSize(val, contentW - 6);
+            doc.setFillColor(...bg);
+            doc.roundedRect(margin, y - 2, contentW, lines.length * 5 + 4, 1, 1, "F");
+            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+            doc.text(lines, margin + 3, y + 2);
+            y += lines.length * 5 + 8;
+          });
+        }
+
+      } else if (feedback.feedback_type === 'experience_90d') {
+        // ── Avaliação QS 90 Dias ───────────────────────────────────────────────
+        const QS90_SL = { 4: "Acima do esperado", 3: "Dentro do esperado", 2: "Abaixo do esperado", 1: "Muito abaixo", "NO": "Não Observado" };
+        const QS90_ITEMS = [
+          { id: "e1",  label: "1 – Assimilação / Rapidez" },
+          { id: "e2",  label: "2 – Cooperação" },
+          { id: "e3",  label: "3 – Empenho / Entusiasmo" },
+          { id: "e4",  label: "4 – Qualidade" },
+          { id: "e5",  label: "5 – Articulação / Equipe" },
+          { id: "e6",  label: "6 – Superação de Obstáculos" },
+          { id: "e7",  label: "7 – Conclusividade" },
+          { id: "e8",  label: "8 – Agregação de Valor" },
+          { id: "e9",  label: "9 – Conhecimento Técnico" },
+          { id: "e10", label: "10 – Geração de Soluções" },
+          { id: "e11", label: "11 – Organização / Gestão" },
+          { id: "e12", label: "12 – Auto-motivação" },
+          { id: "e13", label: "13 – Pontualidade / Compromissos" },
+        ];
+        const QS90_DECISION = { continuidade: "Continuidade do Contrato", continuidade_melhoria: "Continuidade com Plano de Melhoria", encerramento: "ENCERRAMENTO CONTRATUAL" };
+        const scores90 = feedback.qs90_scores || {};
+        const avg90 = feedback.qs90_average;
+
+        checkPage(20);
+        doc.setFillColor(248, 177, 54);
+        doc.rect(margin, y - 1, contentW, 0.5, "F");
+        y += 4;
+        addText("RESULTADO DA AVALIAÇÃO QS 90 DIAS", margin, 9, "bold", [100, 100, 120]);
+        y += 1;
+        addText(`Média: ${avg90 ? Number(avg90).toFixed(2) : "—"}/4,00   |   Itens: ${Object.keys(scores90).length}/13`, margin, 11, "bold", [20, 20, 30]);
+        if (feedback.qs90_decision) {
+          const decisionColor = feedback.qs90_decision === 'encerramento' ? [180, 30, 30] : [20, 20, 30];
+          addText(`Decisão: ${QS90_DECISION[feedback.qs90_decision] || feedback.qs90_decision}`, margin, 10, "bold", decisionColor);
+        }
+        y += 4;
+
+        checkPage(20);
+        doc.setFillColor(20, 20, 30);
+        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(249, 177, 54);
+        doc.text("ITENS DE AVALIAÇÃO — 90 DIAS", margin + 3, y + 4);
+        y += 12;
+
+        QS90_ITEMS.forEach(item => {
+          checkPage(14);
+          const score = scores90[item.id];
+          const scoreColorsQS = { 4: [209,250,229], 3: [219,234,254], 2: [255,251,235], 1: [254,226,226], "NO": [245,245,245] };
+          const sc = scoreColorsQS[score] || [245,245,245];
+          doc.setFillColor(...sc);
+          doc.roundedRect(margin, y - 4, contentW, 10, 1, 1, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 40);
+          doc.text(item.label, margin + 3, y + 1);
+          if (score !== undefined) {
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(60, 60, 80);
+            doc.text(`${score} – ${QS90_SL[score] || ""}`, pageW - margin - 3, y + 1, { align: "right" });
+          }
+          y += 11;
+        });
+
+        if (feedback.qs90_strengths || feedback.qs90_improvements || feedback.qs90_decision_justification) {
+          y += 2;
+          [[feedback.qs90_strengths, "Pontos Fortes", [209,250,229]], [feedback.qs90_improvements, "Pontos de Melhoria", [255,251,235]], [feedback.qs90_decision_justification, "Justificativa da Decisão", [219,234,254]]].forEach(([val, lbl, bg]) => {
+            if (!val) return;
+            checkPage(20);
+            doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(100, 100, 120);
+            doc.text(lbl.toUpperCase(), margin, y); y += 4;
+            const lines = doc.splitTextToSize(val, contentW - 6);
+            doc.setFillColor(...bg);
+            doc.roundedRect(margin, y - 2, contentW, lines.length * 5 + 4, 1, 1, "F");
+            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+            doc.text(lines, margin + 3, y + 2);
+            y += lines.length * 5 + 8;
+          });
+        }
+
+      } else if (feedback.feedback_type === 'one_on_one') {
+        // ── Registro 1:1 ──────────────────────────────────────────────────────
+        checkPage(20);
+        doc.setFillColor(20, 20, 30);
+        doc.rect(margin, y - 1, contentW, 8, "F");
+        doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(249, 177, 54);
+        doc.text("REGISTRO DA CONVERSA DE ALINHAMENTO 1:1", margin + 3, y + 4);
+        y += 12;
+
+        doc.setFontSize(8); doc.setFont("helvetica", "italic"); doc.setTextColor(100, 100, 120);
+        doc.text("USO INTERNO – Bloqueado para visualização pelo Prestador (LGPD)", margin, y); y += 6;
+
+        if (feedback.has_critical_impediment) {
+          checkPage(14);
+          doc.setFillColor(254, 226, 226);
+          doc.roundedRect(margin, y - 2, contentW, 10, 1, 1, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(180, 30, 30);
+          doc.text("⚠ IMPEDIMENTO CRÍTICO SINALIZADO PELO GESTOR", margin + 3, y + 4);
+          y += 14;
+        }
+
+        if (feedback.one_on_one_notes) {
+          checkPage(20);
+          const lines = doc.splitTextToSize(feedback.one_on_one_notes, contentW - 6);
+          doc.setFillColor(245, 245, 250);
+          doc.roundedRect(margin, y - 2, contentW, lines.length * 5 + 6, 2, 2, "F");
+          doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 40);
+          doc.text(lines, margin + 3, y + 2);
+          y += lines.length * 5 + 10;
+        }
+
+      } else if (feedback.feedback_type === 'evaluation') {
         const HARD = [
           { id: "h1", label: "H1 – Conhecimento Técnico" },
           { id: "h2", label: "H2 – Qualidade das Entregas" },

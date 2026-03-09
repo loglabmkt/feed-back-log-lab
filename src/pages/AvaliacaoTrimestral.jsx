@@ -237,6 +237,16 @@ export default function AvaliacaoTrimestral() {
             <h1 className="text-lg font-bold text-slate-900 leading-tight">Avaliação de Desempenho Trimestral</h1>
             <p className="text-xs text-slate-400">LOGLAB_NS_TRIMESTRAL · Escala par 1–4 (sem ponto neutro) · Soma simples 10–40 pontos</p>
           </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => { setIsFirstTimeGuia(false); setShowGuia(true); }}
+            className="flex-shrink-0 gap-1.5 font-bold text-xs shadow-sm"
+            style={{ background: "#F8B137", color: "#14141E" }}
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Guia do Gestor
+          </Button>
           {filledCount > 0 && (
             <div className="flex-shrink-0 text-right">
               <p className="text-xs text-slate-500">{filledCount}/10 critérios</p>

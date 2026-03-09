@@ -183,6 +183,12 @@ export default function AvaliacaoQualidadeServico90() {
         qs90_decision_justification: justification,
       });
       setSaved(true);
+      // Notificar admins por e-mail
+      base44.functions.invoke("notifyAdminNewEvaluation", {
+        managerName: gestor.full_name,
+        employeeName: selectedEmployee.full_name,
+        appUrl: window.location.origin,
+      }).catch(() => {});
       setTimeout(() => { window.location.href = "/gestorfeedbacks"; }, 2500);
     } catch (e) {
       setError("Erro ao salvar a avaliação. Tente novamente.");

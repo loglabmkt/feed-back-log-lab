@@ -91,7 +91,7 @@ export default function CriarFeedback() {
       return;
     }
 
-    if (formData.checklist_questions.length === 0) {
+    if (formData.feedback_type !== "experience_45d" && formData.checklist_questions.length === 0) {
       setError("Adicione pelo menos uma pergunta ao checklist");
       return;
     }

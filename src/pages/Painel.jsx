@@ -302,7 +302,7 @@ export default function Painel() {
                   </div>
                   <div className="flex items-center gap-3">
                     {getStatusBadge(feedback.workflow_status)}
-                    <Link to={createPageUrl("VisualizarFeedback") + `?id=${feedback.id}`}>
+                    <Link to={createPageUrl("RevisarFeedback") + `?id=${feedback.id}`}>
                       <Button variant="ghost" size="sm">
                         <ArrowRight className="w-4 h-4" />
                       </Button>

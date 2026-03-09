@@ -25,7 +25,6 @@ import ValidationStatusChart from "../components/reports/ValidationStatusChart";
 import MonthlyEvolutionChart from "../components/reports/MonthlyEvolutionChart";
 import TypeDistributionChart from "../components/reports/TypeDistributionChart";
 import ManagerAdherenceTable from "../components/reports/ManagerAdherenceTable";
-import RiskRadar from "../components/reports/RiskRadar";
 
 export default function Relatorios() {
   const [users, setUsers] = useState([]);

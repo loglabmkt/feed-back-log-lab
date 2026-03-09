@@ -1,0 +1,80 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { Resend } from 'npm:resend@4.0.1';
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+
+Deno.serve(async (req) => {
+  try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { managerEmail, managerName, providerName } = await req.json();
+
+    if (!managerEmail || !managerName || !providerName) {
+      return Response.json({ 
+        error: 'Missing required parameters: managerEmail, managerName, providerName' 
+      }, { status: 400 });
+    }
+
+    const result = await resend.emails.send({
+      from: 'noreply@loglabdigital.com.br',
+      to: managerEmail,
+      subject: 'Avaliação Validada: Agendar Alinhamento de Nível de Serviço',
+      html: `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #14141E; margin: 0;">Log Lab Digital</h1>
+            </div>
+
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <p style="margin: 0; font-size: 16px;">Olá, <strong>${managerName}</strong>,</p>
+              
+              <p style="margin: 15px 0; font-size: 15px;">
+                A avaliação de nível de serviço referente ao prestador <strong>${providerName}</strong> foi validada internamente pela contratante.
+              </p>
+
+              <p style="margin: 15px 0; font-size: 15px; font-weight: 600; color: #F8B137;">
+                Agende ainda hoje a reunião de devolutiva junto ao prestador para tratar dos indicadores e entregas do período.
+              </p>
+            </div>
+
+            <div style="background: #fff5f0; padding: 15px; border-left: 4px solid #F8B137; margin-bottom: 20px;">
+              <p style="margin: 0; font-size: 14px; color: #666;">
+                <strong>Próximos Passos:</strong> Acesse o painel de gerenciamento para visualizar os detalhes completos da avaliação e agendar a reunião.
+              </p>
+            </div>
+
+            <div style="text-align: center; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 30px;">
+              <p style="font-size: 12px; color: #999; margin: 0;">
+                Este é um email automatizado. Por favor, não responda diretamente.
+              </p>
+              <p style="font-size: 12px; color: #999; margin: 5px 0 0 0;">
+                Log Lab Digital © 2026
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+    });
+
+    if (result.error) {
+      console.error("Resend error:", result.error);
+      return Response.json({ error: result.error }, { status: 500 });
+    }
+
+    return Response.json({ 
+      success: true, 
+      emailId: result.data?.id,
+      recipient: managerEmail
+    });
+
+  } catch (error) {
+    console.error("Function error:", error);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+});

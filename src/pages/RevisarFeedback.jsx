@@ -1106,14 +1106,14 @@ export default function RevisarFeedback() {
           </Alert>
         </>
       ) : (
-        <>
+       <>
           <Alert className="bg-emerald-50 border-emerald-200">
             <AlertDescription className="text-emerald-700">
               <CheckCircle className="w-5 h-5 inline mr-2" />
               <strong>Feedback em conformidade:</strong> Disponibilizado para o gestor enviar ao colaborador após conversa pessoalmente.
             </AlertDescription>
           </Alert>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 flex-wrap">
             <Button
               variant="outline"
               onClick={handleGeneratePdf}
@@ -1131,7 +1131,18 @@ export default function RevisarFeedback() {
               <SlidersHorizontal className="w-4 h-4 mr-2" />
               Calibragem
             </Button>
+            <Button
+              onClick={() => base44.functions.invoke("sendFeedbackToPrestador", { feedbackId: feedback.id }).then(() => setFeedback({...feedback, workflow_status: "PUBLICADO"})).catch(err => console.error(err))}
+              disabled={publishing}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              {publishing ? "Enviando..." : "Enviar Feedback"}
+            </Button>
           </div>
+          <p className="text-sm text-slate-500 text-center mt-2">
+            Envie o feedback para o colaborador validar e concluir o processo de avaliação
+          </p>
         </>
       )}
 

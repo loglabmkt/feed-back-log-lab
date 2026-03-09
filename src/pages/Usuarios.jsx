@@ -64,7 +64,8 @@ export default function Usuarios() {
     department: "",
     position: "",
     admission_date: "",
-    status: "active"
+    status: "active",
+    is_manager: false
   });
   const [createFormData, setCreateFormData] = useState({
     full_name: "",

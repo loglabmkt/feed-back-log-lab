@@ -164,7 +164,7 @@ export default function AvaliacaoExperiencia45() {
     try {
       await base44.entities.FeedbackRecord.create({
         template_id: templateId || "AVAL_EXP45_V1",
-        template_title: "Avaliação de Experiência – 45 Dias",
+        template_title: "Avaliação de Qualidade de Serviço — 45 Dias",
         feedback_type: "experience_45d",
         workflow_status: "EM_REVISAO_ADMIN",
         manager_id: gestor.id,

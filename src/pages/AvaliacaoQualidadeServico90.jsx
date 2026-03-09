@@ -226,6 +226,13 @@ export default function AvaliacaoQualidadeServico90() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
 
+      <GuiaGestor90Dias
+        open={showGuia}
+        onClose={() => setShowGuia(false)}
+        onMarkAsRead={handleMarkGuiaAsRead}
+        isFirstTime={isFirstTimeGuia}
+      />
+
       {/* Sticky Header */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-lg border-b-2 shadow-sm" style={{borderColor: "#F8B137"}}>
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">

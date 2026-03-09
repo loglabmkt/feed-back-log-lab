@@ -124,15 +124,33 @@ export default function Usuarios() {
     setSaving(true);
     setError("");
     try {
-      // Ensure manager_id is null if empty string
       const dataToUpdate = {
-        ...formData,
         manager_id: formData.manager_id || null,
         admission_date: formData.admission_date || null,
         department: formData.department || null,
         position: formData.position || null,
+        status: formData.status
       };
       await base44.entities.User.update(editingUser.id, dataToUpdate);
+
+      // Sincronizar com entidade Gestor
+      const existingGestor = gestores.find(g => g.email?.toLowerCase() === editingUser.email?.toLowerCase());
+      if (formData.is_manager && !existingGestor) {
+        // Promover a gestor
+        const company = companies[0]; // pega empresa padrão se houver
+        await base44.entities.Gestor.create({
+          full_name: editingUser.full_name,
+          email: editingUser.email,
+          department: formData.department || null,
+          company_id: company?.id || null,
+          is_admin: false,
+          status: "active"
+        });
+      } else if (!formData.is_manager && existingGestor) {
+        // Remover perfil de gestor
+        await base44.entities.Gestor.delete(existingGestor.id);
+      }
+
       await loadUsers();
       setShowDialog(false);
       setEditingUser(null);

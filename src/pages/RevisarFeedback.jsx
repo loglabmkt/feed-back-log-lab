@@ -289,6 +289,7 @@ export default function RevisarFeedback() {
   const [showCalibragem, setShowCalibragem] = useState(false);
   const [calibragemText, setCalibragemText] = useState("");
   const [savingCalibragem, setSavingCalibragem] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     loadData();

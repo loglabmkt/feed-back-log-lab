@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, Search, Users, Clock, AlertTriangle, MessageSquare, Lock
+  User, Search, Users, Clock, AlertTriangle, MessageSquare, Lock, BookOpen
 } from "lucide-react";
+import GuiaGestor11 from "@/components/avaliacao/GuiaGestor11";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 

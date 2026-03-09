@@ -472,6 +472,25 @@ export default function AcessoPublicoFeedback() {
                   </div>
                 </div>
 
+                {selectedFeedback.feedback_type === 'one_on_one' ? (
+                  /* LGPD Data Masking: 1:1 content is never sent to the collaborator */
+                  <div className="space-y-4">
+                    <div className="p-6 bg-blue-50 rounded-xl border-2 border-blue-200 text-center">
+                      <Shield className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                      <p className="text-base font-semibold text-slate-800 mb-2">Confirmação de 1:1</p>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        Confirmo que o gestor <strong>{selectedFeedback.manager_name}</strong> realizou a conversa de alinhamento comigo
+                        {selectedFeedback.feedback_date && (
+                          <> no dia <strong>{format(new Date(selectedFeedback.feedback_date), "dd/MM/yyyy")}</strong></>
+                        )}.
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-400 text-center flex items-center justify-center gap-1">
+                      <Shield className="w-3 h-3" />
+                      O conteúdo desta conversa é de uso interno e protegido conforme LGPD.
+                    </p>
+                  </div>
+                ) : (
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</p>
@@ -514,6 +533,7 @@ export default function AcessoPublicoFeedback() {
                     </div>
                   )}
                 </div>
+                )}
 
                 {selectedFeedback.validation_status === 'pending' && selectedFeedback.validation_deadline && (
                   <Alert className="bg-amber-50 border-amber-200">

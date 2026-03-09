@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, ArrowLeft, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const DEFAULT_EXP45_ITEMS = [
+  { id: "e1",  label: "1",  description: "Assimilação do escopo das atividades contratadas com facilidade e rapidez." },
+  { id: "e2",  label: "2",  description: "Atuação colaborativa com a equipe, sem necessidade de solicitação expressa." },
+  { id: "e3",  label: "3",  description: "Empenho, envolvimento e comprometimento na execução dos serviços." },
+  { id: "e4",  label: "4",  description: "Elevado nível de qualidade na entrega dos resultados acordados." },
+  { id: "e5",  label: "5",  description: "Articulação com outros prestadores, empresas do ecossistema e parceiros." },
+  { id: "e6",  label: "6",  description: "Superação de obstáculos, identificando alternativas de solução." },
+  { id: "e7",  label: "7",  description: "Conclusividade e comprometimento com os resultados finais." },
+  { id: "e8",  label: "8",  description: "Atuação que agrega valor ao projeto e às entregas ao cliente." },
+  { id: "e9",  label: "9",  description: "Conhecimento técnico adequado e busca por atualização." },
+  { id: "e10", label: "10", description: "Agilidade na identificação e geração de soluções para problemas." },
+  { id: "e11", label: "11", description: "Organização das atividades e gestão de documentos/informações." },
+  { id: "e12", label: "12", description: "Iniciativa e motivação para entregar acima do mínimo esperado." },
+  { id: "e13", label: "13", description: "Cumprimento de prazos acordados e compromissos assumidos." },
+];
 
 export default function CriarFeedback() {
   const navigate = useNavigate();
@@ -29,6 +45,15 @@ export default function CriarFeedback() {
       { id: "2", question: "O plano de ação foi discutido e acordado?", required: true }
     ]
   });
+
+  const handleTypeChange = (value) => {
+    // Se mudar para experience_45d, pré-preenche o título
+    if (value === "experience_45d") {
+      setFormData({ ...formData, feedback_type: value, title: "Avaliação de Qualidade de Serviço — 45 Dias" });
+    } else {
+      setFormData({ ...formData, feedback_type: value });
+    }
+  };
 
   const addQuestion = () => {
     const newId = String(formData.checklist_questions.length + 1);

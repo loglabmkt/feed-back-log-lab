@@ -50,6 +50,8 @@ export default function CriarFeedback() {
     // Se mudar para experience_45d, pré-preenche o título
     if (value === "experience_45d") {
       setFormData({ ...formData, feedback_type: value, title: "Avaliação de Qualidade de Serviço — 45 Dias" });
+    } else if (value === "experience_90d") {
+      setFormData({ ...formData, feedback_type: value, title: "Avaliação de Qualidade de Serviço — Período Inicial 90 Dias" });
     } else {
       setFormData({ ...formData, feedback_type: value });
     }

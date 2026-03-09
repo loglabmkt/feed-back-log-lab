@@ -178,6 +178,7 @@ export default function CriarFeedback() {
                 <SelectItem value="one_on_one">1:1</SelectItem>
                 <SelectItem value="evaluation">Avaliação Trimestral</SelectItem>
                 <SelectItem value="experience_45d">Avaliação 45 Dias</SelectItem>
+                <SelectItem value="experience_90d">Avaliação 90 Dias (Decisória)</SelectItem>
               </SelectContent>
               </Select>
               {formData.feedback_type === "experience_45d" && (

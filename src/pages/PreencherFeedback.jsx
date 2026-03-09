@@ -91,6 +91,14 @@ export default function PreencherFeedback() {
         workflow_status: sendToAdmin ? "EM_REVISAO_ADMIN" : "DISPONIVEL_PARA_GESTOR"
       });
 
+      if (sendToAdmin) {
+        base44.functions.invoke("notifyAdminNewEvaluation", {
+          managerName: feedback.manager_name || "Gestor",
+          employeeName: feedback.employee_name || "Colaborador",
+          appUrl: window.location.origin,
+        }).catch(() => {});
+      }
+
       navigate(createPageUrl("Feedbacks"));
     } catch (e) {
       setError(e.message || "Erro ao salvar feedback");

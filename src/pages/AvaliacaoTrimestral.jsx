@@ -17,6 +17,9 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import CompetencyCriterion from "@/components/avaliacao/CompetencyCriterion";
 import ScoreSummary, { getBandKey, BANDS } from "@/components/avaliacao/ScoreSummary";
+import GuiaGestorTrimestral from "@/components/avaliacao/GuiaGestorTrimestral";
+
+const GUIA_READ_KEY = "guia_trimestral_lido";
 
 // ─── Criteria definitions ────────────────────────────────────────────────────
 

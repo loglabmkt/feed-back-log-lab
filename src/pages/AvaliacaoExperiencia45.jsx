@@ -10,8 +10,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, ClipboardList, Search, Users
+  User, ClipboardList, Search, Users, BookOpen
 } from "lucide-react";
+import GuiaGestor45Dias from "@/components/avaliacao/GuiaGestor45Dias";
+
+const GUIA_READ_KEY_45 = "guia_45dias_lido";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 

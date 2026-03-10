@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, BarChart3, MessageSquare, CalendarClock } from "lucide-react";
+import { Plus, BarChart3, MessageSquare, CalendarClock, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,24 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GestorLayout from "@/components/GestorLayout";
 import { createPageUrl } from "@/utils";
-
-function DeadlineBadge({ deadline }) {
-  if (!deadline) return null;
-  const [y, m, d] = deadline.split('-');
-  const deadlineDate = new Date(deadline + 'T00:00:00');
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-  const color = diffDays < 0 ? 'text-red-500' : diffDays <= 7 ? 'text-orange-500' : 'text-amber-500';
-  return (
-    <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${color}`}>
-      <CalendarClock className="w-3 h-3" />
-      {d}/{m}/{y}
-      {diffDays < 0 && ' · Prazo vencido'}
-      {diffDays >= 0 && diffDays <= 7 && ` · Vence em ${diffDays} dia${diffDays !== 1 ? 's' : ''}`}
-    </p>
-  );
-}
 
 export default function GestorFeedbacks() {
   const [gestor, setGestor] = useState(null);
@@ -69,18 +51,15 @@ export default function GestorFeedbacks() {
 
       const gestorData = JSON.parse(session);
 
-      // Buscar templates ativos
       const allTemplates = await base44.entities.FeedbackTemplate.filter({ is_active: true });
       setTemplates(allTemplates);
 
-      // Buscar apenas o time do gestor
       const allColaboradores = await base44.entities.Colaborador.filter({
         manager_id: gestorData.id,
         status: 'active'
       });
       setColaboradores(allColaboradores);
 
-      // Buscar feedbacks criados pelo gestor
       const feedbacks = await base44.entities.FeedbackRecord.filter({
         manager_id: gestorData.id
       }, '-created_date');
@@ -115,11 +94,8 @@ export default function GestorFeedbacks() {
     try {
       const colaborador = colaboradores.find(c => c.id === formData.employee_id);
       
-      // Vincular colaborador ao gestor se ainda não estiver vinculado
       if (colaborador.manager_id !== gestor.id) {
-        await base44.entities.Colaborador.update(colaborador.id, {
-          manager_id: gestor.id
-        });
+        await base44.entities.Colaborador.update(colaborador.id, { manager_id: gestor.id });
       }
       
       await base44.entities.FeedbackRecord.create({
@@ -150,6 +126,23 @@ export default function GestorFeedbacks() {
     }
   };
 
+  // Helper: retorna info de prazo com cor dinâmica
+  const getDeadlineInfo = (deadline) => {
+    if (!deadline) return null;
+    const [year, month, day] = deadline.split('-');
+    const formatted = `${day}/${month}/${year}`;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadlineDate = new Date(deadline);
+    deadlineDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return { color: 'text-red-600', Icon: AlertTriangle, label: `Prazo encerrado em ${formatted}` };
+    if (diffDays <= 7) return { color: 'text-red-500', Icon: AlertTriangle, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
+    if (diffDays <= 15) return { color: 'text-orange-500', Icon: CalendarClock, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
+    return { color: 'text-amber-600', Icon: CalendarClock, label: `Prazo: ${formatted}` };
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -161,114 +154,127 @@ export default function GestorFeedbacks() {
   return (
     <GestorLayout currentPage="feedbacks" gestor={gestor}>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          Meus Feedbacks
-        </h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Meus Feedbacks</h1>
         <p className="text-slate-500">Crie e gerencie feedbacks para sua equipe</p>
       </div>
 
-        {/* Templates Ativos */}
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Templates Disponíveis</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {templates.length === 0 ? (
-                <p className="text-sm text-slate-400 col-span-3 py-4">Nenhum template ativo disponível.</p>
-              ) : templates.map((template) => {
-                const isAvaliacao = template.feedback_type === 'evaluation';
-                const isExp45 = template.feedback_type === 'experience_45d';
-                const isExp90 = template.feedback_type === 'experience_90d';
-                const is11 = template.feedback_type === 'one_on_one';
-                const isSpecial = isAvaliacao || isExp45 || isExp90 || is11;
-                return (
-                  <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <p className="text-base font-semibold text-slate-900">{template.title}</p>
-                          <DeadlineBadge deadline={template.deadline} />
-                        </div>
-                        <Badge className="flex-shrink-0" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
-                          {template.feedback_type === 'feedback' ? 'Feedback' :
-                           template.feedback_type === 'one_on_one' ? 'One-on-One' :
-                           template.feedback_type === 'experience_45d' ? '45 Dias' :
-                           template.feedback_type === 'experience_90d' ? '90 Dias' : 'Avaliação'}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {isExp90 ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO · Instrumento Decisório</p>
-                          <p className="text-xs text-slate-400 mb-4">Inclui Decisão Contratual · Blocos 14 e 15 de uso interno</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("AvaliacaoQualidadeServico90")}
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Iniciar Avaliação 90 Dias
-                          </Button>
-                        </>
-                      ) : isExp45 ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO</p>
-                          <p className="text-xs text-slate-400 mb-4">Média ponderada · Itens "Não Observado" excluídos do cálculo</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("AvaliacaoExperiencia45")}
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Iniciar Avaliação 45 Dias
-                          </Button>
-                        </>
-                      ) : is11 ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">Qualitativo · Bimestral · LGPD Compliant</p>
-                          <p className="text-xs text-slate-400 mb-4">15 minutos cronometrados · Foco em impedimentos e execução</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("Registro11")}
-                          >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Iniciar Registro 1:1
-                          </Button>
-                        </>
-                      ) : isAvaliacao ? (
-                        <>
-                          <p className="text-sm text-slate-500 mb-1">10 competências (H1–H5 + S1–S5)</p>
-                          <p className="text-xs text-slate-400 mb-4">Escala 1–4 · Soma 10–40 pts · Motor de faixa automático</p>
-                          <Button
-                            className="w-full font-bold"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => window.location.href = createPageUrl("AvaliacaoTrimestral")}
-                          >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Iniciar Avaliação
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-sm text-slate-500 mb-4">
-                            {template.checklist_questions?.length || 0} perguntas de validação
-                          </p>
-                          <Button
-                            className="w-full"
-                            style={{background: '#F8B137', color: '#14141E'}}
-                            onClick={() => handleCreateFeedback(template)}
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Responder Feedback
-                          </Button>
-                        </>
+      {/* Templates Ativos */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-slate-900 mb-4">Templates Disponíveis</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {templates.length === 0 ? (
+            <p className="text-sm text-slate-400 col-span-3 py-4">Nenhum template ativo disponível.</p>
+          ) : templates.map((template) => {
+            const isAvaliacao = template.feedback_type === 'evaluation';
+            const isExp45 = template.feedback_type === 'experience_45d';
+            const isExp90 = template.feedback_type === 'experience_90d';
+            const is11 = template.feedback_type === 'one_on_one';
+            const isSpecial = isAvaliacao || isExp45 || isExp90 || is11;
+            const deadlineInfo = getDeadlineInfo(template.deadline);
+
+            return (
+              <Card
+                key={template.id}
+                className="border-0 shadow-sm hover:shadow-md transition-shadow"
+                style={isSpecial ? { borderLeft: '4px solid #F8B137' } : {}}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-base block">{template.title}</span>
+                      {deadlineInfo && (
+                        <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${deadlineInfo.color}`}>
+                          <deadlineInfo.Icon className="w-3 h-3 flex-shrink-0" />
+                          {deadlineInfo.label}
+                        </p>
                       )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                    </div>
+                    <Badge
+                      className="flex-shrink-0"
+                      style={isSpecial ? { background: '#14141E', color: '#F8B137' } : { background: '#F8B137', color: '#14141E' }}
+                    >
+                      {template.feedback_type === 'feedback' ? 'Feedback' :
+                       template.feedback_type === 'one_on_one' ? 'One-on-One' :
+                       template.feedback_type === 'experience_45d' ? '45 Dias' :
+                       template.feedback_type === 'experience_90d' ? '90 Dias' :
+                       'Avaliação'}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {isExp90 ? (
+                    <>
+                      <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO · Instrumento Decisório</p>
+                      <p className="text-xs text-slate-400 mb-4">Inclui Decisão Contratual · Blocos 14 e 15 de uso interno</p>
+                      <Button
+                        className="w-full font-bold"
+                        style={{ background: '#F8B137', color: '#14141E' }}
+                        onClick={() => window.location.href = createPageUrl("AvaliacaoQualidadeServico90")}
+                      >
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Iniciar Avaliação 90 Dias
+                      </Button>
+                    </>
+                  ) : isExp45 ? (
+                    <>
+                      <p className="text-sm text-slate-500 mb-1">13 itens · Escala 4/3/2/1/NO</p>
+                      <p className="text-xs text-slate-400 mb-4">Média ponderada · Itens "Não Observado" excluídos do cálculo</p>
+                      <Button
+                        className="w-full font-bold"
+                        style={{ background: '#F8B137', color: '#14141E' }}
+                        onClick={() => window.location.href = createPageUrl("AvaliacaoExperiencia45")}
+                      >
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Iniciar Avaliação 45 Dias
+                      </Button>
+                    </>
+                  ) : is11 ? (
+                    <>
+                      <p className="text-sm text-slate-500 mb-1">Qualitativo · Bimestral · LGPD Compliant</p>
+                      <p className="text-xs text-slate-400 mb-4">15 minutos cronometrados · Foco em impedimentos e execução</p>
+                      <Button
+                        className="w-full font-bold"
+                        style={{ background: '#F8B137', color: '#14141E' }}
+                        onClick={() => window.location.href = createPageUrl("Registro11")}
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Iniciar Registro 1:1
+                      </Button>
+                    </>
+                  ) : isAvaliacao ? (
+                    <>
+                      <p className="text-sm text-slate-500 mb-1">10 competências (H1–H5 + S1–S5)</p>
+                      <p className="text-xs text-slate-400 mb-4">Escala 1–4 · Soma 10–40 pts · Motor de faixa automático</p>
+                      <Button
+                        className="w-full font-bold"
+                        style={{ background: '#F8B137', color: '#14141E' }}
+                        onClick={() => window.location.href = createPageUrl("AvaliacaoTrimestral")}
+                      >
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Iniciar Avaliação
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm text-slate-500 mb-4">
+                        {template.checklist_questions?.length || 0} perguntas de validação
+                      </p>
+                      <Button
+                        className="w-full"
+                        style={{ background: '#F8B137', color: '#14141E' }}
+                        onClick={() => handleCreateFeedback(template)}
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Responder Feedback
+                      </Button>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
+      </div>
 
       {/* Meus Feedbacks */}
       <div>
@@ -281,45 +287,41 @@ export default function GestorFeedbacks() {
               </div>
             ) : (
               <div className="space-y-3">
-               {myFeedbacks.map((feedback) => {
-                 const getStatusDisplay = (status) => {
-                   const statusMap = {
-                     'DISPONIVEL_PARA_GESTOR': { label: 'Disponível', color: 'bg-blue-100 text-blue-700', clickable: false },
-                     'EM_REVISAO_ADMIN': { label: 'Em Revisão', color: 'bg-amber-100 text-amber-700', clickable: false },
-                     'APROVADO': { label: 'Aprovado - Ações Pendentes', color: 'bg-green-100 text-green-700', clickable: true },
-                     'CONVERSA_AGENDADA': { label: 'Conversa Agendada', color: 'bg-purple-100 text-purple-700', clickable: true },
-                     'CONVERSA_REALIZADA': { label: 'Conversa Realizada', color: 'bg-indigo-100 text-indigo-700', clickable: true },
-                     'PUBLICADO': { label: 'Publicado', color: 'bg-emerald-100 text-emerald-700', clickable: false },
-                     'ASSINADO_COLABORADOR': { label: 'Assinado', color: 'bg-teal-100 text-teal-700', clickable: false }
-                   };
-                   return statusMap[status] || { label: status, color: 'bg-slate-100 text-slate-700', clickable: false };
-                 };
+                {myFeedbacks.map((feedback) => {
+                  const statusMap = {
+                    'DISPONIVEL_PARA_GESTOR': { label: 'Disponível', color: 'bg-blue-100 text-blue-700', clickable: false },
+                    'EM_REVISAO_ADMIN': { label: 'Em Revisão', color: 'bg-amber-100 text-amber-700', clickable: false },
+                    'APROVADO': { label: 'Aprovado - Ações Pendentes', color: 'bg-green-100 text-green-700', clickable: true },
+                    'CONVERSA_AGENDADA': { label: 'Conversa Agendada', color: 'bg-purple-100 text-purple-700', clickable: true },
+                    'CONVERSA_REALIZADA': { label: 'Conversa Realizada', color: 'bg-indigo-100 text-indigo-700', clickable: true },
+                    'PUBLICADO': { label: 'Publicado', color: 'bg-emerald-100 text-emerald-700', clickable: false },
+                    'ASSINADO_COLABORADOR': { label: 'Assinado', color: 'bg-teal-100 text-teal-700', clickable: false }
+                  };
+                  const statusDisplay = statusMap[feedback.workflow_status] || { label: feedback.workflow_status, color: 'bg-slate-100 text-slate-700', clickable: false };
 
-                 const statusDisplay = getStatusDisplay(feedback.workflow_status);
-
-                 return (
-                   <div 
-                     key={feedback.id} 
-                     className={`flex items-center justify-between p-4 border rounded-lg ${statusDisplay.clickable ? 'hover:bg-slate-50 cursor-pointer hover:border-[#F8B137]' : 'hover:bg-slate-50'} transition-all`}
-                     onClick={() => {
-                       if (statusDisplay.clickable) {
-                         window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
-                       }
-                     }}
-                   >
-                     <div className="flex-1">
-                       <p className="font-medium text-slate-900">{feedback.employee_name}</p>
-                       <p className="text-sm text-slate-500">{feedback.template_title}</p>
-                       <p className="text-xs text-slate-400 mt-1">
-                         {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
-                       </p>
-                     </div>
-                     <Badge className={statusDisplay.color}>
-                       {statusDisplay.label}
-                     </Badge>
-                   </div>
-                 );
-               })}
+                  return (
+                    <div
+                      key={feedback.id}
+                      className={`flex items-center justify-between p-4 border rounded-lg transition-all ${statusDisplay.clickable ? 'hover:bg-slate-50 cursor-pointer hover:border-[#F8B137]' : 'hover:bg-slate-50'}`}
+                      onClick={() => {
+                        if (statusDisplay.clickable) {
+                          window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
+                        }
+                      }}
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-900">{feedback.employee_name}</p>
+                        <p className="text-sm text-slate-500">{feedback.template_title}</p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <Badge className={statusDisplay.color}>
+                        {statusDisplay.label}
+                      </Badge>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </CardContent>
@@ -357,9 +359,7 @@ export default function GestorFeedbacks() {
                   )}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-slate-500 mt-1">
-                Apenas colaboradores do seu time são listados.
-              </p>
+              <p className="text-xs text-slate-500 mt-1">Apenas colaboradores do seu time são listados.</p>
             </div>
 
             <div>
@@ -413,13 +413,11 @@ export default function GestorFeedbacks() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowDialog(false)}>
-              Cancelar
-            </Button>
+            <Button variant="outline" onClick={() => setShowDialog(false)}>Cancelar</Button>
             <Button
               onClick={handleSave}
               disabled={saving}
-              style={{background: '#F8B137', color: '#14141E'}}
+              style={{ background: '#F8B137', color: '#14141E' }}
             >
               {saving ? 'Enviando...' : 'Enviar'}
             </Button>

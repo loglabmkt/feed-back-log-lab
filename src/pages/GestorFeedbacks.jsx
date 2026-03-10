@@ -195,12 +195,13 @@ export default function GestorFeedbacks() {
                               </p>
                             );
                           })()}
-                        <Badge className="ml-2" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
+                        </div>
+                        <Badge className="ml-2 flex-shrink-0" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
                           {template.feedback_type === 'feedback' ? 'Feedback' :
                            template.feedback_type === 'one_on_one' ? 'One-on-One' :
                            template.feedback_type === 'experience_45d' ? '45 Dias' :
                            template.feedback_type === 'experience_90d' ? '90 Dias' :
-                       template.feedback_type === 'one_on_one' ? '1:1' : 'Avaliação'}
+                           'Avaliação'}
                         </Badge>
                       </CardTitle>
                     </CardHeader>

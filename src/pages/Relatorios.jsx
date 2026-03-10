@@ -285,7 +285,6 @@ export default function Relatorios() {
   }, [templates, records, colaboradores, gestores, filterGestor]);
 
   const resetFilters = () => {
-    setFilterType("all");
     setFilterTemplate("all");
     setFilterGestor("all");
     setFilterDateFrom("");

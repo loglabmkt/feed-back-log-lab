@@ -7,8 +7,7 @@ import {
   Pencil,
   Trash2,
   Power,
-  PowerOff,
-  CalendarClock
+  PowerOff
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

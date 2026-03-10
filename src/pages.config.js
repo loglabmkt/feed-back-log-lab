@@ -70,12 +70,12 @@ import Painel from './pages/Painel';
 import PainelGestor from './pages/PainelGestor';
 import PreencherFeedback from './pages/PreencherFeedback';
 import Registro11 from './pages/Registro11';
+import Relatorios from './pages/Relatorios';
 import Respostas from './pages/Respostas';
 import RevisarFeedback from './pages/RevisarFeedback';
 import Usuarios from './pages/Usuarios';
 import ValidarFeedback from './pages/ValidarFeedback';
 import VisualizarFeedback from './pages/VisualizarFeedback';
-import Relatorios from './pages/Relatorios';
 import __Layout from './Layout.jsx';
 
 
@@ -103,12 +103,12 @@ export const PAGES = {
     "PainelGestor": PainelGestor,
     "PreencherFeedback": PreencherFeedback,
     "Registro11": Registro11,
+    "Relatorios": Relatorios,
     "Respostas": Respostas,
     "RevisarFeedback": RevisarFeedback,
     "Usuarios": Usuarios,
     "ValidarFeedback": ValidarFeedback,
     "VisualizarFeedback": VisualizarFeedback,
-    "Relatorios": Relatorios,
 }
 
 export const pagesConfig = {

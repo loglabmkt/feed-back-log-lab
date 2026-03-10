@@ -38,9 +38,7 @@ export default function Feedbacks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
-
-  // Estado para o dialog de prazo
-  const [deadlineDialog, setDeadlineDialog] = useState(null); // template selecionado
+  const [deadlineTemplate, setDeadlineTemplate] = useState(null); // template sendo editado para prazo
   const [deadlineValue, setDeadlineValue] = useState("");
   const [savingDeadline, setSavingDeadline] = useState(false);
 
@@ -77,22 +75,53 @@ export default function Feedbacks() {
   const handleToggleActive = async (template) => {
     try {
       const newActiveState = !template.is_active;
-      await base44.entities.FeedbackTemplate.update(template.id, { is_active: newActiveState });
+      
+      await base44.entities.FeedbackTemplate.update(template.id, {
+        is_active: newActiveState
+      });
+      
+      // Se foi ativado, notificar gestores via Resend
       if (newActiveState === true) {
         try {
-          await base44.functions.invoke('notifyManagersNewFeedback', { templateId: template.id });
+          await base44.functions.invoke('notifyManagersNewFeedback', {
+            templateId: template.id
+          });
         } catch (emailError) {
           console.error('Erro ao enviar notificações:', emailError);
+          // Não bloqueia a ativação se o email falhar
         }
       }
+      
       await loadData();
     } catch (e) {
       console.error(e);
     }
   };
 
+  const handleOpenDeadline = (template) => {
+    setDeadlineTemplate(template);
+    setDeadlineValue(template.deadline || "");
+  };
+
+  const handleSaveDeadline = async () => {
+    if (!deadlineTemplate) return;
+    setSavingDeadline(true);
+    try {
+      await base44.entities.FeedbackTemplate.update(deadlineTemplate.id, {
+        deadline: deadlineValue || null
+      });
+      setDeadlineTemplate(null);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSavingDeadline(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteId) return;
+    
     setDeleting(true);
     try {
       await base44.entities.FeedbackTemplate.delete(deleteId);
@@ -103,33 +132,6 @@ export default function Feedbacks() {
     } finally {
       setDeleting(false);
     }
-  };
-
-  const openDeadlineDialog = (template) => {
-    setDeadlineDialog(template);
-    setDeadlineValue(template.deadline || "");
-  };
-
-  const handleSaveDeadline = async () => {
-    if (!deadlineDialog) return;
-    setSavingDeadline(true);
-    try {
-      await base44.entities.FeedbackTemplate.update(deadlineDialog.id, {
-        deadline: deadlineValue || null
-      });
-      await loadData();
-      setDeadlineDialog(null);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSavingDeadline(false);
-    }
-  };
-
-  const formatDeadline = (dateStr) => {
-    if (!dateStr) return null;
-    const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
   };
 
   const getTypeBadge = (type) => {
@@ -187,23 +189,22 @@ export default function Feedbacks() {
         )}
       </div>
 
-      {isAdmin && (
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input
-                placeholder="Buscar por título..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-4">
+        {isAdmin && (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                  placeholder="Buscar por título..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <div className="space-y-4">
         {filteredTemplates.length === 0 ? (
           <Card className="border-0 shadow-sm">
             <CardContent className="py-12 text-center">
@@ -220,26 +221,39 @@ export default function Feedbacks() {
           </Card>
         ) : (
           filteredTemplates.map((template) => (
-            <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+            <Card 
+              key={template.id} 
+              className="border-0 shadow-sm hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
+                    <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-slate-900">{template.title}</h3>
                       {getTypeBadge(template.feedback_type)}
                     </div>
-
-                    {/* Prazo visível para admin */}
-                    {template.deadline && (
-                      <p className="text-xs text-amber-600 font-medium mb-2 flex items-center gap-1">
-                        <CalendarClock className="w-3 h-3" />
-                        Prazo: {formatDeadline(template.deadline)}
-                      </p>
-                    )}
-
-                    <p className="text-sm text-slate-500 mb-3">
+                    <p className="text-sm text-slate-500 mb-1">
                       {template.checklist_questions?.length || 0} perguntas no checklist
                     </p>
+                    {template.deadline && (() => {
+                      const [y, m, d] = template.deadline.split('-');
+                      const deadlineDate = new Date(template.deadline + 'T00:00:00');
+                      const today = new Date();
+                      today.setHours(0,0,0,0);
+                      const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+                      const color = diffDays < 0 ? 'text-red-500' : diffDays <= 7 ? 'text-orange-500' : 'text-amber-600';
+                      return (
+                        <p className={`text-xs font-medium mb-3 flex items-center gap-1 ${color}`}>
+                          <CalendarClock className="w-3 h-3" />
+                          Prazo: {d}/{m}/{y}
+                          {diffDays < 0 && ' · Vencido'}
+                          {diffDays >= 0 && diffDays <= 7 && ` · Vence em ${diffDays}d`}
+                        </p>
+                      );
+                    })()}
+                    {!template.deadline && isAdmin && (
+                      <p className="text-xs text-slate-400 mb-3">Sem prazo definido</p>
+                    )}
                     {isAdmin && (() => {
                       const stats = getUsageStats(template.id);
                       return stats.total > 0 ? (
@@ -270,7 +284,7 @@ export default function Feedbacks() {
                   </div>
 
                   {isAdmin && (
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg">
                         {template.is_active ? (
                           <Power className="w-4 h-4 text-emerald-600" />
@@ -286,25 +300,14 @@ export default function Feedbacks() {
                         />
                       </div>
 
-                      {/* Botão de prazo */}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => openDeadlineDialog(template)}
-                        className={template.deadline ? "text-amber-600 border-amber-300 hover:bg-amber-50" : "text-slate-500"}
-                        title="Definir prazo"
-                      >
-                        <CalendarClock className="w-4 h-4" />
-                      </Button>
-
                       <Link to={createPageUrl("EditarFeedback") + `?id=${template.id}`}>
                         <Button variant="outline" size="icon">
                           <Pencil className="w-4 h-4" />
                         </Button>
                       </Link>
 
-                      <Button
-                        variant="outline"
+                      <Button 
+                        variant="outline" 
                         size="icon"
                         onClick={() => setDeleteId(template.id)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -319,51 +322,6 @@ export default function Feedbacks() {
           ))
         )}
       </div>
-
-      {/* Dialog de prazo */}
-      <Dialog open={!!deadlineDialog} onOpenChange={() => setDeadlineDialog(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Definir Prazo</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-3">
-            <p className="text-sm text-slate-500">
-              Template: <strong>{deadlineDialog?.title}</strong>
-            </p>
-            <div>
-              <Label>Data limite de preenchimento</Label>
-              <Input
-                type="date"
-                value={deadlineValue}
-                onChange={(e) => setDeadlineValue(e.target.value)}
-                className="mt-1"
-              />
-              <p className="text-xs text-slate-400 mt-1">
-                O gestor terá até esta data para concluir as avaliações de todos os seus prestadores.
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="gap-2">
-            {deadlineDialog?.deadline && (
-              <Button
-                variant="ghost"
-                className="text-red-500 mr-auto"
-                onClick={() => { setDeadlineValue(""); }}
-              >
-                Remover prazo
-              </Button>
-            )}
-            <Button variant="outline" onClick={() => setDeadlineDialog(null)}>Cancelar</Button>
-            <Button
-              onClick={handleSaveDeadline}
-              disabled={savingDeadline}
-              style={{background: '#F8B137', color: '#14141E'}}
-            >
-              {savingDeadline ? 'Salvando...' : 'Salvar'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>

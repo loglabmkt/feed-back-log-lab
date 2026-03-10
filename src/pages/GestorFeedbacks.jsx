@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, BarChart3, MessageSquare, CalendarClock, AlertTriangle } from "lucide-react";
+import { Plus, BarChart3, MessageSquare, CalendarClock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -132,23 +132,6 @@ export default function GestorFeedbacks() {
     }
   };
 
-  // Helper: retorna info de prazo com cor dinâmica
-  const getDeadlineInfo = (deadline) => {
-    if (!deadline) return null;
-    const [year, month, day] = deadline.split('-');
-    const formatted = `${day}/${month}/${year}`;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const deadlineDate = new Date(deadline);
-    deadlineDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) return { formatted, color: 'text-red-600', icon: AlertTriangle, label: `Prazo encerrado em ${formatted}` };
-    if (diffDays <= 7) return { formatted, color: 'text-red-500', icon: AlertTriangle, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
-    if (diffDays <= 15) return { formatted, color: 'text-orange-500', icon: CalendarClock, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
-    return { formatted, color: 'text-amber-600', icon: CalendarClock, label: `Prazo: ${formatted}` };
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -182,26 +165,13 @@ export default function GestorFeedbacks() {
                   <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>
                       <CardTitle className="flex items-start justify-between">
-                        <div>
-                          <span className="text-base">{template.title}</span>
-                          {(() => {
-                            const di = getDeadlineInfo(template.deadline);
-                            if (!di) return null;
-                            const Icon = di.icon;
-                            return (
-                              <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${di.color}`}>
-                                <Icon className="w-3 h-3 flex-shrink-0" />
-                                {di.label}
-                              </p>
-                            );
-                          })()}
-                        </div>
-                        <Badge className="ml-2 flex-shrink-0" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
+                        <span className="text-base">{template.title}</span>
+                        <Badge className="ml-2" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
                           {template.feedback_type === 'feedback' ? 'Feedback' :
                            template.feedback_type === 'one_on_one' ? 'One-on-One' :
                            template.feedback_type === 'experience_45d' ? '45 Dias' :
                            template.feedback_type === 'experience_90d' ? '90 Dias' :
-                           'Avaliação'}
+                       template.feedback_type === 'one_on_one' ? '1:1' : 'Avaliação'}
                         </Badge>
                       </CardTitle>
                     </CardHeader>

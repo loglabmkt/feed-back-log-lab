@@ -6,40 +6,41 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { feedbackId } = await req.json();
+    const { feedbackId, baseUrl } = await req.json();
 
     if (!feedbackId) {
-      return Response.json({ 
-        error: 'Missing required parameter: feedbackId' 
-      }, { status: 400 });
+      return Response.json({ error: 'Missing feedbackId' }, { status: 400 });
     }
 
-    // Buscar o feedback
+    // Buscar o feedback via service role (gestor não é usuário Base44)
     const feedbacks = await base44.asServiceRole.entities.FeedbackRecord.filter({ id: feedbackId });
     if (!feedbacks || feedbacks.length === 0) {
       return Response.json({ error: 'Feedback not found' }, { status: 404 });
     }
 
     const feedback = feedbacks[0];
-    const { employee_name, employee_email, manager_name, feedback_type, feedback_date } = feedback;
+    const { employee_name, employee_email } = feedback;
 
     // Gerar token de confirmação
-    const confirmationToken = await base44.functions.invoke('generateFeedbackConfirmationToken', {
-      feedbackId: feedbackId,
-      employeeEmail: employee_email
+    const tokenData = `${feedbackId}:${employee_email}:${Date.now()}`;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(tokenData);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const token = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Salvar token no feedback
+    await base44.asServiceRole.entities.FeedbackRecord.update(feedbackId, {
+      public_access_token: token,
+      public_link_generated_date: new Date().toISOString()
     });
 
-    const token = confirmationToken.data.token;
-    const confirmationUrl = `${new URL(req.url).origin}/confirmar-feedback?token=${token}`;
+    // URL de confirmação usando baseUrl enviado pelo frontend
+    const appBase = (baseUrl || '').replace(/\/$/, '');
+    const confirmationUrl = `${appBase}/confirmarfeedback?token=${token}`;
 
-    // Email para o prestador
-    const prestadorResult = await resend.emails.send({
+    // Enviar email para o colaborador/prestador
+    const result = await resend.emails.send({
       from: 'noreply@loglabdigital.com.br',
       to: employee_email,
       subject: 'Tarefa pendente: Confirme a Avaliação Realizada',
@@ -62,13 +63,18 @@ Deno.serve(async (req) => {
               </p>
 
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${confirmationUrl}" style="display: inline-block; background: #F8B137; color: #14141E; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">
-                  Confirmar Recebimento da Avaliação
+                <a href="${confirmationUrl}" style="display: inline-block; background: #F8B137; color: #14141E; padding: 14px 36px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 16px;">
+                  Validar Feedback
                 </a>
               </div>
 
-              <p style="margin: 15px 0; font-size: 14px; color: #666;">
-                Este procedimento registra apenas o recebimento da avaliação realizada
+              <p style="margin: 15px 0; font-size: 13px; color: #888;">
+                Se o botão não funcionar, copie e cole este link no seu navegador:<br/>
+                <a href="${confirmationUrl}" style="color: #F8B137; word-break: break-all;">${confirmationUrl}</a>
+              </p>
+
+              <p style="margin: 15px 0; font-size: 13px; color: #999;">
+                Este procedimento registra apenas o recebimento da avaliação realizada.
               </p>
             </div>
           </div>
@@ -76,13 +82,13 @@ Deno.serve(async (req) => {
       `
     });
 
-    if (!prestadorResult.id) {
-      return Response.json({ error: 'Failed to send email to prestador' }, { status: 500 });
+    if (result.error) {
+      return Response.json({ error: result.error.message || 'Failed to send email' }, { status: 500 });
     }
 
     return Response.json({ 
       success: true,
-      prestadorEmailId: prestadorResult.id
+      emailId: result.data?.id
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

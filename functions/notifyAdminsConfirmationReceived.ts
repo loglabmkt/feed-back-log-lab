@@ -6,12 +6,6 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { feedbackId, employeeName } = await req.json();
 
     if (!feedbackId || !employeeName) {
@@ -24,11 +18,11 @@ Deno.serve(async (req) => {
     const confirmationDate = now.toLocaleDateString('pt-BR');
     const confirmationTime = now.toLocaleTimeString('pt-BR');
 
-    // Email para Haisa e Rodolpho informando confirmação
+    // Email para Haisa e Rodolpho informando confirmação (sem exigir auth Base44)
     const result = await resend.emails.send({
       from: 'noreply@loglabdigital.com.br',
-      to: 'haisa.hashimoto@loglabdigital.com.br, rodolpho.bispo@loglabdigital.com.br',
-      subject: `Confirmação Recebida: Avaliação de Serviço ${employeeName}`,
+      to: ['haisa.hashimoto@loglabdigital.com.br', 'rodolpho.bispo@loglabdigital.com.br'],
+      subject: `Confirmação Recebida: Avaliação de Serviço — ${employeeName}`,
       html: `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6;">
           <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -52,21 +46,19 @@ Deno.serve(async (req) => {
                   <strong>ID do Feedback:</strong> ${feedbackId}
                 </p>
               </div>
-
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${new URL(req.url).origin}/painel" style="display: inline-block; background: #F8B137; color: #14141E; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">
-                  Visualizar Histórico Finalizado
-                </a>
-              </div>
             </div>
           </div>
         </div>
       `
     });
 
+    if (result.error) {
+      return Response.json({ error: result.error.message }, { status: 500 });
+    }
+
     return Response.json({ 
       success: true,
-      emailId: result.id
+      emailId: result.data?.id
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

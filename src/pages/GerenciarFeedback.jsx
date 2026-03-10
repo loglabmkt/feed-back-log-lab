@@ -75,6 +75,9 @@ export default function GerenciarFeedback() {
       if (fb.conversation_scheduled_date) {
         setScheduledDate(new Date(fb.conversation_scheduled_date).toISOString().split('T')[0]);
       }
+      if (fb.manager_conversation_notes) {
+        setConversationNotes(fb.manager_conversation_notes);
+      }
     } catch (e) {
       console.error(e);
       setError("Erro ao carregar feedback");

@@ -1,5 +1,5 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { Resend } from 'npm:resend@4.0.0';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { Resend } from 'npm:resend@4.0.1';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
@@ -8,100 +8,101 @@ Deno.serve(async (req) => {
         const base44 = createClientFromRequest(req);
         const payload = await req.json();
 
-        // Suporte para chamada manual (frontend) e automação de entidade
-        let templateId;
         let template;
 
         // Se veio de automação de entidade
         if (payload.event && payload.data && payload.old_data) {
-            const { event, data, old_data } = payload;
-            
-            // Verificar se is_active mudou de false para true
+            const { data, old_data } = payload;
             const wasActivated = old_data?.is_active === false && data?.is_active === true;
-            
             if (!wasActivated) {
-                return Response.json({ 
-                    success: true,
-                    message: 'Feedback não foi ativado nesta atualização (is_active não mudou de false para true)' 
-                });
+                return Response.json({ success: true, message: 'is_active não mudou para true' });
             }
-            
-            templateId = event.entity_id;
             template = data;
-        } 
+        }
         // Se veio de chamada manual do frontend
         else if (payload.templateId) {
-            templateId = payload.templateId;
-            
-            // Buscar o template
-            const templates = await base44.asServiceRole.entities.FeedbackTemplate.filter({ id: templateId });
-            
+            const templates = await base44.asServiceRole.entities.FeedbackTemplate.filter({ id: payload.templateId });
             if (!templates || templates.length === 0) {
                 return Response.json({ error: 'Template não encontrado' }, { status: 404 });
             }
-            
             template = templates[0];
-        }
-        else {
-            return Response.json({ 
-                error: 'Payload inválido. Esperado: {templateId} ou payload de entity automation' 
-            }, { status: 400 });
+        } else {
+            return Response.json({ error: 'Payload inválido' }, { status: 400 });
         }
 
-        // Buscar APENAS gestores ativos da tabela Gestor
+        // Buscar gestores ativos
         const gestores = await base44.asServiceRole.entities.Gestor.filter({ status: 'active' });
-
         if (!gestores || gestores.length === 0) {
-            return Response.json({ 
-                message: 'Nenhum gestor ativo encontrado',
-                success: true
-            });
+            return Response.json({ message: 'Nenhum gestor ativo encontrado', success: true });
         }
 
-        // Preparar tipo do feedback para exibição
         const tipoMap = {
             'feedback': 'Feedback Trimestral',
-            'one_on_one': 'One-on-One',
-            'evaluation': 'Avaliação de Experiência'
+            'one_on_one': '1:1 (Conversa de Alinhamento)',
+            'evaluation': 'Avaliação Trimestral',
+            'experience_45d': 'Avaliação de Experiência — 45 Dias',
+            'experience_90d': 'Avaliação de Qualidade de Serviço — 90 Dias'
         };
         const tipoFeedback = tipoMap[template.feedback_type] || template.feedback_type;
 
-        // Enviar email via Resend para cada gestor usando template
+        // Formatar prazo
+        let deadlineText = 'Não definido';
+        if (template.deadline) {
+            const [year, month, day] = template.deadline.split('-');
+            deadlineText = `${day}/${month}/${year}`;
+        }
+
         const emailPromises = gestores.map(async (gestor) => {
             try {
+                const nomeGestor = gestor.full_name || 'Gestor';
                 await resend.emails.send({
-                    from: 'Compliance RH <noreply@loglabdigital.com.br>',
+                    from: 'noreply@loglabdigital.com.br',
                     to: gestor.email,
-                    subject: `✅ Novo Template de Feedback Disponível: ${template.title}`,
+                    subject: `Pendência: Avaliação de Nível de Serviço — ${tipoFeedback}`,
                     html: `
-                      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
-                        <div style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                          <h2 style="color: #14141E; margin-bottom: 20px;">Olá</h2>
+                      <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6; background: #f9fafb; padding: 30px 0;">
+                        <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
                           
-                          <p style="color: #333; line-height: 1.6; font-size: 16px; margin-bottom: 20px;">
-                            Existe um formulário de Feedback disponível para você responder aos seus colaboradores, você tem até <strong>01/01/2026</strong> para responder.
-                          </p>
-                          
-                          <div style="margin: 30px 0; text-align: center;">
-                            <a href="https://feedback.loglabdigital.com.br/PainelGestor" 
-                               style="background: #F8B137; color: #14141E; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
-                              Acessar Sistema
-                            </a>
+                          <div style="background: #14141E; padding: 24px 30px; text-align: center;">
+                            <h1 style="color: #F8B137; margin: 0; font-size: 22px; letter-spacing: 0.5px;">Log Lab Digital</h1>
+                            <p style="color: #aaa; margin: 6px 0 0 0; font-size: 13px;">Sistema de Compliance & Avaliação de Serviços</p>
                           </div>
-                          
-                          <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px;">
-                            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
-                              <strong>Template:</strong> ${template.title}
+
+                          <div style="padding: 30px;">
+                            <p style="font-size: 16px; margin: 0 0 20px 0;">Olá, <strong>${nomeGestor}</strong>,</p>
+
+                            <p style="font-size: 15px; color: #444; margin: 0 0 16px 0;">
+                              Informamos que o prazo para a avaliação periódica de nível de serviço referente aos seus prestadores está se aproximando.
+                              Esta análise é fundamental para o controle de qualidade das entregas previstas em contrato.
                             </p>
-                            <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
-                              <strong>Tipo:</strong> ${tipoFeedback}
+
+                            <div style="background: #f8f9fa; border-left: 4px solid #F8B137; border-radius: 4px; padding: 16px 20px; margin: 24px 0;">
+                              <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">
+                                <strong>Tipo de Avaliação:</strong> ${tipoFeedback}
+                              </p>
+                              <p style="margin: 0; font-size: 14px; color: ${template.deadline ? '#d97706' : '#888'};">
+                                <strong>Data de Vencimento:</strong> ${deadlineText}
+                              </p>
+                            </div>
+
+                            <p style="font-size: 15px; color: #444; margin: 0 0 24px 0;">
+                              Por favor, acesse o sistema pelo link abaixo para preencher o formulário técnico:
+                            </p>
+
+                            <div style="text-align: center; margin: 30px 0;">
+                              <a href="https://feedback.loglabdigital.com.br/GestorFeedbacks"
+                                 style="display: inline-block; background: #F8B137; color: #14141E; padding: 14px 36px; border-radius: 8px; font-weight: 700; font-size: 15px; text-decoration: none; letter-spacing: 0.3px;">
+                                Acessar Avaliação de Serviço
+                              </a>
+                            </div>
+                          </div>
+
+                          <div style="background: #f3f4f6; padding: 16px 30px; text-align: center;">
+                            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                              LogLab Digital — Sistema de Compliance RH · Este é um email automático, não responda.
                             </p>
                           </div>
                         </div>
-                        
-                        <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 20px;">
-                          LogLab Digital - Sistema de Compliance RH
-                        </p>
                       </div>
                     `
                 });
@@ -116,8 +117,8 @@ Deno.serve(async (req) => {
         const successCount = results.filter(r => r.success).length;
         const failedEmails = results.filter(r => !r.success);
 
-        return Response.json({ 
-            success: true, 
+        return Response.json({
+            success: true,
             message: `Notificação enviada para ${successCount} de ${gestores.length} gestor(es)`,
             total_gestores: gestores.length,
             emails_enviados: successCount,
@@ -126,9 +127,6 @@ Deno.serve(async (req) => {
 
     } catch (error) {
         console.error('Erro ao notificar gestores:', error);
-        return Response.json({ 
-            error: error.message,
-            stack: error.stack 
-        }, { status: 500 });
+        return Response.json({ error: error.message }, { status: 500 });
     }
 });

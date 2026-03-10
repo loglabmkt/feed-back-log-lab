@@ -1,48 +1,41 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  TrendingUp, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle,
-  Users,
-  MessageSquare
-} from "lucide-react";
+import { TrendingUp, CheckCircle, AlertTriangle, MessageSquare } from "lucide-react";
 
 export default function KPICards({ stats, loading }) {
   const kpis = [
     {
-      title: "Taxa de Compliance",
+      title: "Índice Geral",
       value: `${stats.complianceRate}%`,
-      subtitle: "colaboradores em dia",
+      subtitle: "compliance baseado em prazos",
       icon: TrendingUp,
       bgColor: "from-amber-50 to-orange-50",
       iconBg: "bg-[#F8B137]/20",
       iconColor: "text-[#F8B137]"
     },
     {
-      title: "Total de Feedbacks",
+      title: "Total de Registros",
       value: stats.totalFeedbacks,
-      subtitle: "registrados no sistema",
+      subtitle: "feedbacks cadastrados",
       icon: MessageSquare,
       bgColor: "from-emerald-50 to-emerald-100",
       iconBg: "bg-emerald-200/50",
       iconColor: "text-emerald-700"
     },
     {
-      title: "Aguardando Validação",
-      value: stats.pendingValidations,
-      subtitle: "feedbacks pendentes",
-      icon: Clock,
-      bgColor: "from-amber-50 to-amber-100",
-      iconBg: "bg-amber-200/50",
-      iconColor: "text-amber-700"
+      title: "Concluídos",
+      value: stats.completedFeedbacks,
+      subtitle: "publicados ou assinados",
+      icon: CheckCircle,
+      bgColor: "from-blue-50 to-blue-100",
+      iconBg: "bg-blue-200/50",
+      iconColor: "text-blue-700"
     },
     {
-      title: "Radar de Risco",
+      title: "Em Risco / Atraso",
       value: stats.atRiskCount,
-      subtitle: ">90 dias sem feedback",
+      subtitle: "colaboradores sem conclusão",
       icon: AlertTriangle,
       bgColor: "from-red-50 to-red-100",
       iconBg: "bg-red-200/50",

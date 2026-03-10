@@ -333,6 +333,42 @@ export default function Feedbacks() {
         )}
       </div>
 
+      {/* Dialog de Prazo */}
+      <Dialog open={!!deadlineTemplate} onOpenChange={() => setDeadlineTemplate(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Definir Prazo</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <p className="text-sm text-slate-500">{deadlineTemplate?.title}</p>
+            <div>
+              <Label>Data limite para preenchimento</Label>
+              <Input
+                type="date"
+                value={deadlineValue}
+                onChange={(e) => setDeadlineValue(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            {deadlineValue && (
+              <p className="text-xs text-slate-400">
+                Os gestores verão este prazo em destaque no painel deles.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeadlineTemplate(null)}>Cancelar</Button>
+            <Button
+              onClick={handleSaveDeadline}
+              disabled={savingDeadline}
+              style={{background: '#F8B137', color: '#14141E'}}
+            >
+              {savingDeadline ? 'Salvando...' : 'Salvar Prazo'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

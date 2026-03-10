@@ -85,7 +85,7 @@ export default function Relatorios() {
       }
       return true;
     });
-  }, [records, filterType, filterTemplate, filterGestor, filterDateFrom, filterDateTo]);
+  }, [records, filterTemplate, filterGestor, filterDateFrom, filterDateTo]);
 
   // ---------- template coverage (deadline-based) ----------
   const templateCoverage = useMemo(() => {

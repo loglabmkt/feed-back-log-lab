@@ -24,6 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import GestorLayout from "@/components/GestorLayout";
+import FeedbackContentSummary from "@/components/feedback/FeedbackContentSummary";
 
 export default function GerenciarFeedback() {
   const navigate = useNavigate();

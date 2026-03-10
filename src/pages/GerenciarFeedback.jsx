@@ -442,9 +442,64 @@ export default function GerenciarFeedback() {
                     </Button>
                   )}
                   {feedback.workflow_status === 'CONVERSA_REALIZADA' && (
-                    <Badge className="bg-indigo-100 text-indigo-700">
-                      ✓ Realizada em {feedback.conversation_completed_date && format(new Date(feedback.conversation_completed_date), "dd/MM/yyyy")}
-                    </Badge>
+                    <div className="space-y-3">
+                      <Badge className="bg-indigo-100 text-indigo-700">
+                        ✓ Realizada em {feedback.conversation_completed_date && format(new Date(feedback.conversation_completed_date), "dd/MM/yyyy")}
+                      </Badge>
+
+                      {/* Comentário salvo */}
+                      {feedback.manager_conversation_notes && !showConversationNotes && (
+                        <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                          <p className="text-xs font-semibold text-slate-500 mb-1">Comentário da conversa:</p>
+                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{feedback.manager_conversation_notes}</p>
+                          <button
+                            onClick={() => { setConversationNotes(feedback.manager_conversation_notes); setShowConversationNotes(true); }}
+                            className="mt-1 text-xs text-blue-500 hover:text-blue-700 underline"
+                          >
+                            Editar comentário
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Botão adicionar comentário */}
+                      {!showConversationNotes && !feedback.manager_conversation_notes && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowConversationNotes(true)}
+                          className="gap-2"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          Adicionar Comentários
+                        </Button>
+                      )}
+
+                      {/* Caixa de comentário */}
+                      {showConversationNotes && (
+                        <div className="space-y-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                          <Label className="text-sm font-semibold text-slate-700">Comentário sobre a conversa realizada</Label>
+                          <p className="text-xs text-slate-500">Este comentário ficará visível para o administrador na avaliação do colaborador.</p>
+                          <Textarea
+                            value={conversationNotes}
+                            onChange={(e) => setConversationNotes(e.target.value)}
+                            placeholder="Descreva como foi a conversa, pontos discutidos, reações do colaborador..."
+                            className="min-h-[100px] resize-none"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => setShowConversationNotes(false)}>Cancelar</Button>
+                            <Button
+                              size="sm"
+                              onClick={handleSaveConversationNotes}
+                              disabled={savingNotes || !conversationNotes.trim()}
+                              style={{background: '#14141E', color: 'white'}}
+                            >
+                              {savingNotes ? "Salvando..." : "Salvar Comentário"}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

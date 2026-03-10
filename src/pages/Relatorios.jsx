@@ -73,7 +73,6 @@ export default function Relatorios() {
   // ---------- filtered records ----------
   const filtered = useMemo(() => {
     return records.filter(r => {
-      if (filterType !== "all" && r.feedback_type !== filterType) return false;
       if (filterTemplate !== "all" && r.template_id !== filterTemplate) return false;
       if (filterGestor !== "all" && r.manager_id !== filterGestor) return false;
       if (filterDateFrom) {

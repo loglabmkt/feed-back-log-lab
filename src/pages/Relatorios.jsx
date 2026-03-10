@@ -302,18 +302,6 @@ export default function Relatorios() {
             <Filter className="w-4 h-4" />
             Filtros
           </div>
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-44 h-9 text-sm">
-              <SelectValue placeholder="Tipo de Ritual" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os tipos</SelectItem>
-              {Object.entries(TIPO_LABELS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           <Select value={filterTemplate} onValueChange={setFilterTemplate}>
             <SelectTrigger className="w-52 h-9 text-sm">
               <SelectValue placeholder="Formulário" />

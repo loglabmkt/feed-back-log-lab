@@ -44,7 +44,8 @@ export default function Layout({ children, currentPageName }) {
     '/avaliacaotrimestral',
     '/avaliacaoexperiencia45',
     '/avaliacaoqualidadeservico90',
-    '/registro11'
+    '/registro11',
+    '/confirmarfeedback'
   ];
   
   // Usar correspondência exata ou inicial para evitar conflitos (ex: /colaborador vs /colaboradores)

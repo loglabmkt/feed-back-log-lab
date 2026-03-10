@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
         const emailPromises = gestores.map(async (gestor) => {
             try {
                 await resend.emails.send({
-                    from: 'Compliance RH <marketing@loglabdigital.com.br>',
+                    from: 'Compliance RH <noreply@loglabdigital.com.br>',
                     to: gestor.email,
                     subject: `✅ Novo Template de Feedback Disponível: ${template.title}`,
                     html: `

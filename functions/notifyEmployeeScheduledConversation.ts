@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
         // Enviar email para o colaborador
         await resend.emails.send({
-            from: 'Compliance RH <marketing@loglabdigital.com.br>',
+            from: 'Compliance RH <noreply@loglabdigital.com.br>',
             to: feedback.employee_email,
             subject: `📅 Conversa Agendada sobre seu Feedback`,
             html: `

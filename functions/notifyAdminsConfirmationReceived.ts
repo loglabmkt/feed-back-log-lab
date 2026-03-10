@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
     // Email para Haisa e Rodolpho informando confirmação
     const result = await resend.emails.send({
       from: 'noreply@loglabdigital.com.br',
-      to: 'haisa@loglabdigital.com.br, rodolpho@loglabdigital.com.br',
+      to: 'haisa.hashimoto@loglabdigital.com.br, rodolpho.bispo@loglabdigital.com.br',
       subject: `Confirmação Recebida: Avaliação de Serviço ${employeeName}`,
       html: `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6;">

@@ -300,6 +300,16 @@ export default function Feedbacks() {
                         />
                       </div>
 
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleOpenDeadline(template)}
+                        title="Definir prazo"
+                        className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                      >
+                        <CalendarClock className="w-4 h-4" />
+                      </Button>
+
                       <Link to={createPageUrl("EditarFeedback") + `?id=${template.id}`}>
                         <Button variant="outline" size="icon">
                           <Pencil className="w-4 h-4" />

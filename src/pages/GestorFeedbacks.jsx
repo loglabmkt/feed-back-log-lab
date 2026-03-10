@@ -126,22 +126,7 @@ export default function GestorFeedbacks() {
     }
   };
 
-  // Helper: retorna info de prazo com cor dinâmica
-  const getDeadlineInfo = (deadline) => {
-    if (!deadline) return null;
-    const [year, month, day] = deadline.split('-');
-    const formatted = `${day}/${month}/${year}`;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const deadlineDate = new Date(deadline);
-    deadlineDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return { color: 'text-red-600', Icon: AlertTriangle, label: `Prazo encerrado em ${formatted}` };
-    if (diffDays <= 7) return { color: 'text-red-500', Icon: AlertTriangle, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
-    if (diffDays <= 15) return { color: 'text-orange-500', Icon: CalendarClock, label: `Prazo: ${formatted} (${diffDays}d restantes)` };
-    return { color: 'text-amber-600', Icon: CalendarClock, label: `Prazo: ${formatted}` };
-  };
 
   if (loading) {
     return (

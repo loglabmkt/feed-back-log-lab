@@ -37,9 +37,7 @@ export default function Feedbacks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [deadlineTemplate, setDeadlineTemplate] = useState(null); // template sendo editado para prazo
-  const [deadlineValue, setDeadlineValue] = useState("");
-  const [savingDeadline, setSavingDeadline] = useState(false);
+
 
   useEffect(() => {
     loadData();

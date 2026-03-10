@@ -491,11 +491,61 @@ export default function GerenciarFeedback() {
           </CardContent>
         </Card>
 
-        <Alert className="bg-blue-50 border-blue-200">
-          <AlertDescription className="text-blue-700">
-            <strong>Importante:</strong> O colaborador só poderá visualizar o feedback após você publicá-lo. Siga todas as etapas em ordem.
-          </AlertDescription>
-        </Alert>
+        {/* Etapa 4: Validação Confirmada */}
+        {(feedback.workflow_status === 'PUBLICADO' || feedback.workflow_status === 'ASSINADO_COLABORADOR') && (
+          <Card className="border-0 shadow-sm">
+            <CardContent className="pt-6">
+              <div className={`p-6 rounded-xl border-2 transition-all ${
+                feedback.workflow_status === 'ASSINADO_COLABORADOR'
+                  ? 'border-green-400 bg-green-50'
+                  : 'border-slate-200 bg-slate-50'
+              }`}>
+                <div className="flex items-start gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    feedback.workflow_status === 'ASSINADO_COLABORADOR'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-slate-300 text-slate-600'
+                  }`}>
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2">4. Validação Confirmada</h3>
+                    {feedback.workflow_status === 'PUBLICADO' && (
+                      <div className="space-y-2">
+                        <Badge className="bg-yellow-100 text-yellow-700">⏳ Aguardando confirmação do prestador</Badge>
+                        <p className="text-sm text-slate-500">O email com o link de validação foi enviado para <strong>{feedback.employee_email}</strong>.</p>
+                      </div>
+                    )}
+                    {feedback.workflow_status === 'ASSINADO_COLABORADOR' && (
+                      <div className="space-y-2">
+                        <Badge className="bg-green-100 text-green-700">✓ Prestador confirmou o recebimento</Badge>
+                        {feedback.employee_validation_date && (
+                          <p className="text-sm text-slate-500">
+                            Confirmado em {format(new Date(feedback.employee_validation_date), "dd/MM/yyyy 'às' HH:mm")}
+                          </p>
+                        )}
+                        {feedback.employee_comments && (
+                          <div className="p-3 bg-white rounded-lg border border-green-200">
+                            <p className="text-xs font-semibold text-slate-500 mb-1">Comentário do prestador:</p>
+                            <p className="text-sm text-slate-700">{feedback.employee_comments}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {feedback.workflow_status !== 'PUBLICADO' && feedback.workflow_status !== 'ASSINADO_COLABORADOR' && (
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertDescription className="text-blue-700">
+              <strong>Importante:</strong> Siga todas as etapas em ordem. O colaborador receberá o link de validação por email após o envio.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </GestorLayout>
   );

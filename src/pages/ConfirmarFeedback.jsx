@@ -41,14 +41,15 @@ export default function ConfirmarFeedback() {
 
       // Atualizar status para confirmado
       await base44.asServiceRole.entities.FeedbackRecord.update(fb.id, {
-        workflow_status: "ASSINADO_COLABORADOR"
+        workflow_status: "ASSINADO_COLABORADOR",
+        employee_validation_date: new Date().toISOString()
       });
 
       // Enviar email de confirmação para Haisa e Rodolpho
       await base44.functions.invoke('notifyAdminsConfirmationReceived', {
         feedbackId: fb.id,
         employeeName: fb.employee_name
-      }).catch(() => {});
+      }).catch((e) => { console.error('Notify admins error:', e); });
 
       setStatus("success");
     } catch (err) {

@@ -182,7 +182,19 @@ export default function GestorFeedbacks() {
                   <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>
                       <CardTitle className="flex items-start justify-between">
-                        <span className="text-base">{template.title}</span>
+                        <div>
+                          <span className="text-base">{template.title}</span>
+                          {(() => {
+                            const di = getDeadlineInfo(template.deadline);
+                            if (!di) return null;
+                            const Icon = di.icon;
+                            return (
+                              <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${di.color}`}>
+                                <Icon className="w-3 h-3 flex-shrink-0" />
+                                {di.label}
+                              </p>
+                            );
+                          })()}
                         <Badge className="ml-2" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
                           {template.feedback_type === 'feedback' ? 'Feedback' :
                            template.feedback_type === 'one_on_one' ? 'One-on-One' :

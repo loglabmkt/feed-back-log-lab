@@ -33,6 +33,10 @@ export default function GerenciarFeedback() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
+  const [showFullContent, setShowFullContent] = useState(false);
+  const [showConversationNotes, setShowConversationNotes] = useState(false);
+  const [conversationNotes, setConversationNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
 
   useEffect(() => {
     checkAuth();

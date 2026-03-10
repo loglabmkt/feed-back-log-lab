@@ -48,7 +48,6 @@ export default function Relatorios() {
   const [colaboradores, setColaboradores] = useState([]);
 
   // Filters
-  const [filterType, setFilterType] = useState("all");
   const [filterTemplate, setFilterTemplate] = useState("all");
   const [filterGestor, setFilterGestor] = useState("all");
   const [filterDateFrom, setFilterDateFrom] = useState("");

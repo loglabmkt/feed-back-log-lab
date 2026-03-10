@@ -211,25 +211,6 @@ export default function Feedbacks() {
                     <p className="text-sm text-slate-500 mb-1">
                       {template.checklist_questions?.length || 0} perguntas no checklist
                     </p>
-                    {template.deadline && (() => {
-                      const [y, m, d] = template.deadline.split('-');
-                      const deadlineDate = new Date(template.deadline + 'T00:00:00');
-                      const today = new Date();
-                      today.setHours(0,0,0,0);
-                      const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-                      const color = diffDays < 0 ? 'text-red-500' : diffDays <= 7 ? 'text-orange-500' : 'text-amber-600';
-                      return (
-                        <p className={`text-xs font-medium mb-3 flex items-center gap-1 ${color}`}>
-                          <CalendarClock className="w-3 h-3" />
-                          Prazo: {d}/{m}/{y}
-                          {diffDays < 0 && ' · Vencido'}
-                          {diffDays >= 0 && diffDays <= 7 && ` · Vence em ${diffDays}d`}
-                        </p>
-                      );
-                    })()}
-                    {!template.deadline && isAdmin && (
-                      <p className="text-xs text-slate-400 mb-3">Sem prazo definido</p>
-                    )}
                     {isAdmin && (() => {
                       const stats = getUsageStats(template.id);
                       return stats.total > 0 ? (

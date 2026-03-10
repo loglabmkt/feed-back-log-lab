@@ -1,18 +1,18 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, CheckCircle, AlertTriangle, Clock } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
 
-export default function ComplianceGauge({ complianceRate }) {
+export default function ComplianceGauge({ complianceRate, templateCoverage = [] }) {
   const gaugeData = [
     { value: complianceRate },
     { value: 100 - complianceRate }
   ];
 
   const getColor = () => {
-    if (complianceRate >= 80) return '#10B981'; // green
-    if (complianceRate >= 50) return '#F59E0B'; // amber
-    return '#EF4444'; // red
+    if (complianceRate >= 80) return '#10B981';
+    if (complianceRate >= 50) return '#F59E0B';
+    return '#EF4444';
   };
 
   const getLabel = () => {
@@ -21,26 +21,28 @@ export default function ComplianceGauge({ complianceRate }) {
     return 'Crítico';
   };
 
+  // Sumário dos templates
+  const totalExpected = templateCoverage.reduce((s, t) => s + t.total, 0);
+  const totalCovered = templateCoverage.reduce((s, t) => s + t.covered, 0);
+  const overdueTemplates = templateCoverage.filter(t => t.isOverdue && t.missing > 0);
+
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          Índice de Compliance Geral
+          <TrendingUp className="w-5 h-5" style={{ color: '#F8B137' }} />
+          Índice Geral
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative flex flex-col items-center">
-          <div className="relative w-64 h-64">
-            <PieChart width={256} height={256}>
+        <div className="flex flex-col items-center">
+          <div className="relative w-52 h-52">
+            <PieChart width={208} height={208}>
               <Pie
                 data={gaugeData}
-                cx={128}
-                cy={128}
-                startAngle={180}
-                endAngle={0}
-                innerRadius={80}
-                outerRadius={110}
+                cx={104} cy={104}
+                startAngle={180} endAngle={0}
+                innerRadius={65} outerRadius={90}
                 paddingAngle={0}
                 dataKey="value"
               >
@@ -48,26 +50,55 @@ export default function ComplianceGauge({ complianceRate }) {
                 <Cell fill="#E2E8F0" />
               </Pie>
             </PieChart>
-            <div className="absolute inset-0 flex flex-col items-center justify-center pt-8">
-              <span className="text-5xl font-bold text-slate-900">{complianceRate}%</span>
-              <span className="text-sm font-medium text-slate-500 mt-1">{getLabel()}</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pt-6">
+              <span className="text-4xl font-bold text-slate-900">{complianceRate}%</span>
+              <span className="text-sm font-medium text-slate-500">{getLabel()}</span>
             </div>
           </div>
-          
-          <div className="grid grid-cols-3 gap-4 mt-6 w-full max-w-md">
-            <div className="text-center p-3 bg-emerald-50 rounded-lg">
-              <div className="w-3 h-3 bg-emerald-500 rounded-full mx-auto mb-1" />
-              <p className="text-xs text-slate-600">≥80% Excelente</p>
+
+          {/* Sumário debaixo do gauge */}
+          {templateCoverage.length > 0 ? (
+            <div className="w-full mt-2 space-y-1">
+              <div className="flex justify-between text-xs text-slate-600 px-1">
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-emerald-500" />
+                  {totalCovered} concluídos
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-amber-500" />
+                  {totalExpected - totalCovered} pendentes
+                </span>
+              </div>
+              {overdueTemplates.length > 0 && (
+                <div className="mt-2 p-2 bg-red-50 rounded-lg">
+                  <p className="text-xs text-red-700 font-medium flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    {overdueTemplates.length} formulário(s) com prazo vencido
+                  </p>
+                  {overdueTemplates.slice(0, 2).map(t => (
+                    <p key={t.template.id} className="text-xs text-red-600 mt-1 truncate">
+                      • {t.template.title}: {t.missing} pendente(s)
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="text-center p-3 bg-amber-50 rounded-lg">
-              <div className="w-3 h-3 bg-amber-500 rounded-full mx-auto mb-1" />
-              <p className="text-xs text-slate-600">50-79% Adequado</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2 mt-4 w-full text-center">
+              <div className="p-2 bg-emerald-50 rounded-lg">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mx-auto mb-1" />
+                <p className="text-xs text-slate-600">≥80%</p>
+              </div>
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <div className="w-2 h-2 bg-amber-500 rounded-full mx-auto mb-1" />
+                <p className="text-xs text-slate-600">50–79%</p>
+              </div>
+              <div className="p-2 bg-red-50 rounded-lg">
+                <div className="w-2 h-2 bg-red-500 rounded-full mx-auto mb-1" />
+                <p className="text-xs text-slate-600">&lt;50%</p>
+              </div>
             </div>
-            <div className="text-center p-3 bg-red-50 rounded-lg">
-              <div className="w-3 h-3 bg-red-500 rounded-full mx-auto mb-1" />
-              <p className="text-xs text-slate-600">&lt;50% Crítico</p>
-            </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -138,6 +138,22 @@ export default function GerenciarFeedback() {
     }
   };
 
+  const handleSaveConversationNotes = async () => {
+    if (!conversationNotes.trim()) return;
+    setSavingNotes(true);
+    try {
+      await base44.entities.FeedbackRecord.update(feedback.id, {
+        manager_conversation_notes: conversationNotes.trim()
+      });
+      setFeedback(prev => ({ ...prev, manager_conversation_notes: conversationNotes.trim() }));
+      setShowConversationNotes(false);
+    } catch (e) {
+      setError(e.message || "Erro ao salvar comentário");
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
   const handlePublish = async () => {
     setError("");
     setProcessing(true);

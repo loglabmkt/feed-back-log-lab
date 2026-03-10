@@ -520,9 +520,9 @@ export default function GerenciarFeedback() {
                   <Send className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">3. Publicar Feedback</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">3. Enviar Feedback</h3>
                   <p className="text-sm text-slate-600 mb-4">
-                    Libere o acesso ao colaborador para visualização e validação do feedback.
+                    Envie o feedback para o prestador validar que concluiu todas as etapas da avaliação.
                   </p>
                   {feedback.workflow_status === 'CONVERSA_REALIZADA' && (
                     <Button
@@ -532,7 +532,7 @@ export default function GerenciarFeedback() {
                       className="font-semibold"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {processing ? "Publicando..." : "Publicar Feedback"}
+                      {processing ? "Enviando..." : "Enviar Agora"}
                     </Button>
                   )}
                 </div>

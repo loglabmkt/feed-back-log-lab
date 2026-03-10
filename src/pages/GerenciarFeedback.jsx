@@ -268,39 +268,70 @@ export default function GerenciarFeedback() {
         </Card>
 
         <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Conteúdo do Feedback</CardTitle>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle>Resumo da Avaliação</CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFullContent(!showFullContent)}
+                className="text-xs gap-1"
+              >
+                {showFullContent ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                {showFullContent ? "Ocultar Avaliação" : "Ver Avaliação Completa"}
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
-              <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
+          <CardContent>
+            {/* Resumo compacto sempre visível */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+              <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                <p className="font-semibold text-emerald-700 text-xs mb-1">Pontos Fortes</p>
+                <p className="text-slate-700 line-clamp-2">{feedback.strengths || <span className="text-slate-400 italic">—</span>}</p>
               </div>
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                <p className="font-semibold text-amber-700 text-xs mb-1">Pontos de Melhoria</p>
+                <p className="text-slate-700 line-clamp-2">{feedback.improvements || <span className="text-slate-400 italic">—</span>}</p>
+              </div>
+              {feedback.action_plan && (
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                  <p className="font-semibold text-blue-700 text-xs mb-1">Plano de Ação</p>
+                  <p className="text-slate-700 line-clamp-2">{feedback.action_plan}</p>
+                </div>
+              )}
             </div>
 
-            <div>
-              <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
-              <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
-                <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
-              </div>
-            </div>
-
-            {feedback.action_plan && (
-              <div>
-                <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
-                <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+            {/* Conteúdo completo expandível */}
+            {showFullContent && (
+              <div className="mt-4 space-y-4 border-t pt-4">
+                <div>
+                  <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos Fortes</Label>
+                  <div className="mt-2 p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                    <p className="text-slate-700 whitespace-pre-wrap">{feedback.strengths}</p>
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {feedback.additional_notes && (
-              <div>
-                <Label className="text-sm font-semibold text-slate-700 mb-2">Observações</Label>
-                <div className="mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <p className="text-slate-700 whitespace-pre-wrap">{feedback.additional_notes}</p>
+                <div>
+                  <Label className="text-sm font-semibold text-slate-700 mb-2">Pontos de Melhoria</Label>
+                  <div className="mt-2 p-4 bg-amber-50 rounded-lg border border-amber-100">
+                    <p className="text-slate-700 whitespace-pre-wrap">{feedback.improvements}</p>
+                  </div>
                 </div>
+                {feedback.action_plan && (
+                  <div>
+                    <Label className="text-sm font-semibold text-slate-700 mb-2">Plano de Ação</Label>
+                    <div className="mt-2 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                      <p className="text-slate-700 whitespace-pre-wrap">{feedback.action_plan}</p>
+                    </div>
+                  </div>
+                )}
+                {feedback.additional_notes && (
+                  <div>
+                    <Label className="text-sm font-semibold text-slate-700 mb-2">Observações</Label>
+                    <div className="mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                      <p className="text-slate-700 whitespace-pre-wrap">{feedback.additional_notes}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>

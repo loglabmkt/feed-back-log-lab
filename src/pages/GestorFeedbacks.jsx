@@ -164,33 +164,18 @@ export default function GestorFeedbacks() {
                 return (
                   <Card key={template.id} className="border-0 shadow-sm hover:shadow-md transition-shadow" style={isSpecial ? {borderLeft: '4px solid #F8B137'} : {}}>
                     <CardHeader>
-                      <CardTitle className="flex items-start justify-between">
+                      <div className="flex items-start justify-between gap-2">
                         <div>
-                          <span className="text-base">{template.title}</span>
-                          {template.deadline && (() => {
-                            const [y, m, d] = template.deadline.split('-');
-                            const deadlineDate = new Date(template.deadline + 'T00:00:00');
-                            const today = new Date();
-                            today.setHours(0,0,0,0);
-                            const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
-                            const color = diffDays < 0 ? 'text-red-500' : diffDays <= 7 ? 'text-orange-500' : 'text-amber-500';
-                            return (
-                              <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${color}`}>
-                                <CalendarClock className="w-3 h-3" />
-                                {d}/{m}/{y}
-                                {diffDays < 0 && ' · Prazo vencido'}
-                                {diffDays >= 0 && diffDays <= 7 && ` · Vence em ${diffDays} dia${diffDays !== 1 ? 's' : ''}`}
-                              </p>
-                            );
-                          })()}
+                          <p className="text-base font-semibold text-slate-900">{template.title}</p>
+                          <DeadlineBadge deadline={template.deadline} />
                         </div>
-                        <Badge className="ml-2 flex-shrink-0" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
+                        <Badge className="flex-shrink-0" style={isSpecial ? {background: '#14141E', color: '#F8B137'} : {background: '#F8B137', color: '#14141E'}}>
                           {template.feedback_type === 'feedback' ? 'Feedback' :
                            template.feedback_type === 'one_on_one' ? 'One-on-One' :
                            template.feedback_type === 'experience_45d' ? '45 Dias' :
                            template.feedback_type === 'experience_90d' ? '90 Dias' : 'Avaliação'}
                         </Badge>
-                      </CardTitle>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       {isExp90 ? (

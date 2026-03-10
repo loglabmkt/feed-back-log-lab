@@ -12,6 +12,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import GestorLayout from "@/components/GestorLayout";
 import { createPageUrl } from "@/utils";
 
+function DeadlineBadge({ deadline }) {
+  if (!deadline) return null;
+  const [y, m, d] = deadline.split('-');
+  const deadlineDate = new Date(deadline + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+  const color = diffDays < 0 ? 'text-red-500' : diffDays <= 7 ? 'text-orange-500' : 'text-amber-500';
+  return (
+    <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${color}`}>
+      <CalendarClock className="w-3 h-3" />
+      {d}/{m}/{y}
+      {diffDays < 0 && ' · Prazo vencido'}
+      {diffDays >= 0 && diffDays <= 7 && ` · Vence em ${diffDays} dia${diffDays !== 1 ? 's' : ''}`}
+    </p>
+  );
+}
+
 export default function GestorFeedbacks() {
   const [gestor, setGestor] = useState(null);
   const [templates, setTemplates] = useState([]);

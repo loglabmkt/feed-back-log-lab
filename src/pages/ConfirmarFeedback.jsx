@@ -4,7 +4,6 @@ import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { createPageUrl } from "@/utils";
 
 export default function ConfirmarFeedback() {
   const [searchParams] = useSearchParams();
@@ -21,51 +20,36 @@ export default function ConfirmarFeedback() {
     try {
       if (!token) {
         setStatus("error");
-        setError("Token de confirmação inválido");
+        setError("Token de confirmação inválido ou ausente.");
         return;
       }
 
-      // Buscar feedback com este token
-      const feedbacks = await base44.asServiceRole.entities.FeedbackRecord.filter({
-        public_access_token: token
-      });
+      // Chama função backend que usa asServiceRole (sem exigir auth do usuário)
+      const response = await base44.functions.invoke('confirmFeedbackToken', { token });
+      const data = response?.data;
 
-      if (!feedbacks || feedbacks.length === 0) {
+      if (!data?.success) {
         setStatus("error");
-        setError("Feedback não encontrado ou token expirado");
+        setError(data?.error || "Token inválido ou expirado.");
         return;
       }
 
-      const fb = feedbacks[0];
-      setFeedback(fb);
-
-      // Atualizar status para confirmado
-      await base44.asServiceRole.entities.FeedbackRecord.update(fb.id, {
-        workflow_status: "ASSINADO_COLABORADOR",
-        employee_validation_date: new Date().toISOString()
-      });
-
-      // Enviar email de confirmação para Haisa e Rodolpho
-      await base44.functions.invoke('notifyAdminsConfirmationReceived', {
-        feedbackId: fb.id,
-        employeeName: fb.employee_name
-      }).catch((e) => { console.error('Notify admins error:', e); });
-
+      setFeedback(data.feedback);
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setError(err.message || "Erro ao confirmar feedback");
+      setError(err?.response?.data?.error || err.message || "Erro ao confirmar feedback.");
     }
   };
 
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
+        <Card className="w-full max-w-md shadow-lg">
+          <CardContent className="pt-8 pb-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F8B137] mx-auto mb-4"></div>
-              <p className="text-slate-600">Processando sua confirmação...</p>
+              <p className="text-slate-600 font-medium">Processando sua confirmação...</p>
             </div>
           </CardContent>
         </Card>
@@ -76,7 +60,7 @@ export default function ConfirmarFeedback() {
   if (status === "error") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
               <AlertCircle className="w-6 h-6" />
@@ -85,12 +69,12 @@ export default function ConfirmarFeedback() {
           </CardHeader>
           <CardContent>
             <p className="text-slate-600 mb-6">{error}</p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full"
-              onClick={() => window.location.href = createPageUrl("Painel")}
+              onClick={() => window.location.href = "/"}
             >
-              Voltar ao Painel
+              Fechar
             </Button>
           </CardContent>
         </Card>
@@ -100,7 +84,7 @@ export default function ConfirmarFeedback() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <div className="text-center">
             <div className="flex justify-center mb-4">
@@ -116,26 +100,15 @@ export default function ConfirmarFeedback() {
             <p className="text-center text-slate-600">
               Agradecemos por confirmar o recebimento da sua avaliação de desempenho.
             </p>
-            
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <p className="text-sm text-slate-600">
-                <span className="font-semibold">Feedback ID:</span> {feedback?.id}
-              </p>
-              <p className="text-sm text-slate-600 mt-2">
-                <span className="font-semibold">Data da Confirmação:</span> {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-              </p>
+
+            <div className="bg-slate-50 p-4 rounded-lg text-sm text-slate-600 space-y-1">
+              <p><span className="font-semibold">Prestador:</span> {feedback?.employee_name}</p>
+              <p><span className="font-semibold">Data da Confirmação:</span> {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}</p>
             </div>
 
             <p className="text-center text-sm text-slate-500">
               Seu protocolo foi arquivado e será utilizado para fins de conformidade contratual.
             </p>
-
-            <Button 
-              className="w-full bg-[#F8B137] hover:bg-[#e6a030] text-[#14141E]"
-              onClick={() => window.location.href = createPageUrl("Painel")}
-            >
-              Voltar ao Painel
-            </Button>
           </div>
         </CardContent>
       </Card>

@@ -1039,6 +1039,24 @@ export default function RevisarFeedback() {
         </Card>
       )}
 
+      {/* Comentário do Gestor sobre a Conversa */}
+      {feedback.manager_conversation_notes && (
+        <Card className="border-0 shadow-sm" style={{borderLeft: '4px solid #3B82F6', background: '#eff6ff'}}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold flex items-center gap-2 text-blue-700">
+              <MessageSquare className="w-4 h-4" />
+              Comentário do Gestor — Conversa Realizada
+            </CardTitle>
+            <p className="text-xs text-blue-400">Registrado pelo gestor após a devolutiva com o colaborador</p>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 bg-white rounded-xl border border-blue-100 whitespace-pre-wrap text-sm text-slate-800 leading-relaxed">
+              {feedback.manager_conversation_notes}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Bloco de Calibragem — aparece sempre que houver nota salva */}
       {feedback.admin_director_notes && (
         <Card className="border-0 shadow-sm" style={{borderLeft: '4px solid #8B5CF6', background: '#faf5ff'}}>

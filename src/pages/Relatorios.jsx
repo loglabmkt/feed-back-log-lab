@@ -74,7 +74,7 @@ export default function Relatorios() {
   const filtered = useMemo(() => {
     return records.filter(r => {
       if (filterTemplate !== "all" && r.template_id !== filterTemplate) return false;
-      if (filterGestor !== "all" && r.manager_id !== filterGestor) return false;
+      if (filterGestor  !== "all" && r.manager_id  !== filterGestor)  return false;
       if (filterDateFrom) {
         const d = parseDate(r.feedback_date || r.created_date);
         if (!d || d < new Date(filterDateFrom)) return false;

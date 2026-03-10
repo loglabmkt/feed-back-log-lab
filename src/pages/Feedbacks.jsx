@@ -95,27 +95,6 @@ export default function Feedbacks() {
     }
   };
 
-  const handleOpenDeadline = (template) => {
-    setDeadlineTemplate(template);
-    setDeadlineValue(template.deadline || "");
-  };
-
-  const handleSaveDeadline = async () => {
-    if (!deadlineTemplate) return;
-    setSavingDeadline(true);
-    try {
-      await base44.entities.FeedbackTemplate.update(deadlineTemplate.id, {
-        deadline: deadlineValue || null
-      });
-      setDeadlineTemplate(null);
-      await loadData();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setSavingDeadline(false);
-    }
-  };
-
   const handleDelete = async () => {
     if (!deleteId) return;
     

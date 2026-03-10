@@ -155,8 +155,6 @@ export default function GestorFeedbacks() {
             const isExp90 = template.feedback_type === 'experience_90d';
             const is11 = template.feedback_type === 'one_on_one';
             const isSpecial = isAvaliacao || isExp45 || isExp90 || is11;
-            const deadlineInfo = getDeadlineInfo(template.deadline);
-
             return (
               <Card
                 key={template.id}
@@ -167,12 +165,6 @@ export default function GestorFeedbacks() {
                   <CardTitle className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <span className="text-base block">{template.title}</span>
-                      {deadlineInfo && (
-                        <p className={`text-xs font-medium mt-1 flex items-center gap-1 ${deadlineInfo.color}`}>
-                          <deadlineInfo.Icon className="w-3 h-3 flex-shrink-0" />
-                          {deadlineInfo.label}
-                        </p>
-                      )}
                     </div>
                     <Badge
                       className="flex-shrink-0"

@@ -80,44 +80,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Failed to send email to prestador' }, { status: 500 });
     }
 
-    // Email para Haisa e Rodolpho
-    const adminResult = await resend.emails.send({
-      from: 'noreply@loglabdigital.com.br',
-      to: 'haisa@loglabdigital.com.br, rodolpho@loglabdigital.com.br',
-      subject: `Processo Concluído: Avaliação de Serviço ${employee_name}`,
-      html: `
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #333; line-height: 1.6;">
-          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #14141E; margin: 0;">Log Lab Digital</h1>
-            </div>
-
-            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-              <p style="margin: 0 0 15px 0; font-size: 16px;">Olá, Haisa e Rodolpho,</p>
-              
-              <p style="margin: 15px 0; font-size: 15px;">
-                O processo de avaliação de nível de serviço do prestador <strong>${employee_name}</strong> foi finalizado com sucesso.
-              </p>
-
-              <p style="margin: 15px 0; font-size: 15px;">
-                Aguardando a confirmação de recebimento pelo prestador para conclusão do protocolo.
-              </p>
-
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${new URL(req.url).origin}/painel" style="display: inline-block; background: #F8B137; color: #14141E; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">
-                  Visualizar Histórico Finalizado
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      `
-    });
-
     return Response.json({ 
       success: true,
-      prestadorEmailId: prestadorResult.id,
-      adminEmailId: adminResult.id
+      prestadorEmailId: prestadorResult.id
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

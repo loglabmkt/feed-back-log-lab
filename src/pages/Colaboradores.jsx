@@ -420,6 +420,13 @@ export default function Colaboradores() {
                 employeeId={editingEmployee?.id || null}
                 eval45dCompleted={formData.eval_45d_completed}
                 onMark45dDone={() => setFormData({...formData, eval_45d_completed: true})}
+                useAdmissionForSchedule={formData.use_admission_for_schedule}
+                scheduleStartDate={formData.schedule_start_date}
+                onScheduleConfigChange={(cfg) => setFormData(prev => ({
+                  ...prev,
+                  use_admission_for_schedule: cfg.use_admission_for_schedule,
+                  schedule_start_date: cfg.schedule_start_date || ""
+                }))}
               />
             </div>
           </div>

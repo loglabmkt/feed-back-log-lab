@@ -141,6 +141,8 @@ export default function Colaboradores() {
           department: formData.department || null,
           admission_date: formData.admission_date || null,
           eval_45d_completed: false,
+          use_admission_for_schedule: formData.use_admission_for_schedule ?? false,
+          schedule_start_date: formData.schedule_start_date || null,
           status: "active"
         });
       }

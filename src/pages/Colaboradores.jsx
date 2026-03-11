@@ -127,6 +127,8 @@ export default function Colaboradores() {
           company_id: formData.company_id || null,
           manager_id: formData.manager_id || null,
           department: formData.department || null,
+          admission_date: formData.admission_date || null,
+          eval_45d_completed: false,
           status: "active"
         });
       }

@@ -83,7 +83,9 @@ export default function Colaboradores() {
       manager_id: employee.manager_id || "",
       department: employee.department || "",
       admission_date: employee.admission_date || "",
-      eval_45d_completed: employee.eval_45d_completed || false
+      eval_45d_completed: employee.eval_45d_completed || false,
+      use_admission_for_schedule: employee.use_admission_for_schedule ?? false,
+      schedule_start_date: employee.schedule_start_date || ""
     });
     setShowDialog(true);
   };

@@ -36,7 +36,9 @@ export default function Colaboradores() {
     email: "",
     company_id: "",
     manager_id: "",
-    department: ""
+    department: "",
+    admission_date: "",
+    eval_45d_completed: false
   });
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);

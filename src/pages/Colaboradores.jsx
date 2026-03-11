@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { UserCircle, Plus, Search, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import { UserCircle, Plus, Search, Pencil, ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RotinasAvaliacao from "@/components/colaboradores/RotinasAvaliacao";
 
 export default function Colaboradores() {
   const [employees, setEmployees] = useState([]);

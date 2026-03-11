@@ -112,7 +112,12 @@ export default function Colaboradores() {
 
     try {
       if (editingEmployee) {
-        await base44.entities.Colaborador.update(editingEmployee.id, formData);
+        await base44.entities.Colaborador.update(editingEmployee.id, {
+          ...formData,
+          company_id: formData.company_id || null,
+          manager_id: formData.manager_id || null,
+          admission_date: formData.admission_date || null
+        });
       } else {
         const emailExists = employees.some(e => e.email.toLowerCase() === formData.email.toLowerCase());
         if (emailExists) {

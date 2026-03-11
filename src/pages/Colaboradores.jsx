@@ -122,7 +122,8 @@ export default function Colaboradores() {
           ...formData,
           company_id: formData.company_id || null,
           manager_id: formData.manager_id || null,
-          admission_date: formData.admission_date || null
+          admission_date: formData.admission_date || null,
+          schedule_start_date: formData.schedule_start_date || null
         });
       } else {
         const emailExists = employees.some(e => e.email.toLowerCase() === formData.email.toLowerCase());

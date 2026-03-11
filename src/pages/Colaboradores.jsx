@@ -214,7 +214,7 @@ export default function Colaboradores() {
                     <div>
                       <h3 className="font-semibold text-slate-900">{employee.full_name}</h3>
                       <p className="text-sm text-slate-500">{employee.email}</p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500">
                         {company && <span>Empresa: {company.razao_social}</span>}
                         {manager && (
                           <>
@@ -226,6 +226,15 @@ export default function Colaboradores() {
                           <>
                             <span>•</span>
                             <span>{employee.department}</span>
+                          </>
+                        )}
+                        {employee.admission_date && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <CalendarDays className="w-3 h-3" />
+                              Admissão: {new Date(employee.admission_date + 'T00:00:00').toLocaleDateString('pt-BR')}
+                            </span>
                           </>
                         )}
                       </div>

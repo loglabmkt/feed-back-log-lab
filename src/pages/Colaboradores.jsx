@@ -288,80 +288,124 @@ export default function Colaboradores() {
       )}
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingEmployee ? 'Editar' : 'Novo'} Colaborador</DialogTitle>
+            <DialogTitle className="text-lg font-bold">
+              {editingEmployee ? 'Editar' : 'Novo'} Colaborador
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-                {error}
+
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-2">
+
+            {/* ── Coluna 1: Dados cadastrais ── */}
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-4 flex items-center gap-1.5">
+                <UserCircle className="w-3.5 h-3.5" />
+                Dados Cadastrais
+              </p>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Nome Completo *</Label>
+                  <Input
+                    value={formData.full_name}
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                    placeholder="Nome do colaborador"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Data de Admissão</Label>
+                  <Input
+                    type="date"
+                    value={formData.admission_date}
+                    onChange={(e) => setFormData({...formData, admission_date: e.target.value})}
+                  />
+                  <p className="text-xs text-slate-400">Usada para calcular os ciclos de avaliação obrigatórios</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Email *</Label>
+                  <Input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase()})}
+                    placeholder="email@empresa.com"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Empresa</Label>
+                  <Select
+                    value={formData.company_id || "none"}
+                    onValueChange={(v) => setFormData({...formData, company_id: v === "none" ? "" : v})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a empresa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sem empresa</SelectItem>
+                      {companies.map(c => (
+                        <SelectItem key={c.id} value={c.id}>{c.razao_social}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Gestor</Label>
+                  <Select
+                    value={formData.manager_id || "none"}
+                    onValueChange={(v) => setFormData({...formData, manager_id: v === "none" ? "" : v})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o gestor" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Sem gestor</SelectItem>
+                      {managers.map(m => (
+                        <SelectItem key={m.id} value={m.id}>{m.full_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Departamento</Label>
+                  <Input
+                    value={formData.department}
+                    onChange={(e) => setFormData({...formData, department: e.target.value})}
+                    placeholder="Ex: Comercial, TI, RH..."
+                  />
+                </div>
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Nome Completo *</Label>
-              <Input
-                value={formData.full_name}
-                onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                placeholder="Nome do colaborador"
-              />
             </div>
 
-            <div className="space-y-2">
-              <Label>Email *</Label>
-              <Input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase()})}
-                placeholder="email@empresa.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Empresa</Label>
-              <Select value={formData.company_id} onValueChange={(value) => setFormData({...formData, company_id: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={null}>Sem empresa</SelectItem>
-                  {companies.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.razao_social}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Gestor</Label>
-              <Select value={formData.manager_id} onValueChange={(value) => setFormData({...formData, manager_id: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o gestor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={null}>Sem gestor</SelectItem>
-                  {managers.map(m => (
-                    <SelectItem key={m.id} value={m.id}>{m.full_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Departamento</Label>
-              <Input
-                value={formData.department}
-                onChange={(e) => setFormData({...formData, department: e.target.value})}
-                placeholder="Ex: Comercial, TI, RH..."
+            {/* ── Coluna 2: Rotinas de Avaliação ── */}
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-4 flex items-center gap-1.5">
+                <CalendarDays className="w-3.5 h-3.5" />
+                Rotinas de Avaliação
+              </p>
+              <RotinasAvaliacao
+                admissionDate={formData.admission_date}
+                employeeId={editingEmployee?.id || null}
+                eval45dCompleted={formData.eval_45d_completed}
+                onMark45dDone={() => setFormData({...formData, eval_45d_completed: true})}
               />
             </div>
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handleSave}
               disabled={saving}
               style={{background: '#F8B137', color: '#14141E'}}

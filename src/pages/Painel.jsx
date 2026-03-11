@@ -68,7 +68,7 @@ export default function Painel() {
         totalFeedbacks: myFeedbacks.length,
         disponiveisGestor: myFeedbacks.filter(f => f.workflow_status === 'DISPONIVEL_PARA_GESTOR').length,
         emRevisao: myFeedbacks.filter(f => f.workflow_status === 'EM_REVISAO_ADMIN').length,
-        aguardandoColaborador: myFeedbacks.filter(f => f.workflow_status === 'AGUARDANDO_VALIDACAO_COLABORADOR').length,
+        aguardandoColaborador: myFeedbacks.filter(f => f.workflow_status === 'PUBLICADO').length,
         assinados: myFeedbacks.filter(f => f.workflow_status === 'ASSINADO_COLABORADOR').length,
         totalUsuarios: 0
       });

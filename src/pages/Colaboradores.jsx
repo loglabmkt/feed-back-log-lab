@@ -99,7 +99,9 @@ export default function Colaboradores() {
       manager_id: "",
       department: "",
       admission_date: "",
-      eval_45d_completed: false
+      eval_45d_completed: false,
+      use_admission_for_schedule: false,
+      schedule_start_date: ""
     });
     setShowDialog(true);
   };

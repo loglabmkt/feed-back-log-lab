@@ -91,7 +91,7 @@ export default function Painel() {
       DISPONIVEL_PARA_GESTOR: { label: "Disponível", color: "bg-blue-50 text-blue-700", icon: Clock },
       EM_REVISAO_ADMIN: { label: "Em Revisão", color: "bg-amber-50 text-amber-700", icon: Shield },
       CONCLUIDO_PARA_ENVIO: { label: "Aprovado", color: "bg-emerald-50 text-emerald-700", icon: CheckCircle },
-      AGUARDANDO_VALIDACAO_COLABORADOR: { label: "Aguardando", color: "bg-purple-50 text-purple-700", icon: Send },
+      PUBLICADO: { label: "Publicado", color: "bg-purple-50 text-purple-700", icon: Send },
       ASSINADO_COLABORADOR: { label: "Assinado", color: "bg-slate-100 text-slate-700", icon: CheckCircle }
     };
     const info = statusMap[status] || statusMap.DISPONIVEL_PARA_GESTOR;

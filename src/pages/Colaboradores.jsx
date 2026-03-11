@@ -79,7 +79,9 @@ export default function Colaboradores() {
       email: employee.email || "",
       company_id: employee.company_id || "",
       manager_id: employee.manager_id || "",
-      department: employee.department || ""
+      department: employee.department || "",
+      admission_date: employee.admission_date || "",
+      eval_45d_completed: employee.eval_45d_completed || false
     });
     setShowDialog(true);
   };
@@ -91,7 +93,9 @@ export default function Colaboradores() {
       email: "",
       company_id: "",
       manager_id: "",
-      department: ""
+      department: "",
+      admission_date: "",
+      eval_45d_completed: false
     });
     setShowDialog(true);
   };

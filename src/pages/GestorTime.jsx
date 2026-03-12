@@ -274,8 +274,13 @@ export default function GestorTime() {
                           {prestador.full_name}
                         </h3>
                         <p className="text-sm text-slate-500 truncate">
-                          {prestador.position || "—"}
+                          {prestador.email}
                         </p>
+                        {prestador.position && (
+                          <p className="text-xs text-slate-400 truncate">
+                            {prestador.position}
+                          </p>
+                        )}
                       </div>
                     </div>
 

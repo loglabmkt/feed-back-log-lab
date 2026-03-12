@@ -13,6 +13,7 @@ import {
   User, ClipboardList, Search, Users, BookOpen
 } from "lucide-react";
 import GuiaGestor45Dias from "@/components/avaliacao/GuiaGestor45Dias";
+import TeamModal from "@/components/gestores/TeamModal";
 
 const GUIA_READ_KEY_45 = "guia_45dias_lido";
 import { format } from "date-fns";
@@ -475,35 +476,17 @@ export default function AvaliacaoExperiencia45() {
         )}
 
         {/* Modal colaboradores */}
-        <Dialog open={showColabModal} onOpenChange={setShowColabModal}>
-          <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
-            <DialogHeader>
-              <DialogTitle>Selecionar Colaborador</DialogTitle>
-            </DialogHeader>
-            <div className="relative mb-3">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input value={modalSearch} onChange={(e) => setModalSearch(e.target.value)} placeholder="Buscar pelo nome..." className="pl-9" autoFocus />
-            </div>
-            <div className="overflow-y-auto flex-1 divide-y border rounded-xl">
-              {allColaboradores.filter(e => e.full_name.toLowerCase().includes(modalSearch.toLowerCase())).map(emp => (
-                <button key={emp.id} type="button"
-                  onClick={() => { setSelectedEmployee(emp); setShowColabModal(false); setSearchQuery(""); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 bg-white hover:bg-amber-50 text-left transition-colors"
-                >
-                  <Avatar className="h-8 w-8 flex-shrink-0">
-                    <AvatarFallback className="text-xs font-bold text-white bg-slate-400">{getInitials(emp.full_name)}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-slate-900 text-sm truncate">{emp.full_name}</p>
-                    <p className="text-xs text-slate-500 truncate">{emp.position || emp.department || emp.email}</p>
-                  </div>
-                  {evaluatedIds.has(emp.id) && <CheckCircle className="w-4 h-4 flex-shrink-0 text-emerald-500" title="Já avaliado" />}
-                  {selectedEmployee?.id === emp.id && <CheckCircle className="w-4 h-4 flex-shrink-0" style={{color: "#F8B137"}} />}
-                </button>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
+        {showColabModal && gestor && (
+          <TeamModal
+            manager={gestor}
+            allColaboradores={allColaboradores}
+            onClose={() => setShowColabModal(false)}
+            onSaved={() => {
+              setShowColabModal(false);
+            }}
+            ritualType="experience_45d"
+          />
+        )}
 
         {/* Submit */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">

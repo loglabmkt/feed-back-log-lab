@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Prestadores from './pages/Prestadores';
 import DetalhesPrestador from './pages/DetalhesPrestador';
+import MeuTime from './pages/MeuTime';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -75,6 +76,10 @@ const AuthenticatedApp = () => {
             <DetalhesPrestador />
           </LayoutWrapper>
         } 
+      />
+      <Route 
+        path="/MeuTime" 
+        element={<MeuTime />} 
       />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

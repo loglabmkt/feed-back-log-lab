@@ -81,12 +81,7 @@ function RitualCard({
   customStart,
   onToggleAdmission,
   onCustomStartChange,
-  onMarkCompleted,
-  showCompletionForm,
-  completionFormDate,
-  onCompletionDateChange,
-  onSaveCompletion,
-  onCancelCompletion
+  onMarkCompleted
 }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -166,7 +161,7 @@ function RitualCard({
         )}
 
         {/* Rituais únicos: botão de marcar como concluído */}
-        {isUnique && !isCompleted && !isExempt && !showCompletionForm && (
+        {isUnique && !isCompleted && !isExempt && (
           <Button
             size="sm"
             variant="outline"
@@ -174,54 +169,17 @@ function RitualCard({
             className="w-full text-xs"
           >
             <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-            Marcar como Concluído (Retroativo)
+            Marcar como Concluído
           </Button>
         )}
 
-        {/* Formulário de conclusão manual */}
-        {showCompletionForm && (
-          <div className="p-3 rounded-lg border border-blue-200 bg-blue-50 space-y-2">
-            <Label className="text-xs font-semibold text-slate-700">Data de realização *</Label>
-            <Input
-              type="date"
-              value={completionFormDate || ""}
-              onChange={(e) => onCompletionDateChange(e.target.value)}
-              className="h-8 text-sm"
-            />
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                onClick={onSaveCompletion}
-                disabled={!completionFormDate}
-                className="flex-1 text-xs"
-                style={{background: '#F8B137', color: '#14141E'}}
-              >
-                Confirmar
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={onCancelCompletion}
-                className="flex-1 text-xs"
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        )}
-
         {/* Info de conclusão */}
-        {isCompleted && completionDate && (
+        {isCompleted && (
           <div className="p-2.5 rounded-lg border border-emerald-200 bg-emerald-50">
             <p className="text-xs text-emerald-700">
               <CheckCircle2 className="w-3.5 h-3.5 inline mr-1" />
-              Concluído em: <strong>{fmt(parseSafeDate(completionDate))}</strong>
+              {isUnique ? 'Marcado como concluído' : 'Concluído'}
             </p>
-            {isUnique && (
-              <p className="text-xs text-emerald-600 mt-0.5">
-                Marcado manualmente (retroativo)
-              </p>
-            )}
           </div>
         )}
 
@@ -263,11 +221,7 @@ export default function RotinasAvaliacaoRefatorada({
   const [feedbackRecords, setFeedbackRecords] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Estados locais para formulários de conclusão manual
-  const [show45Form, setShow45Form] = useState(false);
-  const [completion45Date, setCompletion45Date] = useState("");
-  const [show90Form, setShow90Form] = useState(false);
-  const [completion90Date, setCompletion90Date] = useState("");
+
 
   useEffect(() => {
     if (prestadorId) {
@@ -372,24 +326,16 @@ export default function RotinasAvaliacaoRefatorada({
   // ══════════════════════════════════════════════════════════════
   // HANDLERS
   // ══════════════════════════════════════════════════════════════
-  const handleSave45Completion = async () => {
-    if (!completion45Date) return;
+  const handleMark45Completed = async () => {
     await onUpdateRitual?.({
-      ritual_45d_completed_manual: true,
-      ritual_45d_completion_date: completion45Date
+      ritual_45d_completed_manual: true
     });
-    setShow45Form(false);
-    setCompletion45Date("");
   };
 
-  const handleSave90Completion = async () => {
-    if (!completion90Date) return;
+  const handleMark90Completed = async () => {
     await onUpdateRitual?.({
-      ritual_90d_completed_manual: true,
-      ritual_90d_completion_date: completion90Date
+      ritual_90d_completed_manual: true
     });
-    setShow90Form(false);
-    setCompletion90Date("");
   };
 
   if (loading) {
@@ -421,15 +367,7 @@ export default function RotinasAvaliacaoRefatorada({
         customStart={cfg45.custom_start}
         onToggleAdmission={(val) => onUpdateRitual?.({ ritual_45d_use_admission: val })}
         onCustomStartChange={(val) => onUpdateRitual?.({ ritual_45d_custom_start: val || null })}
-        onMarkCompleted={() => setShow45Form(true)}
-        showCompletionForm={show45Form}
-        completionFormDate={completion45Date}
-        onCompletionDateChange={setCompletion45Date}
-        onSaveCompletion={handleSave45Completion}
-        onCancelCompletion={() => {
-          setShow45Form(false);
-          setCompletion45Date("");
-        }}
+        onMarkCompleted={handleMark45Completed}
       />
 
       {/* Ritual 90 Dias */}
@@ -448,15 +386,7 @@ export default function RotinasAvaliacaoRefatorada({
         customStart={cfg90.custom_start}
         onToggleAdmission={(val) => onUpdateRitual?.({ ritual_90d_use_admission: val })}
         onCustomStartChange={(val) => onUpdateRitual?.({ ritual_90d_custom_start: val || null })}
-        onMarkCompleted={() => setShow90Form(true)}
-        showCompletionForm={show90Form}
-        completionFormDate={completion90Date}
-        onCompletionDateChange={setCompletion90Date}
-        onSaveCompletion={handleSave90Completion}
-        onCancelCompletion={() => {
-          setShow90Form(false);
-          setCompletion90Date("");
-        }}
+        onMarkCompleted={handleMark90Completed}
       />
 
       {/* Ritual Trimestral */}

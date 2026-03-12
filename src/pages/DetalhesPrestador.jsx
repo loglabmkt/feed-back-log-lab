@@ -34,7 +34,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import RotinasAvaliacaoRefatorada from "@/components/colaboradores/RotinasAvaliacaoRefatorada";
+import RotinasAvaliacaoTabs from "@/components/colaboradores/RotinasAvaliacaoTabs";
 
 export default function DetalhesPrestador() {
   const navigate = useNavigate();
@@ -497,7 +497,7 @@ export default function DetalhesPrestador() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RotinasAvaliacaoRefatorada
+              <RotinasAvaliacaoTabs
                 prestadorId={prestadorId}
                 admissionDate={formData.admission_date}
                 ritual45dConfig={{

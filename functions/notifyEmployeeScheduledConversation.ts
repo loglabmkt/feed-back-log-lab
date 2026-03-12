@@ -32,16 +32,16 @@ Deno.serve(async (req) => {
 
         // Enviar email para o colaborador
         await resend.emails.send({
-            from: 'Compliance RH <noreply@loglabdigital.com.br>',
+            from: 'noreply@loglabdigital.com.br',
             to: feedback.employee_email,
-            subject: `📅 Conversa Agendada sobre seu Feedback`,
+            subject: 'Avaliação agendada: alinhe o melhor horário.',
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
                 <div style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                   <h2 style="color: #14141E; margin-bottom: 20px;">Olá, ${feedback.employee_name}</h2>
                   
                   <p style="color: #333; line-height: 1.6; font-size: 16px; margin-bottom: 20px;">
-                    Você tem uma nova conversa agendada com seu gestor sobre seu feedback no dia <strong>${dataFormatada}</strong>, combine o melhor horário com o seu gestor.
+                    Você tem uma nova conversa agendada com o contratante sobre sua avaliação técnica referente ao nível de serviço prestado, no dia <strong>${dataFormatada}</strong>, combine o horário mais adequado para ambos.
                   </p>
                   
                   <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px;">
@@ -55,8 +55,7 @@ Deno.serve(async (req) => {
                 </div>
                 
                 <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 20px;">
-                  Obrigado<br>
-                  LogLab Digital - Sistema de Compliance RH
+                  LogLab Digital
                 </p>
               </div>
             `

@@ -139,8 +139,8 @@ export default function GestorFeedbacks() {
   return (
     <GestorLayout currentPage="feedbacks" gestor={gestor}>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Meus Feedbacks</h1>
-        <p className="text-slate-500">Crie e gerencie feedbacks para sua equipe</p>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Feedbacks</h1>
+        <p className="text-slate-500">Inicie novas avaliações para sua equipe</p>
       </div>
 
       {/* Templates Ativos */}
@@ -253,57 +253,7 @@ export default function GestorFeedbacks() {
         </div>
       </div>
 
-      {/* Meus Feedbacks */}
-      <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Respondidos</h2>
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
-            {myFeedbacks.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">
-                Nenhum feedback criado ainda
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {myFeedbacks.map((feedback) => {
-                  const statusMap = {
-                    'DISPONIVEL_PARA_GESTOR': { label: 'Disponível', color: 'bg-blue-100 text-blue-700', clickable: false },
-                    'EM_REVISAO_ADMIN': { label: 'Em Revisão', color: 'bg-amber-100 text-amber-700', clickable: false },
-                    'APROVADO': { label: 'Aprovado - Ações Pendentes', color: 'bg-green-100 text-green-700', clickable: true },
-                    'CONVERSA_AGENDADA': { label: 'Conversa Agendada', color: 'bg-purple-100 text-purple-700', clickable: true },
-                    'CONVERSA_REALIZADA': { label: 'Conversa Realizada', color: 'bg-indigo-100 text-indigo-700', clickable: true },
-                    'PUBLICADO': { label: 'Publicado', color: 'bg-emerald-100 text-emerald-700', clickable: false },
-                    'ASSINADO_COLABORADOR': { label: 'Assinado', color: 'bg-teal-100 text-teal-700', clickable: false }
-                  };
-                  const statusDisplay = statusMap[feedback.workflow_status] || { label: feedback.workflow_status, color: 'bg-slate-100 text-slate-700', clickable: false };
 
-                  return (
-                    <div
-                      key={feedback.id}
-                      className={`flex items-center justify-between p-4 border rounded-lg transition-all ${statusDisplay.clickable ? 'hover:bg-slate-50 cursor-pointer hover:border-[#F8B137]' : 'hover:bg-slate-50'}`}
-                      onClick={() => {
-                        if (statusDisplay.clickable) {
-                          window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
-                        }
-                      }}
-                    >
-                      <div className="flex-1">
-                        <p className="font-medium text-slate-900">{feedback.employee_name}</p>
-                        <p className="text-sm text-slate-500">{feedback.template_title}</p>
-                        <p className="text-xs text-slate-400 mt-1">
-                          {new Date(feedback.feedback_date).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <Badge className={statusDisplay.color}>
-                        {statusDisplay.label}
-                      </Badge>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Dialog para criar feedback */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>

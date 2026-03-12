@@ -4,6 +4,7 @@ import {
   LayoutDashboard, 
   MessageSquare, 
   Users,
+  ClipboardList,
   LogOut, 
   Menu, 
   X 
@@ -91,7 +92,22 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
                 } : {}}
               >
                 <MessageSquare className={`w-5 h-5 ${currentPage === 'feedbacks' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
-                Meus Feedbacks
+                Feedbacks
+              </Link>
+              <Link
+                to="/painelgestor/respostas"
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  currentPage === 'respostas'
+                    ? 'text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                style={currentPage === 'respostas' ? {
+                  background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.15) 0%, rgba(248, 177, 55, 0.05) 100%)',
+                  borderLeft: '3px solid #F8B137'
+                } : {}}
+              >
+                <ClipboardList className={`w-5 h-5 ${currentPage === 'respostas' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
+                Respostas
               </Link>
               <Link
                 to={createPageUrl("MeuTime")}
@@ -151,7 +167,8 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
             </button>
             <h2 className="text-lg font-semibold text-slate-900">
               {currentPage === 'dashboard' && 'Dashboard'}
-              {currentPage === 'feedbacks' && 'Meus Feedbacks'}
+              {currentPage === 'feedbacks' && 'Feedbacks'}
+              {currentPage === 'respostas' && 'Respostas'}
               {currentPage === 'meutime' && 'Meu Time'}
             </h2>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
   ArrowLeft, 
@@ -28,6 +28,7 @@ import FeedbackContentSummary from "@/components/feedback/FeedbackContentSummary
 
 export default function GerenciarFeedback() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [feedback, setFeedback] = useState(null);
   const [gestor, setGestor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -214,7 +215,10 @@ export default function GerenciarFeedback() {
         <div>
           <Button 
             variant="ghost" 
-            onClick={() => navigate(createPageUrl("GestorFeedbacks"))}
+            onClick={() => {
+              const from = location.state?.from || '/painelgestor/feedbacks';
+              navigate(from);
+            }}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

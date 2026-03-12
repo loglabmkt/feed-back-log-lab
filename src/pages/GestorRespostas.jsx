@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,6 +9,7 @@ import GestorLayout from "@/components/GestorLayout";
 import { createPageUrl } from "@/utils";
 
 export default function GestorRespostas() {
+  const navigate = useNavigate();
   const [gestor, setGestor] = useState(null);
   const [feedbacks, setFeedbacks] = useState([]);
   const [colaboradores, setColaboradores] = useState([]);
@@ -180,7 +182,9 @@ export default function GestorRespostas() {
                     }`}
                     onClick={() => {
                       if (statusDisplay.clickable) {
-                        window.location.href = createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`;
+                        navigate(createPageUrl("GerenciarFeedback") + `?id=${feedback.id}`, {
+                          state: { from: '/painelgestor/respostas' }
+                        });
                       }
                     }}
                   >

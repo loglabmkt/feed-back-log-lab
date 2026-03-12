@@ -1,6 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { Users, Search, CheckCircle2, Circle, Loader2, X } from "lucide-react";
+import { Users, Search, CheckCircle2, Circle, Loader2, X, AlertCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,7 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export default function TeamModal({ manager, allColaboradores, onClose, onSaved }) {
+export default function TeamModal({ manager, allColaboradores, onClose, onSaved, ritualType }) {
   const [search, setSearch] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -24,6 +30,21 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved 
   );
 
   const [selected, setSelected] = useState(new Set(initialTeam));
+
+  // Verifica se colaborador está bloqueado para o ritual selecionado
+  const isBlocked = (colab) => {
+    if (!ritualType) return false;
+    
+    if (ritualType === 'experience_45d') {
+      return colab.ritual_45d_completed_manual === true;
+    }
+    
+    if (ritualType === 'experience_90d') {
+      return colab.ritual_90d_completed_manual === true;
+    }
+    
+    return false;
+  };
 
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
@@ -110,15 +131,20 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved 
             const isSelected = selected.has(colab.id);
             const isMine = initialTeam.has(colab.id);
             const isOthers = colab.manager_id && colab.manager_id !== manager.id;
+            const blocked = isBlocked(colab);
             return (
-              <button
-                key={colab.id}
-                type="button"
-                onClick={() => toggle(colab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                  isSelected ? "bg-amber-50 hover:bg-amber-100" : "bg-white hover:bg-slate-50"
-                }`}
-              >
+              <TooltipProvider key={colab.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => !blocked && toggle(colab.id)}
+                      disabled={blocked}
+                      className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                        blocked ? "bg-gray-100 cursor-not-allowed" :
+                        isSelected ? "bg-amber-50 hover:bg-amber-100" : "bg-white hover:bg-slate-50"
+                      }`}
+                    >
                 <div className={`w-5 h-5 flex-shrink-0 rounded-full border-2 flex items-center justify-center transition-colors ${
                   isSelected ? "border-amber-500 bg-amber-500" : "border-slate-300"
                 }`}>
@@ -127,22 +153,46 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved 
                 <Avatar className="h-8 w-8 flex-shrink-0">
                   <AvatarFallback
                     className="text-xs font-bold"
-                    style={{ background: isSelected ? "#F8B137" : "#e2e8f0", color: isSelected ? "#14141E" : "#64748b" }}
+                    style={{ 
+                      background: blocked ? "#d1d5db" : isSelected ? "#F8B137" : "#e2e8f0", 
+                      color: blocked ? "#9ca3af" : isSelected ? "#14141E" : "#64748b" 
+                    }}
                   >
                     {getInitials(colab.full_name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-slate-900 text-sm truncate">{colab.full_name}</p>
-                  <p className="text-xs text-slate-500 truncate">{colab.position || colab.department || colab.email}</p>
+                  <p className={`font-semibold text-sm truncate ${blocked ? "text-gray-400" : "text-slate-900"}`}>
+                    {colab.full_name}
+                  </p>
+                  <p className={`text-xs truncate ${blocked ? "text-gray-400" : "text-slate-500"}`}>
+                    {colab.position || colab.department || colab.email}
+                  </p>
                 </div>
-                {isMine && !isSelected && (
-                  <Badge className="text-xs bg-slate-100 text-slate-500">Remover</Badge>
+                {blocked ? (
+                  <Badge className="text-xs bg-gray-200 text-gray-600 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Avaliação já realizada
+                  </Badge>
+                ) : (
+                  <>
+                    {isMine && !isSelected && (
+                      <Badge className="text-xs bg-slate-100 text-slate-500">Remover</Badge>
+                    )}
+                    {isOthers && !isMine && (
+                      <Badge className="text-xs bg-blue-50 text-blue-600">Outro time</Badge>
+                    )}
+                  </>
                 )}
-                {isOthers && !isMine && (
-                  <Badge className="text-xs bg-blue-50 text-blue-600">Outro time</Badge>
-                )}
-              </button>
+                    </button>
+                  </TooltipTrigger>
+                  {blocked && (
+                    <TooltipContent>
+                      <p className="text-xs">Este colaborador já realizou esta avaliação</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             );
           })}
         </div>

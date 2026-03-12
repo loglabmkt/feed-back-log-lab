@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Shield, Plus, Search, Pencil, Users as UsersIcon, UserCheck, AlertCircle, Trash2 } from "lucide-react";
 import TeamModal from "@/components/gestores/TeamModal";
@@ -34,6 +35,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Gestores() {
+  const navigate = useNavigate();
   const [managers, setManagers] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -330,7 +332,7 @@ export default function Gestores() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setTeamModalManager(manager)}
+                      onClick={() => navigate(`/GestorTime?id=${manager.id}`)}
                       className="text-xs gap-1.5"
                     >
                       <UsersIcon className="w-3.5 h-3.5" />

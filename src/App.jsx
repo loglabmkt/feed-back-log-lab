@@ -11,6 +11,7 @@ import Prestadores from './pages/Prestadores';
 import DetalhesPrestador from './pages/DetalhesPrestador';
 import MeuTime from './pages/MeuTime';
 import GestorRespostas from './pages/GestorRespostas';
+import GestorTime from './pages/GestorTime';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -85,6 +86,14 @@ const AuthenticatedApp = () => {
       <Route 
         path="/painelgestor/respostas" 
         element={<GestorRespostas />} 
+      />
+      <Route 
+        path="/GestorTime" 
+        element={
+          <LayoutWrapper currentPageName="GestorTime">
+            <GestorTime />
+          </LayoutWrapper>
+        } 
       />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

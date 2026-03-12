@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { DateInput } from "@/components/ui/date-input";
 import { 
   CheckCircle2, 
   Clock, 
@@ -126,12 +127,11 @@ function RitualCard({
         {!useAdmission && (
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-700">Data de início</Label>
-            <Input
-              type="date"
+            <DateInput
               value={customStart || ""}
-              onChange={(e) => onCustomStartChange(e.target.value)}
+              onChange={onCustomStartChange}
               disabled={isCompleted}
-              className="h-8 text-sm"
+              className="h-8"
             />
           </div>
         )}

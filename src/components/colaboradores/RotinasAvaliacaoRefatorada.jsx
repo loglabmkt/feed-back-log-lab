@@ -193,11 +193,11 @@ function RitualCard({
           </div>
         )}
 
-        {/* Histórico (rituais recorrentes) */}
-        {!isUnique && totalCompleted > 0 && (
+        {/* Histórico (rituais recorrentes e únicos concluídos) */}
+        {totalCompleted > 0 && (
           <div className="p-2.5 rounded-lg bg-slate-50">
             <p className="text-xs text-slate-600">
-              Última conclusão: <strong>{fmt(parseSafeDate(lastCompletedDate))}</strong>
+              Última conclusão: <strong>{lastCompletedDate ? fmt(parseSafeDate(lastCompletedDate)) : "—"}</strong>
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
               Total de avaliações realizadas: {totalCompleted}
@@ -256,26 +256,28 @@ export default function RotinasAvaliacaoRefatorada({
   const due45 = base45 ? addDays(base45, 45) : null;
   const days45 = due45 ? differenceInDays(due45, today) : null;
 
-  const has45Record = feedbackRecords.some(
-    r => r.feedback_type === "experience_45d" && 
-         SUBMITTED_STATUSES.includes(r.workflow_status)
-  );
+  const records45 = feedbackRecords
+    .filter(r => r.feedback_type === "experience_45d" && r.workflow_status === "ASSINADO_COLABORADOR")
+    .sort((a, b) => new Date(b.employee_validation_date || 0) - new Date(a.employee_validation_date || 0));
+  const last45 = records45[0];
+  const has45Record = records45.length > 0;
   const is45Completed = cfg45.completed_manual || has45Record;
   const is45Exempt = !is45Completed && due45 && differenceInDays(today, due45) > 0;
 
   const actual45CompletionDate = cfg45.completed_manual 
     ? cfg45.completion_date 
-    : feedbackRecords.find(r => r.feedback_type === "experience_45d")?.employee_validation_date;
+    : last45?.employee_validation_date;
+  const last45Date = last45 ? parseSafeDate(last45.employee_validation_date) : null;
 
   // ══════════════════════════════════════════════════════════════
   // RITUAL 90 DIAS
   // ══════════════════════════════════════════════════════════════
   const cfg90 = ritual90dConfig || {};
   const records90 = feedbackRecords
-    .filter(r => r.feedback_type === "experience_90d" && SUBMITTED_STATUSES.includes(r.workflow_status))
-    .sort((a, b) => new Date(b.employee_validation_date || b.feedback_date) - new Date(a.employee_validation_date || a.feedback_date));
+    .filter(r => r.feedback_type === "experience_90d" && r.workflow_status === "ASSINADO_COLABORADOR")
+    .sort((a, b) => new Date(b.employee_validation_date || 0) - new Date(a.employee_validation_date || 0));
   const last90 = records90[0];
-  const last90Date = last90 ? parseSafeDate(last90.employee_validation_date || last90.feedback_date) : null;
+  const last90Date = last90 ? parseSafeDate(last90.employee_validation_date) : null;
 
   const base90 = last90Date 
     ? last90Date 
@@ -296,10 +298,10 @@ export default function RotinasAvaliacaoRefatorada({
   // ══════════════════════════════════════════════════════════════
   const cfgTri = ritualTriConfig || {};
   const recordsTri = feedbackRecords
-    .filter(r => r.feedback_type === "evaluation" && SUBMITTED_STATUSES.includes(r.workflow_status))
-    .sort((a, b) => new Date(b.employee_validation_date || b.feedback_date) - new Date(a.employee_validation_date || a.feedback_date));
+    .filter(r => r.feedback_type === "evaluation" && r.workflow_status === "ASSINADO_COLABORADOR")
+    .sort((a, b) => new Date(b.employee_validation_date || 0) - new Date(a.employee_validation_date || 0));
   const lastTri = recordsTri[0];
-  const lastTriDate = lastTri ? parseSafeDate(lastTri.employee_validation_date || lastTri.feedback_date) : null;
+  const lastTriDate = lastTri ? parseSafeDate(lastTri.employee_validation_date) : null;
 
   const baseTri = lastTriDate 
     ? lastTriDate 
@@ -312,10 +314,10 @@ export default function RotinasAvaliacaoRefatorada({
   // ══════════════════════════════════════════════════════════════
   const cfg1on1 = ritual1on1Config || {};
   const records1on1 = feedbackRecords
-    .filter(r => r.feedback_type === "one_on_one" && SUBMITTED_STATUSES.includes(r.workflow_status))
-    .sort((a, b) => new Date(b.employee_validation_date || b.feedback_date) - new Date(a.employee_validation_date || a.feedback_date));
+    .filter(r => r.feedback_type === "one_on_one" && r.workflow_status === "ASSINADO_COLABORADOR")
+    .sort((a, b) => new Date(b.employee_validation_date || 0) - new Date(a.employee_validation_date || 0));
   const last1on1 = records1on1[0];
-  const last1on1Date = last1on1 ? parseSafeDate(last1on1.employee_validation_date || last1on1.feedback_date) : null;
+  const last1on1Date = last1on1 ? parseSafeDate(last1on1.employee_validation_date) : null;
 
   const base1on1 = last1on1Date 
     ? last1on1Date 
@@ -363,6 +365,8 @@ export default function RotinasAvaliacaoRefatorada({
         isCompleted={is45Completed}
         isExempt={is45Exempt}
         completionDate={actual45CompletionDate}
+        lastCompletedDate={last45Date}
+        totalCompleted={records45.length}
         useAdmission={cfg45.use_admission ?? true}
         customStart={cfg45.custom_start}
         onToggleAdmission={(val) => onUpdateRitual?.({ ritual_45d_use_admission: val })}

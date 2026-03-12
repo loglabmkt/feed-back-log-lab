@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import Prestadores from './pages/Prestadores';
+import DetalhesPrestador from './pages/DetalhesPrestador';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -58,6 +60,22 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route 
+        path="/Prestadores" 
+        element={
+          <LayoutWrapper currentPageName="Prestadores">
+            <Prestadores />
+          </LayoutWrapper>
+        } 
+      />
+      <Route 
+        path="/DetalhesPrestador" 
+        element={
+          <LayoutWrapper currentPageName="DetalhesPrestador">
+            <DetalhesPrestador />
+          </LayoutWrapper>
+        } 
+      />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -144,8 +144,8 @@ export default function Layout({ children, currentPageName }) {
       show: isAdmin 
     },
     { 
-      name: "Colaboradores", 
-      href: createPageUrl("Colaboradores"), 
+      name: "Prestadores", 
+      href: "/Prestadores", 
       icon: Users,
       show: isAdmin 
     },
@@ -329,6 +329,8 @@ export default function Layout({ children, currentPageName }) {
               {currentPageName === 'Empresas' && 'Empresas'}
               {currentPageName === 'Gestores' && 'Gestores'}
               {currentPageName === 'Colaboradores' && 'Colaboradores'}
+              {currentPageName === 'Prestadores' && 'Prestadores'}
+              {currentPageName === 'DetalhesPrestador' && 'Detalhes do Prestador'}
               {currentPageName === 'MinhaEquipe' && 'Minha Equipe'}
               {currentPageName === 'Usuarios' && 'Gestão de Usuários'}
               {currentPageName === 'Feedbacks' && 'Feedbacks & Rituais'}

@@ -339,20 +339,6 @@ function RitualTabContent({
             </CardContent>
           </Card>
         )}
-
-        {/* Resumo histórico */}
-        {totalCompleted > 0 && (
-          <Card className="border-0 shadow-sm bg-slate-50">
-            <CardContent className="p-3 space-y-1">
-              <p className="text-sm text-slate-600">
-                Última conclusão: <strong>{lastCompletedDate ? fmt(parseSafeDate(lastCompletedDate)) : "—"}</strong>
-              </p>
-              <p className="text-xs text-slate-500">
-                Total de avaliações realizadas: {totalCompleted}
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
 
       <Separator />

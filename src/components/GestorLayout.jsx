@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { 
   LayoutDashboard, 
   MessageSquare, 
+  Users,
   LogOut, 
   Menu, 
   X 
@@ -92,6 +93,21 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
                 <MessageSquare className={`w-5 h-5 ${currentPage === 'feedbacks' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
                 Meus Feedbacks
               </Link>
+              <Link
+                to={createPageUrl("MeuTime")}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  currentPage === 'meutime'
+                    ? 'text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                style={currentPage === 'meutime' ? {
+                  background: 'linear-gradient(135deg, rgba(248, 177, 55, 0.15) 0%, rgba(248, 177, 55, 0.05) 100%)',
+                  borderLeft: '3px solid #F8B137'
+                } : {}}
+              >
+                <Users className={`w-5 h-5 ${currentPage === 'meutime' ? 'text-[#F8B137]' : 'text-slate-400'}`} />
+                Meu Time
+              </Link>
             </nav>
           </div>
 
@@ -134,7 +150,9 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
               <Menu className="w-5 h-5 text-slate-600" />
             </button>
             <h2 className="text-lg font-semibold text-slate-900">
-              {currentPage === 'dashboard' ? 'Dashboard' : 'Meus Feedbacks'}
+              {currentPage === 'dashboard' && 'Dashboard'}
+              {currentPage === 'feedbacks' && 'Meus Feedbacks'}
+              {currentPage === 'meutime' && 'Meu Time'}
             </h2>
           </div>
         </header>

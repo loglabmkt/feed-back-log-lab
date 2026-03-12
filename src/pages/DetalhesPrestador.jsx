@@ -34,7 +34,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import RotinasAvaliacao from "@/components/colaboradores/RotinasAvaliacao";
+import RotinasAvaliacaoRefatorada from "@/components/colaboradores/RotinasAvaliacaoRefatorada";
 
 export default function DetalhesPrestador() {
   const navigate = useNavigate();
@@ -59,10 +59,19 @@ export default function DetalhesPrestador() {
     department: "",
     position: "",
     admission_date: "",
-    eval_45d_completed: false,
-    use_admission_for_schedule: false,
-    schedule_start_date: "",
-    status: "active"
+    status: "active",
+    ritual_45d_use_admission: true,
+    ritual_45d_custom_start: null,
+    ritual_45d_completed_manual: false,
+    ritual_45d_completion_date: null,
+    ritual_90d_use_admission: true,
+    ritual_90d_custom_start: null,
+    ritual_90d_completed_manual: false,
+    ritual_90d_completion_date: null,
+    ritual_trimestral_use_admission: true,
+    ritual_trimestral_custom_start: null,
+    ritual_1on1_use_admission: true,
+    ritual_1on1_custom_start: null
   });
   
   const [error, setError] = useState("");
@@ -93,10 +102,19 @@ export default function DetalhesPrestador() {
           department: data.department || "",
           position: data.position || "",
           admission_date: data.admission_date || "",
-          eval_45d_completed: data.eval_45d_completed || false,
-          use_admission_for_schedule: data.use_admission_for_schedule ?? false,
-          schedule_start_date: data.schedule_start_date || "",
-          status: data.status || "active"
+          status: data.status || "active",
+          ritual_45d_use_admission: data.ritual_45d_use_admission ?? true,
+          ritual_45d_custom_start: data.ritual_45d_custom_start || null,
+          ritual_45d_completed_manual: data.ritual_45d_completed_manual || false,
+          ritual_45d_completion_date: data.ritual_45d_completion_date || null,
+          ritual_90d_use_admission: data.ritual_90d_use_admission ?? true,
+          ritual_90d_custom_start: data.ritual_90d_custom_start || null,
+          ritual_90d_completed_manual: data.ritual_90d_completed_manual || false,
+          ritual_90d_completion_date: data.ritual_90d_completion_date || null,
+          ritual_trimestral_use_admission: data.ritual_trimestral_use_admission ?? true,
+          ritual_trimestral_custom_start: data.ritual_trimestral_custom_start || null,
+          ritual_1on1_use_admission: data.ritual_1on1_use_admission ?? true,
+          ritual_1on1_custom_start: data.ritual_1on1_custom_start || null
         });
       }
     } catch (e) {
@@ -479,28 +497,33 @@ export default function DetalhesPrestador() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <RotinasAvaliacao
+              <RotinasAvaliacaoRefatorada
+                prestadorId={prestadorId}
                 admissionDate={formData.admission_date}
-                employeeId={prestadorId}
-                eval45dCompleted={formData.eval_45d_completed}
-                onMark45dDone={async () => {
-                  await base44.entities.Colaborador.update(prestadorId, {
-                    eval_45d_completed: true
-                  });
-                  setFormData({...formData, eval_45d_completed: true});
+                ritual45dConfig={{
+                  use_admission: formData.ritual_45d_use_admission,
+                  custom_start: formData.ritual_45d_custom_start,
+                  completed_manual: formData.ritual_45d_completed_manual,
+                  completion_date: formData.ritual_45d_completion_date
                 }}
-                useAdmissionForSchedule={formData.use_admission_for_schedule}
-                scheduleStartDate={formData.schedule_start_date}
-                onScheduleConfigChange={async (cfg) => {
-                  await base44.entities.Colaborador.update(prestadorId, {
-                    use_admission_for_schedule: cfg.use_admission_for_schedule,
-                    schedule_start_date: cfg.schedule_start_date || null
-                  });
-                  setFormData(prev => ({
-                    ...prev,
-                    use_admission_for_schedule: cfg.use_admission_for_schedule,
-                    schedule_start_date: cfg.schedule_start_date || ""
-                  }));
+                ritual90dConfig={{
+                  use_admission: formData.ritual_90d_use_admission,
+                  custom_start: formData.ritual_90d_custom_start,
+                  completed_manual: formData.ritual_90d_completed_manual,
+                  completion_date: formData.ritual_90d_completion_date
+                }}
+                ritualTriConfig={{
+                  use_admission: formData.ritual_trimestral_use_admission,
+                  custom_start: formData.ritual_trimestral_custom_start
+                }}
+                ritual1on1Config={{
+                  use_admission: formData.ritual_1on1_use_admission,
+                  custom_start: formData.ritual_1on1_custom_start
+                }}
+                onUpdateRitual={async (updates) => {
+                  await base44.entities.Colaborador.update(prestadorId, updates);
+                  setFormData(prev => ({ ...prev, ...updates }));
+                  await loadData();
                 }}
               />
             </CardContent>

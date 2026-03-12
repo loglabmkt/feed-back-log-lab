@@ -169,7 +169,7 @@ export default function ColaboradorDetalhesModal({ colaborador, gestorId, onClos
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <User className="w-5 h-5" style={{ color: "#F8B137" }} />
-            Detalhes do Colaborador
+            Detalhes do Prestador
           </DialogTitle>
         </DialogHeader>
 

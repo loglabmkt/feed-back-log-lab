@@ -94,12 +94,12 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved,
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Users className="w-5 h-5" style={{ color: "#F8B137" }} />
-            Time de {manager.full_name}
+            Prestadores de {manager.full_name}
           </DialogTitle>
         </DialogHeader>
 
         <div className="text-sm text-slate-500 -mt-2 mb-2">
-          {selected.size} liderado{selected.size !== 1 ? "s" : ""} selecionado{selected.size !== 1 ? "s" : ""}
+          {selected.size} prestador{selected.size !== 1 ? "es" : ""} selecionado{selected.size !== 1 ? "s" : ""}
           {(addedCount > 0 || removedCount > 0) && (
             <span className="ml-2 text-amber-600 font-medium">
               ({addedCount > 0 && `+${addedCount}`}{addedCount > 0 && removedCount > 0 && " / "}{removedCount > 0 && `-${removedCount}`})
@@ -112,7 +112,7 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved,
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar colaborador..."
+            placeholder="Buscar prestador..."
             className="pl-9"
             autoFocus
           />
@@ -125,7 +125,7 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved,
 
         <div className="overflow-y-auto flex-1 divide-y border rounded-xl">
           {filtered.length === 0 && (
-            <p className="text-sm text-slate-400 text-center py-6">Nenhum colaborador encontrado.</p>
+            <p className="text-sm text-slate-400 text-center py-6">Nenhum prestador encontrado.</p>
           )}
           {filtered.map(colab => {
             const isSelected = selected.has(colab.id);
@@ -188,7 +188,7 @@ export default function TeamModal({ manager, allColaboradores, onClose, onSaved,
                   </TooltipTrigger>
                   {blocked && (
                     <TooltipContent>
-                      <p className="text-xs">Este colaborador já realizou esta avaliação</p>
+                      <p className="text-xs">Este prestador já realizou esta avaliação</p>
                     </TooltipContent>
                   )}
                 </Tooltip>

@@ -255,7 +255,7 @@ export default function MeuTime() {
         <Card className="border-0 shadow-sm">
           <CardContent className="py-12 text-center">
             <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhum colaborador vinculado ao seu time ainda.</p>
+            <p className="text-slate-500">Nenhum prestador vinculado ao seu time ainda.</p>
           </CardContent>
         </Card>
       ) : (
@@ -267,7 +267,7 @@ export default function MeuTime() {
                 <table className="w-full">
                   <thead className="bg-slate-50 border-b">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase">Colaborador</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase">Prestador</th>
                       <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">45 Dias</th>
                       <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">90 Dias</th>
                       <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Trimestral</th>

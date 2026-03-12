@@ -10,6 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Prestadores from './pages/Prestadores';
 import DetalhesPrestador from './pages/DetalhesPrestador';
 import MeuTime from './pages/MeuTime';
+import GestorRespostas from './pages/GestorRespostas';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -80,6 +81,10 @@ const AuthenticatedApp = () => {
       <Route 
         path="/MeuTime" 
         element={<MeuTime />} 
+      />
+      <Route 
+        path="/painelgestor/respostas" 
+        element={<GestorRespostas />} 
       />
       <Route path="*" element={<PageNotFound />} />
     </Routes>

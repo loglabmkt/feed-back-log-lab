@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
     }
 
     const feedback = feedbacks[0];
-    const { manager_id, manager_name, employee_name } = feedback;
+    const { manager_id, manager_name, employee_name, admin_director_notes } = feedback;
 
     // Buscar o gestor para pegar o email
     const gestores = await base44.asServiceRole.entities.Gestor.filter({ id: manager_id });
@@ -59,6 +59,17 @@ Deno.serve(async (req) => {
                 Agende ainda hoje a reunião de devolutiva junto ao prestador para tratar dos indicadores e entregas do período.
               </p>
             </div>
+
+            ${admin_director_notes ? `
+            <div style="background: #f3f0ff; padding: 15px; border-left: 4px solid #8b5cf6; margin-bottom: 20px; border-radius: 4px;">
+              <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: #6d28d9;">
+                📝 Comentário de Calibragem da Diretoria:
+              </p>
+              <p style="margin: 0; font-size: 14px; color: #4c1d95; white-space: pre-wrap;">
+                ${admin_director_notes}
+              </p>
+            </div>
+            ` : ''}
 
             <div style="background: #fff5f0; padding: 15px; border-left: 4px solid #F8B137; margin-bottom: 20px;">
               <p style="margin: 0; font-size: 14px; color: #666;">

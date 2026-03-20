@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 
 /**
  * Security hook for sensitive/public pages.
@@ -26,14 +27,10 @@ export function useSecurityGuard() {
 
       if ((widthDiff > threshold || heightDiff > threshold) && !reported) {
         reported = true;
-        fetch("/api/security/devtools-detected", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            timestamp: new Date().toISOString(),
-            page: window.location.pathname,
-            userAgent: navigator.userAgent,
-          }),
+        base44.functions.invoke("securityLog", {
+          timestamp: new Date().toISOString(),
+          page: window.location.pathname,
+          userAgent: navigator.userAgent,
         }).catch(() => {});
       } else if (widthDiff <= threshold && heightDiff <= threshold) {
         reported = false; // reset so it can report again if re-opened

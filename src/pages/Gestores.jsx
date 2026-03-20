@@ -436,6 +436,37 @@ export default function Gestores() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Convite Modal (pós-cadastro) */}
+      {conviteManager && (
+        <ConviteModal
+          manager={conviteManager}
+          onClose={() => setConviteManager(null)}
+          onSent={() => loadData()}
+        />
+      )}
+
+      {/* Reenviar Convite Confirmation */}
+      <AlertDialog open={!!reenviarManager} onOpenChange={(open) => !open && setReenviarManager(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reenviar Convite</AlertDialogTitle>
+            <AlertDialogDescription>
+              Reenviar convite de cadastro para <strong>{reenviarManager?.full_name}</strong>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={reenviarLoading}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReenviarConvite}
+              disabled={reenviarLoading}
+              style={{ background: '#14141E', color: '#F8B137' }}
+            >
+              {reenviarLoading ? "Enviando..." : "Reenviar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Detalhes Modal */}
       {detalhesManager && (
         <GestorDetalhesModal

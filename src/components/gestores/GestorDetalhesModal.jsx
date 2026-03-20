@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { X, Mail, Users, ChevronRight, Loader2, CheckCircle2, AlertCircle, ClipboardList } from "lucide-react";
+import { Mail, Users, ChevronRight, Loader2, CheckCircle2, AlertCircle, ClipboardList, Send } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 const RITUAIS = [
   { key: "AVALIACAO_45", label: "Avaliação de Qualidade de Serviço — 45 Dias" },

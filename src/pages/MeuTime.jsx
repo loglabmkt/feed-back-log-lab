@@ -268,10 +268,10 @@ export default function MeuTime() {
                   <thead className="bg-slate-50 border-b">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase">Prestador</th>
-                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">45 Dias</th>
-                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">90 Dias</th>
-                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Trimestral</th>
-                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">1:1 Bimestral</th>
+                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Avaliação 45 Dias</th>
+                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Avaliação 90 Dias</th>
+                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Feedback Trimestral</th>
+                      <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Feedback 1:1</th>
                       <th className="px-4 py-4 text-center text-xs font-bold text-slate-600 uppercase">Ações</th>
                     </tr>
                   </thead>

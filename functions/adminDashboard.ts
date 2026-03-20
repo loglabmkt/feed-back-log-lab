@@ -192,7 +192,7 @@ function handleProximosVencimentos(colabs, records, gestores, today) {
   const result = [];
 
   const RITUAL_LABELS = {
-    experience_45d: 'Avaliação 45 Dias',
+    experience_45d: 'Avaliação Inicial 45 Dias',
     experience_90d: 'Avaliação 90 Dias',
     evaluation: 'Trimestral',
     one_on_one: '1:1'
@@ -290,7 +290,7 @@ function handleAtividadeRecente(colabs, records, gestores) {
   const gestorMap = Object.fromEntries(gestores.map(g => [g.id, g]));
 
   const RITUAL_LABELS = {
-    experience_45d: 'Avaliação 45 Dias',
+    experience_45d: 'Avaliação Inicial 45 Dias',
     experience_90d: 'Avaliação 90 Dias',
     evaluation: 'Trimestral',
     one_on_one: '1:1',

@@ -372,6 +372,15 @@ export default function Gestores() {
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setReenviarManager(manager)}
+                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                      title="Reenviar convite"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(manager)}>
                       <Pencil className="w-4 h-4" />
                     </Button>

@@ -474,6 +474,7 @@ export default function Gestores() {
           colaboradores={allUsers}
           company={companies.find(c => c.id === detalhesManager.company_id)}
           onClose={() => setDetalhesManager(null)}
+          onInviteSent={() => loadData()}
         />
       )}
 

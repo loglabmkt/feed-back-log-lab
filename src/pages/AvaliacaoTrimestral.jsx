@@ -147,8 +147,7 @@ export default function AvaliacaoTrimestral() {
     try {
       await base44.entities.FeedbackRecord.create({
         template_id: "LOGLAB_NS_TRIMESTRAL",
-        template_title: "Instrumento de Avaliação de Nível de Serviço",
-        additional_notes: serviceFunction,
+        template_title: "Instrumento de Avaliação de Nível de Serviço — Trimestral",
         feedback_type: "evaluation",
         workflow_status: "EM_REVISAO_ADMIN",
         manager_id: gestor.id,

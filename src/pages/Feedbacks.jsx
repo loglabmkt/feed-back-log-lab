@@ -261,6 +261,16 @@ export default function Feedbacks() {
                         />
                       </div>
 
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => { setNotifyTemplate(template); setNotifyResult(null); }}
+                        title="Notificar gestores"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        <Mail className="w-4 h-4" />
+                      </Button>
+
                       <Link to={createPageUrl("EditarFeedback") + `?id=${template.id}`}>
                         <Button variant="outline" size="icon">
                           <Pencil className="w-4 h-4" />

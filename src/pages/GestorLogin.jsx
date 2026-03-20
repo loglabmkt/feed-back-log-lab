@@ -41,7 +41,7 @@ export default function GestorLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background: 'linear-gradient(135deg, #14141E 0%, #1a1a2e 100%)'}}>
+    <div className="no-select min-h-screen flex items-center justify-center p-4" style={{background: 'linear-gradient(135deg, #14141E 0%, #1a1a2e 100%)'}}>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 pb-6">
           <div className="flex justify-center mb-4">

@@ -342,19 +342,19 @@ export default function MeuTime() {
                   
                   <div className="space-y-3">
                     <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">45 Dias</p>
+                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">Avaliação 45 Dias</p>
                       {renderStatusBadge(colab.rituais.avaliacao45, '45')}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">90 Dias</p>
+                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">Avaliação 90 Dias</p>
                       {renderStatusBadge(colab.rituais.avaliacao90, '90')}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">Trimestral</p>
+                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">Feedback Trimestral</p>
                       {renderStatusBadge(colab.rituais.trimestral, 'recorrente')}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">1:1 Bimestral</p>
+                      <p className="text-xs font-bold text-slate-500 uppercase mb-1">Feedback 1:1</p>
                       {renderStatusBadge(colab.rituais.oneOnOne, 'recorrente')}
                     </div>
                   </div>

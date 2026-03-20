@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Shield, Plus, Search, Pencil, Users as UsersIcon, UserCheck, AlertCircle, Trash2 } from "lucide-react";
+import { Shield, Plus, Search, Pencil, Users as UsersIcon, UserCheck, AlertCircle, Trash2, Eye } from "lucide-react";
 import TeamModal from "@/components/gestores/TeamModal";
+import GestorDetalhesModal from "@/components/gestores/GestorDetalhesModal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,7 @@ export default function Gestores() {
   const [saving, setSaving] = useState(false);
   const [deletingManager, setDeletingManager] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [detalhesManager, setDetalhesManager] = useState(null);
 
   // Busca de usuário no modal "Novo Gestor"
   const [userSearch, setUserSearch] = useState("");

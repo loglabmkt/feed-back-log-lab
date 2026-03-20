@@ -39,6 +39,7 @@ import {
 
 export default function Gestores() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [managers, setManagers] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [allUsers, setAllUsers] = useState([]);

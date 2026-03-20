@@ -230,10 +230,31 @@ export default function Gestores() {
 
       await loadData();
       setShowDialog(false);
+      if (!editingManager) {
+        // Abrir modal de convite para novo gestor
+        const gestoresAtuais = await base44.entities.Gestor.list();
+        const novoGestor = gestoresAtuais.find(g => g.email?.toLowerCase() === formData.email.toLowerCase());
+        if (novoGestor) setConviteManager(novoGestor);
+      }
     } catch (e) {
       setError(e.message || "Erro ao salvar gestor");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleReenviarConvite = async () => {
+    if (!reenviarManager) return;
+    setReenviarLoading(true);
+    try {
+      await base44.functions.invoke('sendGestorInvite', { gestorId: reenviarManager.id });
+      toast({ description: `Convite reenviado para ${reenviarManager.email}` });
+      await loadData();
+      setReenviarManager(null);
+    } catch {
+      toast({ description: "Erro ao reenviar convite.", variant: "destructive" });
+    } finally {
+      setReenviarLoading(false);
     }
   };
 

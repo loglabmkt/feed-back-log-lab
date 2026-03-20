@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function GestorCadastro() {
+  useSecurityGuard();
   // step 1: verificar email | step 2: inserir código | step 3: criar senha
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");

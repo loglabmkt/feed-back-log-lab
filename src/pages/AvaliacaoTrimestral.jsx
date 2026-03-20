@@ -248,7 +248,7 @@ export default function AvaliacaoTrimestral() {
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-bold text-slate-900 leading-tight">Avaliação de Desempenho Trimestral</h1>
+            <h1 className="text-lg font-bold text-slate-900 leading-tight">Instrumento de Avaliação de Nível de Serviço — Trimestral</h1>
             <p className="text-xs text-slate-400">LOGLAB_NS_TRIMESTRAL · Escala par 1–4 (sem ponto neutro) · Soma simples 10–40 pontos</p>
           </div>
           <Button

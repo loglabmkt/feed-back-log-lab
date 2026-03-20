@@ -177,7 +177,7 @@ export default function AvaliacaoExperiencia45() {
     try {
       await base44.entities.FeedbackRecord.create({
         template_id: templateId || "AVAL_EXP45_V1",
-        template_title: "Avaliação de Qualidade de Serviço — 45 Dias",
+        template_title: "Avaliação de Qualidade de Serviço — Período Inicial de 45 Dias",
         feedback_type: "experience_45d",
         workflow_status: "EM_REVISAO_ADMIN",
         manager_id: gestor.id,
@@ -256,7 +256,7 @@ export default function AvaliacaoExperiencia45() {
             <ArrowLeft className="w-5 h-5 text-slate-600" />
           </button>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Qualidade de Serviço — 45 Dias</h1>
+            <h1 className="text-xl font-bold text-slate-900 leading-tight">Avaliação de Qualidade de Serviço — Período Inicial de 45 Dias</h1>
             <p className="text-xs text-slate-400">Log Lab Digital · Escala: 4=Referência · 3=Entrega o esperado · 2=Em desenvolvimento · 1=Crítico · NO=Não Observado</p>
           </div>
           <Button

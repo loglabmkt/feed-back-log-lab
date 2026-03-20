@@ -395,6 +395,16 @@ export default function Gestores() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Detalhes Modal */}
+      {detalhesManager && (
+        <GestorDetalhesModal
+          manager={detalhesManager}
+          colaboradores={allUsers}
+          company={companies.find(c => c.id === detalhesManager.company_id)}
+          onClose={() => setDetalhesManager(null)}
+        />
+      )}
+
       {/* Team Modal */}
       {teamModalManager && (
         <TeamModal

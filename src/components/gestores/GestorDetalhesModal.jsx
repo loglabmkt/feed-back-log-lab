@@ -20,11 +20,28 @@ function getInitials(name) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
-export default function GestorDetalhesModal({ manager, colaboradores, company, onClose }) {
+export default function GestorDetalhesModal({ manager, colaboradores, company, onClose, onInviteSent }) {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [confirmRitual, setConfirmRitual] = useState(null);
   const [sending, setSending] = useState(false);
   const [sentMap, setSentMap] = useState({});
+  const [confirmInvite, setConfirmInvite] = useState(false);
+  const [sendingInvite, setSendingInvite] = useState(false);
+
+  const handleSendInvite = async () => {
+    setSendingInvite(true);
+    try {
+      await base44.functions.invoke('sendGestorInvite', { gestorId: manager.id });
+      toast({ description: `Convite enviado para ${manager.email}` });
+      setConfirmInvite(false);
+      onInviteSent?.();
+    } catch {
+      toast({ description: "Erro ao enviar convite.", variant: "destructive" });
+    } finally {
+      setSendingInvite(false);
+    }
+  };
 
   const team = colaboradores.filter(c => c.manager_id === manager.id);
 

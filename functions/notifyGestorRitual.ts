@@ -16,7 +16,7 @@ function buildEmailHtml(nomeGestor, nomeRotina) {
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
           <div style="background: #14141E; padding: 24px 30px; text-align: center;">
             <h1 style="color: #F8B137; margin: 0; font-size: 22px; letter-spacing: 0.5px;">Log Lab Digital</h1>
-            <p style="color: #aaa; margin: 6px 0 0 0; font-size: 13px;">Sistema de Compliance & Avaliação de Serviços</p>
+            <p style="color: #aaa; margin: 6px 0 0 0; font-size: 13px;">Log Lab</p>
           </div>
           <div style="padding: 30px;">
             <p style="font-size: 16px; margin: 0 0 20px 0;">Olá, <strong>${nomeGestor}</strong>,</p>

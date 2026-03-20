@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
                           
                           <div style="background: #14141E; padding: 24px 30px; text-align: center;">
                             <h1 style="color: #F8B137; margin: 0; font-size: 22px; letter-spacing: 0.5px;">Log Lab Digital</h1>
-                            <p style="color: #aaa; margin: 6px 0 0 0; font-size: 13px;">Sistema de Compliance & Avaliação de Serviços</p>
+                            <p style="color: #aaa; margin: 6px 0 0 0; font-size: 13px;">Log Lab</p>
                           </div>
 
                           <div style="padding: 30px;">

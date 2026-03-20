@@ -61,6 +61,9 @@ export default function Gestores() {
   const [deletingManager, setDeletingManager] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [detalhesManager, setDetalhesManager] = useState(null);
+  const [conviteManager, setConviteManager] = useState(null);
+  const [reenviarManager, setReenviarManager] = useState(null);
+  const [reenviarLoading, setReenviarLoading] = useState(false);
 
   // Busca de usuário no modal "Novo Gestor"
   const [userSearch, setUserSearch] = useState("");

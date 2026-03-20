@@ -13,12 +13,19 @@ import TypeDistributionChart from "../components/reports/TypeDistributionChart";
 import ManagerAdherenceTable from "../components/reports/ManagerAdherenceTable";
 import RiskRadar from "../components/reports/RiskRadar";
 
+import {
+  calcManagerAdherence,
+  getDistributionByRitual,
+  getMonthlyEvolution,
+  calcRitualStatus,
+} from "../lib/reportEngine";
+
 const TIPO_LABELS = {
   feedback: "Feedback",
   one_on_one: "1:1",
   evaluation: "Avaliação Trimestral",
   experience_45d: "Experiência 45d",
-  experience_90d: "Qualidade de Serviço 90d"
+  experience_90d: "Qualidade 90d"
 };
 
 const TIPO_COLORS = {
@@ -33,11 +40,6 @@ function parseDate(str) {
   if (!str) return null;
   const d = new Date(str);
   return isNaN(d.getTime()) ? null : d;
-}
-
-function daysBetween(dateA, dateB) {
-  const msPerDay = 24 * 60 * 60 * 1000;
-  return Math.round((dateB - dateA) / msPerDay);
 }
 
 export default function Relatorios() {
@@ -70,11 +72,11 @@ export default function Relatorios() {
 
   useEffect(() => { loadData(); }, []);
 
-  // ---------- filtered records ----------
+  // ---------- filtered records (para widgets que ainda usam filtro simples) ----------
   const filtered = useMemo(() => {
     return records.filter(r => {
       if (filterTemplate !== "all" && r.template_id !== filterTemplate) return false;
-      if (filterGestor  !== "all" && r.manager_id  !== filterGestor)  return false;
+      if (filterGestor !== "all" && r.manager_id !== filterGestor) return false;
       if (filterDateFrom) {
         const d = parseDate(r.feedback_date || r.created_date);
         if (!d || d < new Date(filterDateFrom)) return false;
@@ -87,16 +89,23 @@ export default function Relatorios() {
     });
   }, [records, filterTemplate, filterGestor, filterDateFrom, filterDateTo]);
 
-  // ---------- template coverage (deadline-based) ----------
+  // ---------- colaboradores ativos (com filtro de gestor se selecionado) ----------
+  const activeColabs = useMemo(() => {
+    const active = colaboradores.filter(c => c.status === "active");
+    if (filterGestor !== "all") return active.filter(c => c.manager_id === filterGestor);
+    return active;
+  }, [colaboradores, filterGestor]);
+
+  // ---------- template coverage (deadline-based — mantido para ComplianceGauge) ----------
   const templateCoverage = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
     const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
 
     return templates.filter(t => t.is_active && t.deadline).map(t => {
       const deadline = parseDate(t.deadline);
       const isOverdue = deadline ? today > deadline : false;
-      const daysUntil = deadline ? daysBetween(today, deadline) : null;
+      const msPerDay = 24 * 60 * 60 * 1000;
+      const daysUntil = deadline ? Math.round((deadline - today) / msPerDay) : null;
 
       const relevant = records.filter(r => r.template_id === t.id);
       const covered = relevant.filter(r => DONE.includes(r.workflow_status)).length;
@@ -107,45 +116,35 @@ export default function Relatorios() {
     });
   }, [templates, records, colaboradores]);
 
-  // ---------- compliance rate ----------
+  // ---------- compliance rate (mantido para ComplianceGauge) ----------
   const complianceRate = useMemo(() => {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
     const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
     const activeTemplatesWithDeadline = templates.filter(t => t.is_active && t.deadline);
     if (activeTemplatesWithDeadline.length === 0) return 0;
 
-    const totalExpected = activeTemplatesWithDeadline.reduce((s, t) => {
+    const totalExpected = activeTemplatesWithDeadline.reduce((s) => {
       return s + colaboradores.filter(c => c.status === "active").length;
     }, 0);
 
     const totalDone = activeTemplatesWithDeadline.reduce((s, t) => {
-      const done = records.filter(r => r.template_id === t.id && DONE.includes(r.workflow_status)).length;
-      return s + done;
+      return s + records.filter(r => r.template_id === t.id && DONE.includes(r.workflow_status)).length;
     }, 0);
 
     if (totalExpected === 0) return 0;
     return Math.round((totalDone / totalExpected) * 100);
   }, [templates, records, colaboradores]);
 
-  // ---------- stats for KPI cards ----------
+  // ---------- KPI stats ----------
   const stats = useMemo(() => {
     const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const RISK_DAYS = 7;
 
+    // Contar prestadores com pelo menos 1 ritual ATRASADO (usando motor novo)
     const atRiskSet = new Set();
-    templates.filter(t => t.is_active && t.deadline).forEach(t => {
-      const deadline = parseDate(t.deadline);
-      if (!deadline) return;
-      const daysUntil = daysBetween(today, deadline);
-      const isAtRisk = daysUntil <= RISK_DAYS; // overdue or within 7 days
-      if (!isAtRisk) return;
-
-      const doneColabs = new Set(
-        records.filter(r => r.template_id === t.id && DONE.includes(r.workflow_status)).map(r => r.employee_id)
-      );
-      colaboradores.filter(c => c.status === "active" && !doneColabs.has(c.id)).forEach(c => {
-        atRiskSet.add(c.id);
+    activeColabs.forEach(colab => {
+      ['experience_45d', 'experience_90d', 'evaluation', 'one_on_one', 'feedback'].forEach(type => {
+        const r = calcRitualStatus(colab, type, records, today);
+        if (r.status === 'ATRASADO' || r.status === 'EM_RISCO') atRiskSet.add(colab.id);
       });
     });
 
@@ -155,7 +154,7 @@ export default function Relatorios() {
       completedFeedbacks: filtered.filter(r => DONE.includes(r.workflow_status)).length,
       atRiskCount: atRiskSet.size
     };
-  }, [complianceRate, filtered, templates, records, colaboradores]);
+  }, [complianceRate, filtered, activeColabs, records]);
 
   // ---------- validation status chart ----------
   const validationStatusData = useMemo(() => {
@@ -175,88 +174,92 @@ export default function Relatorios() {
     return Object.entries(counts).map(([name, value], i) => ({ name, value, color: colors[i] }));
   }, [filtered]);
 
-  // ---------- monthly evolution ----------
+  // ---------- monthly evolution — usando motor novo ----------
   const monthlyData = useMemo(() => {
-    const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
-    const map = {};
-    filtered.forEach(r => {
-      const date = parseDate(r.feedback_date || r.created_date);
-      if (!date) return;
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      const label = date.toLocaleString('pt-BR', { month: 'short', year: '2-digit' });
-      if (!map[key]) map[key] = { month: label, total: 0, concluido: 0, pendente: 0 };
-      map[key].total++;
-      if (DONE.includes(r.workflow_status)) map[key].concluido++;
-      else map[key].pendente++;
-    });
-    return Object.keys(map).sort().slice(-6).map(k => map[k]);
-  }, [filtered]);
+    return getMonthlyEvolution(
+      colaboradores.filter(c => c.status === 'active'),
+      records,
+      {
+        dateFrom: filterDateFrom || undefined,
+        dateTo: filterDateTo || undefined,
+        managerId: filterGestor !== 'all' ? filterGestor : undefined,
+      }
+    );
+  }, [colaboradores, records, filterDateFrom, filterDateTo, filterGestor]);
 
-  // ---------- type distribution ----------
+  // ---------- type distribution — usando motor novo ----------
   const typeDistribution = useMemo(() => {
-    const counts = {};
-    filtered.forEach(r => {
-      counts[r.feedback_type] = (counts[r.feedback_type] || 0) + 1;
-    });
-    return Object.entries(counts).map(([type, value]) => ({
-      name: TIPO_LABELS[type] || type,
-      value,
-      color: TIPO_COLORS[type] || "#94A3B8"
-    }));
-  }, [filtered]);
+    const distrib = getDistributionByRitual(
+      colaboradores,
+      records,
+      {
+        dateFrom: filterDateFrom || undefined,
+        dateTo: filterDateTo || undefined,
+        managerId: filterGestor !== 'all' ? filterGestor : undefined,
+      }
+    );
 
-  // ---------- manager adherence ----------
-  const managerAdherence = useMemo(() => {
-    const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-
-    return gestores.filter(g => g.status === "active").map(g => {
-      const team = colaboradores.filter(c => c.manager_id === g.id && c.status === "active");
-      const teamIds = new Set(team.map(c => c.id));
-
-      const managerRecords = filtered.filter(r => r.manager_id === g.id);
-      const covered = new Set(
-        managerRecords.filter(r => DONE.includes(r.workflow_status) && teamIds.has(r.employee_id)).map(r => r.employee_id)
-      ).size;
-
-      // at risk: in templates with upcoming/overdue deadline and not done
-      let atRisk = 0;
-      templates.filter(t => t.is_active && t.deadline).forEach(t => {
-        const deadline = parseDate(t.deadline);
-        if (!deadline) return;
-        const daysUntil = daysBetween(today, deadline);
-        if (daysUntil > 7) return;
-        const doneForTemplate = new Set(
-          records.filter(r => r.template_id === t.id && DONE.includes(r.workflow_status) && teamIds.has(r.employee_id)).map(r => r.employee_id)
+    // Se há filtro de template, filtrar apenas o tipo correspondente ao template
+    let filteredDistrib = distrib;
+    if (filterTemplate !== 'all') {
+      const tmpl = templates.find(t => t.id === filterTemplate);
+      if (tmpl) {
+        filteredDistrib = Object.fromEntries(
+          Object.entries(distrib).filter(([k]) => k === tmpl.feedback_type)
         );
-        team.forEach(c => { if (!doneForTemplate.has(c.id)) atRisk++; });
-      });
+      }
+    }
 
-      const adherence = team.length > 0 ? Math.round((covered / team.length) * 100) : 0;
-      const status = adherence >= 100 ? "meta" : adherence >= 70 ? "adequado" : "atraso";
+    return Object.entries(filteredDistrib).map(([type, data]) => ({
+      name: TIPO_LABELS[type] || type,
+      type,
+      color: TIPO_COLORS[type] || "#94A3B8",
+      // Para o gráfico de distribuição: usar total de concluídos como valor principal
+      value: data.onTime + data.late,
+      onTime: data.onTime,
+      late: data.late,
+      delayed: data.delayed,
+      pending: data.pendingOrRisk,
+      total: data.total,
+    }));
+  }, [colaboradores, records, filterDateFrom, filterDateTo, filterGestor, filterTemplate, templates]);
 
-      return {
-        fullName: g.full_name,
-        team: team.length,
-        covered,
-        atRisk,
-        adherence,
-        status
-      };
-    }).filter(m => m.team > 0);
-  }, [gestores, colaboradores, filtered, templates, records]);
+  // ---------- manager adherence — usando motor novo ----------
+  const managerAdherence = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const activeGestores = gestores.filter(g => g.status === 'active');
 
-  // ---------- risk radar ----------
+    // Se filtro de gestor específico, apenas esse
+    const targetGestores = filterGestor !== 'all'
+      ? activeGestores.filter(g => g.id === filterGestor)
+      : activeGestores;
+
+    // Tipos de ritual a considerar (filtrar por template se selecionado)
+    let ritualTypes = ['experience_45d', 'experience_90d', 'evaluation', 'one_on_one', 'feedback'];
+    if (filterTemplate !== 'all') {
+      const tmpl = templates.find(t => t.id === filterTemplate);
+      if (tmpl) ritualTypes = [tmpl.feedback_type];
+    }
+
+    return targetGestores.map(gestor => {
+      const team = colaboradores.filter(c => c.manager_id === gestor.id && c.status === 'active');
+      if (team.length === 0) return null;
+      return calcManagerAdherence(gestor, team, records, ritualTypes, today);
+    }).filter(Boolean);
+  }, [gestores, colaboradores, records, filterGestor, filterTemplate, templates]);
+
+  // ---------- risk radar (mantido com lógica de templates-deadline) ----------
   const usersAtRisk = useMemo(() => {
     const DONE = ["PUBLICADO", "ASSINADO_COLABORADOR"];
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const RISK_DAYS = 7;
+    const msPerDay = 24 * 60 * 60 * 1000;
     const result = [];
 
     templates.filter(t => t.is_active && t.deadline).forEach(t => {
       const deadline = parseDate(t.deadline);
       if (!deadline) return;
-      const daysUntil = daysBetween(today, deadline);
+      const daysUntil = Math.round((deadline - today) / msPerDay);
       if (daysUntil > RISK_DAYS) return;
 
       const doneColabs = new Set(
@@ -332,7 +335,6 @@ export default function Relatorios() {
               value={filterDateFrom}
               onChange={e => setFilterDateFrom(e.target.value)}
               className="h-9 text-sm w-36"
-              placeholder="De"
             />
             <span className="text-slate-400 text-sm">até</span>
             <Input
@@ -340,7 +342,6 @@ export default function Relatorios() {
               value={filterDateTo}
               onChange={e => setFilterDateTo(e.target.value)}
               className="h-9 text-sm w-36"
-              placeholder="Até"
             />
           </div>
 
@@ -368,7 +369,7 @@ export default function Relatorios() {
       </div>
 
       {/* Type distribution */}
-      <TypeDistributionChart typeDistribution={typeDistribution} totalFeedbacks={filtered.length} loading={loading} />
+      <TypeDistributionChart typeDistribution={typeDistribution} loading={loading} />
 
       {/* Monthly Evolution */}
       <MonthlyEvolutionChart data={monthlyData} loading={loading} />

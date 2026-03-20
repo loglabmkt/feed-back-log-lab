@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSecurityGuard } from "@/hooks/useSecurityGuard";
 import { base44 } from "@/api/base44Client";
 import { Shield, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

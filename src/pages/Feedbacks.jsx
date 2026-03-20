@@ -38,6 +38,9 @@ export default function Feedbacks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [notifyTemplate, setNotifyTemplate] = useState(null);
+  const [notifying, setNotifying] = useState(false);
+  const [notifyResult, setNotifyResult] = useState(null);
 
 
   useEffect(() => {
@@ -72,27 +75,27 @@ export default function Feedbacks() {
 
   const handleToggleActive = async (template) => {
     try {
-      const newActiveState = !template.is_active;
-      
       await base44.entities.FeedbackTemplate.update(template.id, {
-        is_active: newActiveState
+        is_active: !template.is_active
       });
-      
-      // Se foi ativado, notificar gestores via Resend
-      if (newActiveState === true) {
-        try {
-          await base44.functions.invoke('notifyManagersNewFeedback', {
-            templateId: template.id
-          });
-        } catch (emailError) {
-          console.error('Erro ao enviar notificações:', emailError);
-          // Não bloqueia a ativação se o email falhar
-        }
-      }
-      
       await loadData();
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleNotifyManagers = async () => {
+    if (!notifyTemplate) return;
+    setNotifying(true);
+    try {
+      const response = await base44.functions.invoke('notifyManagersNewFeedback', {
+        templateId: notifyTemplate.id
+      });
+      setNotifyResult({ success: true, data: response.data });
+    } catch (e) {
+      setNotifyResult({ success: false });
+    } finally {
+      setNotifying(false);
     }
   };
 

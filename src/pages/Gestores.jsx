@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Shield, Plus, Search, Pencil, Users as UsersIcon, UserCheck, AlertCircle, Trash2, Eye } from "lucide-react";
+import { Shield, Plus, Search, Pencil, Users as UsersIcon, UserCheck, AlertCircle, Trash2, Eye, Send } from "lucide-react";
 import TeamModal from "@/components/gestores/TeamModal";
 import GestorDetalhesModal from "@/components/gestores/GestorDetalhesModal";
+import ConviteModal from "@/components/gestores/ConviteModal";
+import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

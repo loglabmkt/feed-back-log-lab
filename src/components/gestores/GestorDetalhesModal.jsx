@@ -86,10 +86,34 @@ export default function GestorDetalhesModal({ manager, colaboradores, company, o
             <p className="font-bold text-slate-900 truncate text-lg">{manager.full_name}</p>
             <p className="text-sm text-slate-500 truncate">{manager.email}</p>
             {company && <p className="text-xs text-slate-400 truncate mt-0.5">{company.razao_social}</p>}
-            <div className="mt-1.5">
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <Badge className={manager.status === 'active' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500'} variant="outline">
                 {manager.status === 'active' ? 'Ativo' : 'Inativo'}
               </Badge>
+            </div>
+            <div className="mt-2">
+              {!confirmInvite ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 h-7 text-xs"
+                  onClick={() => setConfirmInvite(true)}
+                >
+                  <Send className="w-3 h-3" />
+                  Reenviar Convite
+                </Button>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-slate-600">Confirmar envio?</span>
+                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-slate-500" onClick={() => setConfirmInvite(false)} disabled={sendingInvite}>
+                    Cancelar
+                  </Button>
+                  <Button size="sm" className="h-6 px-2 text-xs gap-1" style={{ background: '#14141E', color: '#F8B137' }} onClick={handleSendInvite} disabled={sendingInvite}>
+                    {sendingInvite ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                    Enviar
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>

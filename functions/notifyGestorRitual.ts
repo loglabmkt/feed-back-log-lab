@@ -46,7 +46,7 @@ function buildEmailHtml(nomeGestor, nomeRotina) {
           </div>
           <div style="background: #f3f4f6; padding: 16px 30px; text-align: center;">
             <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-              LogLab Digital — Sistema de Compliance RH · Este é um email automático, não responda.
+              LogLab Digital · Este é um email automático, não responda.
             </p>
           </div>
         </div>

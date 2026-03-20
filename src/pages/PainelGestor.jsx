@@ -68,20 +68,20 @@ export default function PainelGestor() {
   return (
     <GestorLayout currentPage="dashboard" gestor={gestor}>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
-          Bem-vindo, {gestor?.full_name?.split(' ')[0]}!
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">
+          Bem-vindo, <span className="font-bold">{gestor?.full_name?.split(' ')[0]}</span>!
         </h1>
         <p className="text-slate-500">Aqui está um resumo dos seus feedbacks</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-500">Meu Time</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background: 'rgba(248, 177, 55, 0.1)'}}>
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background: 'rgba(248, 177, 55, 0.12)'}}>
                 <FileText className="w-6 h-6" style={{color: '#F8B137'}} />
               </div>
               <div>
@@ -92,14 +92,14 @@ export default function PainelGestor() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-500">Feedbacks Realizados</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-blue-50">
-                <Clock className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background: 'rgba(248, 177, 55, 0.12)'}}>
+                <Clock className="w-6 h-6" style={{color: '#F8B137'}} />
               </div>
               <div>
                 <p className="text-3xl font-bold text-slate-900">{stats.feedbacksRealizados}</p>
@@ -109,14 +109,14 @@ export default function PainelGestor() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-500">Em Revisão</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-amber-50">
-                <CheckCircle2 className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background: 'rgba(248, 177, 55, 0.12)'}}>
+                <CheckCircle2 className="w-6 h-6" style={{color: '#F8B137'}} />
               </div>
               <div>
                 <p className="text-3xl font-bold text-slate-900">{stats.emRevisao}</p>
@@ -126,14 +126,14 @@ export default function PainelGestor() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-500">Assinados</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-green-50">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{background: 'rgba(248, 177, 55, 0.12)'}}>
+                <CheckCircle2 className="w-6 h-6" style={{color: '#F8B137'}} />
               </div>
               <div>
                 <p className="text-3xl font-bold text-slate-900">{stats.assinados}</p>
@@ -144,7 +144,7 @@ export default function PainelGestor() {
         </Card>
       </div>
 
-      <Card className="border-0 shadow-sm">
+      <Card className="border border-gray-100 shadow-sm">
         <CardHeader>
           <CardTitle>Feedbacks Recentes</CardTitle>
         </CardHeader>
@@ -154,25 +154,31 @@ export default function PainelGestor() {
               Nenhum feedback encontrado
             </div>
           ) : (
-            <div className="space-y-3">
-              {feedbacks.slice(0, 5).map((feedback) => (
-                <div key={feedback.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50">
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-900">{feedback.employee_name}</p>
-                    <p className="text-sm text-slate-500">{feedback.template_title}</p>
+            <div className="divide-y divide-gray-100">
+              {feedbacks.slice(0, 5).map((feedback) => {
+                const initials = feedback.employee_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
+                return (
+                  <div key={feedback.id} className="flex items-center gap-3 py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors cursor-default">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold text-white" style={{background: '#F8B137', color: '#0a0a0a'}}>
+                      {initials}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-slate-900 truncate">{feedback.employee_name}</p>
+                      <p className="text-sm text-slate-500 truncate">{feedback.template_title}</p>
+                    </div>
+                    <Badge
+                      className={
+                        feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'bg-blue-100 text-blue-700' :
+                        feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'bg-amber-100 text-amber-700' :
+                        'bg-green-100 text-green-700'
+                      }
+                    >
+                      {feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'Disponível' :
+                       feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Em Revisão' : 'Assinado'}
+                    </Badge>
                   </div>
-                  <Badge
-                    className={
-                      feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'bg-blue-100 text-blue-700' :
-                      feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'bg-amber-100 text-amber-700' :
-                      'bg-green-100 text-green-700'
-                    }
-                  >
-                    {feedback.workflow_status === 'DISPONIVEL_PARA_GESTOR' ? 'Disponível' :
-                     feedback.workflow_status === 'EM_REVISAO_ADMIN' ? 'Em Revisão' : 'Assinado'}
-                  </Badge>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

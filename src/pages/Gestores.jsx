@@ -332,11 +332,16 @@ export default function Gestores() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-slate-900">{manager.full_name}</h3>
                         {manager.is_admin && (
                           <Badge className="bg-slate-100 text-slate-700 border-slate-200">
                             Admin
+                          </Badge>
+                        )}
+                        {manager.ultimo_convite_enviado_em && (
+                          <Badge className="bg-blue-50 text-blue-600 border-blue-200 text-xs" variant="outline">
+                            Convite enviado · {new Date(manager.ultimo_convite_enviado_em).toLocaleDateString('pt-BR')}
                           </Badge>
                         )}
                       </div>

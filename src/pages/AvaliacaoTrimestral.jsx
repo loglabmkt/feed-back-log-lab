@@ -59,7 +59,6 @@ export default function AvaliacaoTrimestral() {
   const [showColabModal, setShowColabModal] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
   const [quarterRef, setQuarterRef] = useState("");
-  const [serviceFunction, setServiceFunction] = useState("");
   const [scores, setScores] = useState({});
   const [evidences, setEvidences] = useState({});
   const [evalAction1, setEvalAction1] = useState("");

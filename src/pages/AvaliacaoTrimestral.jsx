@@ -134,7 +134,6 @@ export default function AvaliacaoTrimestral() {
     setError("");
     if (!selectedEmployee) { setError("Selecione o colaborador avaliado."); return; }
     if (!quarterRef) { setError("Selecione o trimestre de referência."); return; }
-    if (!serviceFunction.trim()) { setError("Preencha a Função/Serviço Contratado."); return; }
     if (filledCount < 10) { setError(`Preencha todos os 10 critérios. Faltam ${10 - filledCount}.`); return; }
     if (missingEvidences.length > 0) {
       setError(`Evidências obrigatórias faltando: ${missingEvidences.map(id => id.toUpperCase()).join(", ")}. Notas 1, 2 e 4 exigem evidência.`);

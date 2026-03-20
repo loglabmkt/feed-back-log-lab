@@ -24,7 +24,7 @@ const TIPO_LABELS = {
   feedback: "Feedback",
   one_on_one: "1:1",
   evaluation: "Avaliação Trimestral",
-  experience_45d: "Experiência 45d",
+  experience_45d: "Avaliação 45 Dias",
   experience_90d: "Qualidade 90d"
 };
 

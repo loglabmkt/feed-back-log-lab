@@ -294,6 +294,42 @@ export default function Feedbacks() {
         )}
       </div>
 
+      <AlertDialog open={!!notifyTemplate} onOpenChange={() => { setNotifyTemplate(null); setNotifyResult(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Notificar Gestores</AlertDialogTitle>
+            <AlertDialogDescription>
+              {notifyResult ? (
+                notifyResult.success ? (
+                  <span className="text-emerald-700 font-medium">
+                    ✓ Notificação enviada! {notifyResult.data?.emailsEnviados} de {notifyResult.data?.totalGestores} gestor(es) notificado(s).
+                    {notifyResult.data?.falhas > 0 && ` (${notifyResult.data.falhas} falha(s))`}
+                  </span>
+                ) : (
+                  <span className="text-red-600 font-medium">Erro ao enviar notificações. Tente novamente.</span>
+                )
+              ) : (
+                <>Deseja enviar uma notificação por e-mail para todos os gestores sobre a disponibilidade de <strong>{notifyTemplate?.title}</strong>?</>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setNotifyTemplate(null); setNotifyResult(null); }}>
+              {notifyResult ? 'Fechar' : 'Cancelar'}
+            </AlertDialogCancel>
+            {!notifyResult && (
+              <AlertDialogAction
+                onClick={handleNotifyManagers}
+                disabled={notifying}
+                style={{ background: '#14141E', color: '#F8B137' }}
+              >
+                {notifying ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enviando...</> : 'Enviar Notificação'}
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

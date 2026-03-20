@@ -332,13 +332,13 @@ export default function Gestores() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/GestorTime?id=${manager.id}`)}
-                      className="text-xs gap-1.5"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDetalhesManager(manager)}
+                      className="text-slate-500 hover:text-slate-700"
+                      title="Ver detalhes"
                     >
-                      <UsersIcon className="w-3.5 h-3.5" />
-                      Meu Time
+                      <Eye className="w-4 h-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => handleEdit(manager)}>
                       <Pencil className="w-4 h-4" />

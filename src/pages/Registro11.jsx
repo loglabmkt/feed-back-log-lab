@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   ArrowLeft, Save, AlertCircle, CheckCircle,
-  User, Search, Users, Clock, AlertTriangle, MessageSquare, Lock, BookOpen
+  User, Search, Users, Clock, MessageSquare, Lock, BookOpen
 } from "lucide-react";
 import GuiaGestor11 from "@/components/avaliacao/GuiaGestor11";
 import { format } from "date-fns";
@@ -24,7 +24,7 @@ export default function Registro11() {
   const [showColabModal, setShowColabModal] = useState(false);
   const [modalSearch, setModalSearch] = useState("");
   const [notes, setNotes] = useState("");
-  const [hasCriticalImpediment, setHasCriticalImpediment] = useState(false);
+
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
@@ -75,7 +75,7 @@ export default function Registro11() {
         employee_email: selectedEmployee.email,
         feedback_date: format(new Date(), "yyyy-MM-dd"),
         one_on_one_notes: notes,
-        has_critical_impediment: hasCriticalImpediment,
+
       });
       setSaved(true);
       setTimeout(() => { window.location.href = "/gestorfeedbacks"; }, 2500);
@@ -295,36 +295,6 @@ export default function Registro11() {
           </CardContent>
         </Card>
 
-        {/* Impedimento Crítico */}
-        <Card className={`border-2 shadow-sm transition-all ${hasCriticalImpediment ? "border-red-400 bg-red-50/50" : "border-slate-100"}`}>
-          <CardContent className="p-5">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="impediment"
-                checked={hasCriticalImpediment}
-                onCheckedChange={(checked) => setHasCriticalImpediment(!!checked)}
-                className="mt-0.5"
-              />
-              <div className="flex-1">
-                <label htmlFor="impediment" className="text-sm font-bold text-slate-800 cursor-pointer">
-                  Sinalizar impedimento crítico à execução
-                </label>
-                <p className="text-xs text-slate-500 mt-1">
-                  Ao marcar, um alerta vermelho será gerado para o Admin/RH ao receber este registro para análise imediata.
-                </p>
-              </div>
-              <AlertTriangle className={`w-5 h-5 flex-shrink-0 transition-colors ${hasCriticalImpediment ? "text-red-500" : "text-slate-300"}`} />
-            </div>
-            {hasCriticalImpediment && (
-              <Alert className="mt-4 bg-red-100 border-red-400">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800 font-semibold">
-                  🚨 Impedimento crítico sinalizado. O Admin/RH será notificado ao receber este registro.
-                </AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
 
         {error && (
           <Alert variant="destructive">

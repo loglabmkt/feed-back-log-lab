@@ -73,7 +73,7 @@ export default function PainelGestor() {
         <h1 className="text-2xl font-bold text-slate-900 mb-1">
           Bem-vindo, <span className="font-bold">{gestor?.full_name?.split(' ')[0]}</span>!
         </h1>
-        <p className="text-slate-500">Aqui está um resumo dos seus feedbacks</p>
+        <p className="text-slate-500">Aqui está o resumo das suas rotinas de gestão</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -145,6 +145,8 @@ export default function PainelGestor() {
           </CardContent>
         </Card>
       </div>
+
+      <RotinasWidget gestorId={gestor?.id} />
 
       <Card className="border border-gray-100 shadow-sm">
         <CardHeader>

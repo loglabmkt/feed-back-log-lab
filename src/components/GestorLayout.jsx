@@ -39,7 +39,7 @@ export default function GestorLayout({ children, currentPage = 'dashboard', gest
 
   const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, to: createPageUrl("PainelGestor") },
-    { key: 'feedbacks', label: 'Feedbacks', icon: MessageSquare, to: createPageUrl("GestorFeedbacks") },
+    { key: 'feedbacks', label: 'Rotinas', icon: MessageSquare, to: createPageUrl("GestorFeedbacks") },
     { key: 'respostas', label: 'Respostas', icon: ClipboardList, to: '/painelgestor/respostas' },
     { key: 'meutime', label: 'Meu Time', icon: Users, to: createPageUrl("MeuTime") },
   ];

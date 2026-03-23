@@ -257,17 +257,6 @@ export default function ColaboradorDetalhesModal({ colaborador, gestorId, onClos
                             <p className="font-semibold">Resultado: {getResultado(feedback)}</p>
                           </div>
                         </div>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            // TODO: Implementar visualização Read-Only da avaliação
-                            alert('Visualização detalhada em desenvolvimento');
-                          }}
-                          className="flex-shrink-0"
-                        >
-                          Ver detalhes
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>

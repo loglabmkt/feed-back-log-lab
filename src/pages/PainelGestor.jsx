@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSecurityGuard } from "@/hooks/useSecurityGuard";
 import { base44 } from "@/api/base44Client";
+import RotinasWidget from "@/components/gestor/RotinasWidget";
 import { 
   CheckCircle2, 
   Clock, 

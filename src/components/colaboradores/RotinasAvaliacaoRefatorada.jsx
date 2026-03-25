@@ -357,7 +357,7 @@ export default function RotinasAvaliacaoRefatorada({
       <RitualCard
         ritual="45d"
         icon={Target}
-        title="Avaliação de Experiência — 45 Dias"
+        title="Avaliação de Qualidade de Serviço — Período Inicial 45 Dias"
         description="Ritual único · Ocorre uma vez após admissão"
         dueDate={due45}
         daysUntil={days45}

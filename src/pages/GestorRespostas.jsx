@@ -72,7 +72,7 @@ export default function GestorRespostas() {
     'one_on_one': 'Registro de 1:1 (Conversa de Alinhamento)',
     'evaluation': 'Instrumento de Nível de Serviço — Trimestral',
     'experience_90d': 'Avaliação de Qualidade de Serviço — 90 Dias',
-    'experience_45d': 'Avaliação de Qualidade de Serviço — 45 Dias',
+    'experience_45d': 'Avaliação de Qualidade de Serviço — Período Inicial 45 Dias',
     'feedback': 'Feedback'
   };
 
@@ -113,7 +113,7 @@ export default function GestorRespostas() {
                   <SelectItem value="one_on_one">Registro de 1:1 (Conversa de Alinhamento)</SelectItem>
                   <SelectItem value="evaluation">Instrumento de Nível de Serviço — Trimestral</SelectItem>
                   <SelectItem value="experience_90d">Avaliação de Qualidade de Serviço — 90 Dias</SelectItem>
-                  <SelectItem value="experience_45d">Avaliação de Qualidade de Serviço — 45 Dias</SelectItem>
+                  <SelectItem value="experience_45d">Avaliação de Qualidade de Serviço — Período Inicial 45 Dias</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -172,7 +172,7 @@ export default function GestorFeedbacks() {
                     >
                       {template.feedback_type === 'feedback' ? 'Feedback' :
                        template.feedback_type === 'one_on_one' ? 'One-on-One' :
-                       template.feedback_type === 'experience_45d' ? '45 Dias' :
+                       template.feedback_type === 'experience_45d' ? 'Período Inicial 45 Dias' :
                        template.feedback_type === 'experience_90d' ? '90 Dias' :
                        'Avaliação'}
                     </Badge>
@@ -208,7 +208,7 @@ export default function GestorFeedbacks() {
                   ) : is11 ? (
                     <>
                       <p className="text-sm text-slate-500 mb-1">Qualitativo · Bimestral · LGPD Compliant</p>
-                      <p className="text-xs text-slate-400 mb-4">15 minutos cronometrados · Foco em impedimentos e execução</p>
+                      <p className="text-xs text-slate-400 mb-4">15 minutos · Foco em impedimentos e execução</p>
                       <Button
                         className="w-full font-bold"
                         style={{ background: '#F8B137', color: '#14141E' }}

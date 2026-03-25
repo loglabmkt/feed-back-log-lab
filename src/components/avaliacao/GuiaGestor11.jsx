@@ -179,7 +179,7 @@ export default function GuiaGestor11({ open, onClose, onMarkAsRead, isFirstTime 
                   {
                     icon: <Clock className="w-5 h-5 text-white" />,
                     title: "Duração",
-                    desc: "15 minutos cronometrados. Por que pouco tempo? Para evitar que se torne uma sessão de terapia ou reunião de projeto. O foco é a análise de impedimentos e orientado à execução.",
+                    desc: "15 minutos. Por que pouco tempo? Para evitar que se torne uma sessão de terapia ou reunião de projeto. O foco é a análise de impedimentos e orientado à execução.",
                   },
                   {
                     icon: <MapPin className="w-5 h-5 text-white" />,
@@ -194,7 +194,7 @@ export default function GuiaGestor11({ open, onClose, onMarkAsRead, isFirstTime 
                   {
                     icon: <ClipboardCheck className="w-5 h-5 text-white" />,
                     title: "Registro na plataforma",
-                    desc: "Após o 1:1, o contratante registra a realização e os pontos levantados. Essas informações não aparecerão para o prestador. Se houver impedimento crítico à execução, registrar como 'impedimento' para acompanhamento ou sinalizar à gestão.",
+                    desc: "Após o 1:1, o contratante registra a realização e os pontos levantados. Essas informações não aparecerão para o prestador.",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4 items-start p-4 border border-slate-100 rounded-xl bg-white">

@@ -375,7 +375,7 @@ export default function AvaliacaoQualidadeServico90() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0" style={{background: "#F8B137", color: "#14141E"}}>13</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0" style={{background: "#F8B137", color: "#14141E"}}>14</div>
               <div className="flex-1">
                 <CardTitle className="text-base font-bold text-slate-900">Seção 2 – Itens de Avaliação</CardTitle>
                 <p className="text-xs text-slate-500">Escala: 4 = Referência/Supera · 3 = Entrega o esperado · 2 = Em desenvolvimento · 1 = Crítico · NO = Não Observado</p>

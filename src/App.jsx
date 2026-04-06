@@ -8,6 +8,8 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Prestadores from './pages/Prestadores';
+import RootRedirect from './components/RootRedirect';
+import AdminAliasRedirect from './components/AdminAliasRedirect';
 import DetalhesPrestador from './pages/DetalhesPrestador';
 import MeuTime from './pages/MeuTime';
 import GestorRespostas from './pages/GestorRespostas';
@@ -47,11 +49,8 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
+      <Route path="/" element={<RootRedirect />} />
+      <Route path="/gestao/feedback/admin" element={<AdminAliasRedirect />} />
       {Object.entries(Pages).map(([path, Page]) => (
         <Route
           key={path}

@@ -20,10 +20,10 @@ export default function RootRedirect() {
         if (authed) {
           setDestination("/painel");
         } else {
-          base44.auth.redirectToLogin("/painel");
+          setDestination("/gestorlogin");
         }
       } catch {
-        base44.auth.redirectToLogin("/painel");
+        setDestination("/gestorlogin");
       }
     }
     check();

@@ -68,10 +68,10 @@ export default function DetalhesPrestador() {
     ritual_90d_custom_start: null,
     ritual_90d_completed_manual: false,
     ritual_90d_completion_date: null,
-    ritual_trimestral_use_admission: true,
-    ritual_trimestral_custom_start: null,
-    ritual_1on1_use_admission: true,
-    ritual_1on1_custom_start: null
+    ritual_trimestral_use_admission: false,
+    ritual_trimestral_custom_start: '2026-04-09',
+    ritual_1on1_use_admission: false,
+    ritual_1on1_custom_start: '2026-04-09'
   });
   
   const [error, setError] = useState("");

@@ -135,27 +135,30 @@ export default function DetalhesPrestador() {
       return;
     }
 
+    // Monta payload base sem admission_date
+    const basePayload = {
+      ...formData,
+      company_id: formData.company_id || null,
+      manager_id: formData.manager_id || null,
+      schedule_start_date: formData.schedule_start_date || null
+    };
+    // PROTEÇÃO CRÍTICA: só inclui admission_date se tiver valor real
+    // Nunca sobrescrever admission_date com null/vazio
+    if (formData.admission_date && formData.admission_date !== "") {
+      basePayload.admission_date = formData.admission_date;
+    } else {
+      delete basePayload.admission_date;
+    }
+
     try {
       if (isNew) {
-        const created = await base44.entities.Colaborador.create({
-          ...formData,
-          company_id: formData.company_id || null,
-          manager_id: formData.manager_id || null,
-          admission_date: formData.admission_date || null,
-          schedule_start_date: formData.schedule_start_date || null
-        });
+        const created = await base44.entities.Colaborador.create(basePayload);
         setSuccessMessage("Prestador criado com sucesso!");
         setTimeout(() => {
           navigate(`/DetalhesPrestador?id=${created.id}`);
         }, 1500);
       } else {
-        await base44.entities.Colaborador.update(prestadorId, {
-          ...formData,
-          company_id: formData.company_id || null,
-          manager_id: formData.manager_id || null,
-          admission_date: formData.admission_date || null,
-          schedule_start_date: formData.schedule_start_date || null
-        });
+        await base44.entities.Colaborador.update(prestadorId, basePayload);
         setSuccessMessage("Alterações salvas com sucesso!");
         setEditMode(false);
         await loadData();

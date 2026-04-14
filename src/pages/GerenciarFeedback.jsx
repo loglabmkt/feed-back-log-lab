@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatBRT } from "@/lib/dateUtils";
 import GestorLayout from "@/components/GestorLayout";
 import FeedbackContentSummary from "@/components/feedback/FeedbackContentSummary";
 
@@ -264,7 +265,7 @@ export default function GerenciarFeedback() {
                 <p className="text-lg font-semibold text-slate-900">{feedback.employee_name}</p>
                 <p className="text-sm text-slate-500">{feedback.employee_email}</p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Template: {feedback.template_title} • Data: {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  Template: {feedback.template_title} • Data: {feedback.feedback_date && formatBRT(feedback.feedback_date, 'long')}
                 </p>
               </div>
             </div>
@@ -357,7 +358,7 @@ export default function GerenciarFeedback() {
                   )}
                   {(feedback.workflow_status === 'CONVERSA_AGENDADA' || feedback.workflow_status === 'CONVERSA_REALIZADA') && (
                     <Badge className="bg-purple-100 text-purple-700">
-                      ✓ Agendado para {feedback.conversation_scheduled_date && format(new Date(feedback.conversation_scheduled_date), "dd/MM/yyyy")}
+                      ✓ Agendado para {feedback.conversation_scheduled_date && formatBRT(feedback.conversation_scheduled_date, 'date')}
                     </Badge>
                   )}
                 </div>
@@ -398,7 +399,7 @@ export default function GerenciarFeedback() {
                   {feedback.workflow_status === 'CONVERSA_REALIZADA' && (
                     <div className="space-y-3">
                       <Badge className="bg-indigo-100 text-indigo-700">
-                        ✓ Realizada em {feedback.conversation_completed_date && format(new Date(feedback.conversation_completed_date), "dd/MM/yyyy")}
+                        ✓ Realizada em {feedback.conversation_completed_date && formatBRT(feedback.conversation_completed_date, 'date')}
                       </Badge>
 
                       {/* Comentário salvo */}
@@ -525,7 +526,7 @@ export default function GerenciarFeedback() {
                         <Badge className="bg-green-100 text-green-700">✓ Prestador confirmou o recebimento</Badge>
                         {feedback.employee_validation_date && (
                           <p className="text-sm text-slate-500">
-                            Confirmado em {format(new Date(feedback.employee_validation_date), "dd/MM/yyyy 'às' HH:mm")}
+                            Confirmado em {formatBRT(feedback.employee_validation_date, 'datetime')}
                           </p>
                         )}
                         {feedback.employee_comments && (

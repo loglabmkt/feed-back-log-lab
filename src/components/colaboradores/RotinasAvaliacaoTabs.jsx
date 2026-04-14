@@ -22,6 +22,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { addDays, differenceInDays, format, parseISO, isValid } from "date-fns";
+import { formatBRT } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";
 
 const SUBMITTED_STATUSES = [
@@ -93,7 +94,7 @@ function HistoricoItem({ avaliacao, onViewDetails }) {
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-semibold text-slate-900">
-                Criado em {fmt(parseSafeDate(avaliacao.feedback_date))}
+                Criado em {formatBRT(avaliacao.feedback_date, 'date')}
               </span>
               <Badge className={statusCfg.color + " text-xs"}>
                 {statusCfg.label}
@@ -101,7 +102,7 @@ function HistoricoItem({ avaliacao, onViewDetails }) {
             </div>
             <p className="text-xs text-slate-500">
               {isConcluido 
-                ? `Concluído em ${fmt(parseSafeDate(avaliacao.employee_validation_date))}`
+                ? `Concluído em ${formatBRT(avaliacao.employee_validation_date, 'date')}`
                 : "Em andamento"}
             </p>
             <p className="text-xs text-slate-500">

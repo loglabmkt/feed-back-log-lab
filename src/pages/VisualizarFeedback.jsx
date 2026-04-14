@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatBRT } from "@/lib/dateUtils";
 
 export default function VisualizarFeedback() {
   const navigate = useNavigate();
@@ -258,7 +260,7 @@ export default function VisualizarFeedback() {
                 <CheckCircle className="w-4 h-4 text-emerald-600" />
                 <AlertDescription className="text-emerald-700">
                   Feedback validado e assinado pelo colaborador em{' '}
-                  {feedback.employee_validation_date && format(new Date(feedback.employee_validation_date), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  {feedback.employee_validation_date && formatBRT(feedback.employee_validation_date, 'datetime')}
                 </AlertDescription>
               </Alert>
             )}

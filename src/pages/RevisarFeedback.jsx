@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { formatBRT } from "@/lib/dateUtils";
 
 // ── Avaliação Trimestral helpers ──────────────────────────────────────────────
 const HARD_SKILLS = [
@@ -404,7 +405,7 @@ export default function RevisarFeedback() {
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(200, 200, 200);
-      doc.text(`Gerado em ${format(new Date(), "dd/MM/yyyy 'às' HH:mm")}`, margin, 18);
+      doc.text(`Gerado em ${formatBRT(new Date(), 'datetime')}`, margin, 18);
       y = 32;
 
       // Colaborador info
@@ -412,7 +413,7 @@ export default function RevisarFeedback() {
       y += 1;
       addText(feedback.employee_name, margin, 13, "bold", [20, 20, 30]);
       addText(feedback.employee_email, margin, 9, "normal", [80, 80, 100]);
-      addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? format(new Date(feedback.feedback_date), "dd/MM/yyyy") : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
+      addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? formatBRT(feedback.feedback_date, 'date') : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
       y += 4;
 
       if (feedback.feedback_type === 'experience_45d') {
@@ -951,7 +952,7 @@ export default function RevisarFeedback() {
               <p className="text-lg font-semibold text-slate-900">{feedback.employee_name}</p>
               <p className="text-sm text-slate-500">{feedback.employee_email}</p>
               <p className="text-xs text-slate-400 mt-1">
-                Gestor: {feedback.manager_name} • Data: {feedback.feedback_date && format(new Date(feedback.feedback_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                Gestor: {feedback.manager_name} • Data: {feedback.feedback_date && formatBRT(feedback.feedback_date, 'long')}
               </p>
             </div>
           </div>

@@ -10,9 +10,43 @@
  */
 
 const ALERT_THRESHOLD_DAYS = 10;
+const TIMEZONE = 'America/Cuiaba';
 
 // Tipos únicos (1 realização esperada por prestador lifetime)
 const UNIQUE_RITUALS = ['experience_45d', 'experience_90d'];
+
+// Statuses que indicam avaliação em andamento — ritual não deve ser ATRASADO
+const IN_PROGRESS_STATUSES = new Set([
+  'DISPONIVEL_PARA_GESTOR',
+  'EM_REVISAO_ADMIN',
+  'CONCLUIDO_PARA_ENVIO',
+  'APROVADO',
+  'CONVERSA_AGENDADA',
+  'CONVERSA_REALIZADA',
+  'PUBLICADO',
+  'ASSINADO_COLABORADOR'
+]);
+
+/**
+ * Retorna a data de "hoje" no timezone de Cuiabá (UTC-4).
+ * Evita adiantar 1 dia por comparar UTC com data local.
+ */
+export function getTodayCuiaba() {
+  const now = new Date();
+  const cuiabaStr = now.toLocaleDateString('en-CA', { timeZone: TIMEZONE });
+  return new Date(cuiabaStr + 'T00:00:00');
+}
+
+/**
+ * Verifica se há avaliação em andamento para este colaborador neste ritual.
+ */
+function hasInProgressFeedback(colaborador, ritualType, allRecords) {
+  return allRecords.some(r =>
+    r.employee_id === colaborador.id &&
+    r.feedback_type === ritualType &&
+    IN_PROGRESS_STATUSES.has(r.workflow_status)
+  );
+}
 
 // Intervalos dos rituais recorrentes em dias
 const RECURRENT_INTERVALS = {
@@ -104,6 +138,10 @@ export function calcUniqueRitualStatus(colaborador, ritualType, conclusoes, refe
   // Não concluído — verificar se venceu
   const daysRemaining = Math.round((dueDate - today) / 86400000);
   if (daysRemaining < 0) {
+    // Se há avaliação em andamento, não conta como ATRASADO
+    if (hasInProgressFeedback(colaborador, ritualType, conclusoes)) {
+      return { status: 'EM_ANDAMENTO', dueDate, conclusionDate: null, daysRemaining };
+    }
     return { status: 'ATRASADO', dueDate, conclusionDate: null, daysRemaining };
   }
   return { status: 'PENDENTE', dueDate, conclusionDate: null, daysRemaining };
@@ -169,7 +207,12 @@ export function calcRecurrentRitualStatus(colaborador, ritualType, conclusoes, r
     }
 
     const daysRemaining = Math.round((dueDate - today) / 86400000);
-    if (daysRemaining < 0) return { status: 'ATRASADO', dueDate, conclusionDate: null, daysRemaining };
+    if (daysRemaining < 0) {
+      if (hasInProgressFeedback(colaborador, ritualType, conclusoes)) {
+        return { status: 'EM_ANDAMENTO', dueDate, conclusionDate: null, daysRemaining };
+      }
+      return { status: 'ATRASADO', dueDate, conclusionDate: null, daysRemaining };
+    }
     if (daysRemaining <= ALERT_THRESHOLD_DAYS) return { status: 'EM_RISCO', dueDate, conclusionDate: null, daysRemaining };
     return { status: 'PENDENTE', dueDate, conclusionDate: null, daysRemaining };
   }
@@ -184,8 +227,12 @@ export function calcRecurrentRitualStatus(colaborador, ritualType, conclusoes, r
     return { status: 'PENDENTE', dueDate: firstDue, conclusionDate: null, daysRemaining };
   }
 
-  // Primeiro ciclo já venceu e nunca foi feito — ATRASADO
-  return { status: 'ATRASADO', dueDate: firstDue, conclusionDate: null, daysRemaining: Math.round((firstDue - today) / 86400000) };
+  // Primeiro ciclo já venceu — verificar se há avaliação em andamento
+  const daysRemaining = Math.round((firstDue - today) / 86400000);
+  if (hasInProgressFeedback(colaborador, ritualType, conclusoes)) {
+    return { status: 'EM_ANDAMENTO', dueDate: firstDue, conclusionDate: null, daysRemaining };
+  }
+  return { status: 'ATRASADO', dueDate: firstDue, conclusionDate: null, daysRemaining };
 }
 
 /**
@@ -229,8 +276,8 @@ export function calcManagerAdherence(gestor, team, allRecords, ritualTypes = ALL
 
       if (result.status === 'ISENTO_LEGACY' || result.status === 'SEM_ANCHOR') return;
       // PENDENTE ainda não venceu — não penaliza nem conta no denominador de "esperado vencido"
-      // Mas incluímos no total para dar contexto
-      if (result.status === 'PENDENTE') return;
+      // EM_ANDAMENTO: venceu mas tem avaliação em curso — não conta como atrasado
+      if (result.status === 'PENDENTE' || result.status === 'EM_ANDAMENTO') return;
 
       totalExpected++;
       if (result.status === 'CONCLUIDO_NO_PRAZO') totalOnTime++;
@@ -302,7 +349,8 @@ export function getDistributionByRitual(colaboradores, allRecords, filters = {})
       if (result.status === 'CONCLUIDO_NO_PRAZO') onTime++;
       else if (result.status === 'CONCLUIDO_COM_ATRASO') late++;
       else if (result.status === 'ATRASADO') delayed++;
-      else pendingOrRisk++;
+      else if (result.status !== 'EM_ANDAMENTO') pendingOrRisk++;
+      // EM_ANDAMENTO: não conta como delayed nem pendente — ritual em curso
     });
 
     const total = onTime + late + delayed + pendingOrRisk;

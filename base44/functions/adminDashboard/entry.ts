@@ -23,6 +23,20 @@ const ALERT_DAYS = 10;
 
 // ---------- helpers ----------
 
+const TIMEZONE = 'America/Cuiaba';
+
+/**
+ * Retorna a data de "hoje" no timezone de Cuiabá (UTC-4), zerando horas.
+ * Evita o problema de new Date() usar UTC e adiantar 1 dia.
+ */
+function getTodayCuiaba() {
+  const now = new Date();
+  // Formata a data local em Cuiabá no formato YYYY-MM-DD
+  const cuiabaStr = now.toLocaleDateString('en-CA', { timeZone: TIMEZONE });
+  // Cria um Date local com hora zerada (midnight local)
+  return new Date(cuiabaStr + 'T00:00:00');
+}
+
 function addDays(date, days) {
   return new Date(date.getTime() + days * 86400000);
 }
@@ -30,6 +44,18 @@ function addDays(date, days) {
 function toDateOnly(d) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
+
+// Statuses que indicam que um ritual está "em andamento" — não deve ser contado como ATRASADO
+const IN_PROGRESS_STATUSES = new Set([
+  'DISPONIVEL_PARA_GESTOR',
+  'EM_REVISAO_ADMIN',
+  'CONCLUIDO_PARA_ENVIO',
+  'APROVADO',
+  'CONVERSA_AGENDADA',
+  'CONVERSA_REALIZADA',
+  'PUBLICADO',
+  'ASSINADO_COLABORADOR'
+]);
 
 /**
  * Retorna a data âncora do colaborador para o tipo de ritual.
@@ -85,9 +111,21 @@ function getUniqueConclusion(colab, ritualType, records) {
 }
 
 /**
+ * Verifica se há algum feedback "em andamento" para este prestador neste ritual.
+ * Um feedback em andamento impede que o ritual seja contado como ATRASADO.
+ */
+function hasInProgressFeedback(colab, ritualType, records) {
+  return records.some(r =>
+    r.employee_id === colab.id &&
+    r.feedback_type === ritualType &&
+    IN_PROGRESS_STATUSES.has(r.workflow_status)
+  );
+}
+
+/**
  * Calcula o status de um ritual para um colaborador.
  * Retorna { status, dueDate, conclusionDate, daysUntilDue }
- * status: CONCLUIDO_NO_PRAZO | CONCLUIDO_COM_ATRASO | ISENTO_LEGACY | ATRASADO | PENDENTE | EM_RISCO | SEM_ANCHOR
+ * status: CONCLUIDO_NO_PRAZO | CONCLUIDO_COM_ATRASO | ISENTO_LEGACY | ATRASADO | PENDENTE | EM_RISCO | SEM_ANCHOR | EM_ANDAMENTO
  */
 function calcStatus(colab, ritualType, records, today) {
   const isUnique = ritualType in UNIQUE_OFFSETS;
@@ -107,6 +145,10 @@ function calcStatus(colab, ritualType, records, today) {
       return { status: onTime ? 'CONCLUIDO_NO_PRAZO' : 'CONCLUIDO_COM_ATRASO', dueDate, conclusionDate: conc.conclusionDate, daysUntilDue };
     }
 
+    // Antes de marcar ATRASADO: verificar se há feedback em andamento
+    if (daysUntilDue < 0 && hasInProgressFeedback(colab, ritualType, records)) {
+      return { status: 'EM_ANDAMENTO', dueDate, conclusionDate: null, daysUntilDue };
+    }
     if (daysUntilDue < 0) return { status: 'ATRASADO', dueDate, conclusionDate: null, daysUntilDue };
     if (daysUntilDue <= ALERT_DAYS) return { status: 'EM_RISCO', dueDate, conclusionDate: null, daysUntilDue };
     return { status: 'PENDENTE', dueDate, conclusionDate: null, daysUntilDue };
@@ -138,6 +180,10 @@ function calcStatus(colab, ritualType, records, today) {
     return { status: onTime ? 'CONCLUIDO_NO_PRAZO' : 'CONCLUIDO_COM_ATRASO', dueDate, conclusionDate: conclusionInCycle._d, daysUntilDue };
   }
 
+  // Antes de marcar ATRASADO: verificar se há feedback em andamento
+  if (daysUntilDue < 0 && hasInProgressFeedback(colab, ritualType, records)) {
+    return { status: 'EM_ANDAMENTO', dueDate, conclusionDate: null, daysUntilDue };
+  }
   if (daysUntilDue < 0) return { status: 'ATRASADO', dueDate, conclusionDate: null, daysUntilDue };
   if (daysUntilDue <= ALERT_DAYS) return { status: 'EM_RISCO', dueDate, conclusionDate: null, daysUntilDue };
   return { status: 'PENDENTE', dueDate, conclusionDate: null, daysUntilDue };
@@ -154,7 +200,7 @@ function handleMetrics(colabs, records, today) {
   colabs.filter(c => c.status === 'active').forEach(colab => {
     ALL_RITUAL_TYPES.forEach(ritualType => {
       const r = calcStatus(colab, ritualType, records, today);
-      if (r.status === 'ISENTO_LEGACY' || r.status === 'SEM_ANCHOR' || r.status === 'PENDENTE') return;
+      if (['ISENTO_LEGACY', 'SEM_ANCHOR', 'PENDENTE', 'EM_ANDAMENTO'].includes(r.status)) return;
       // Tudo que já deveria ter sido feito (vencido ou concluído)
       if (['CONCLUIDO_NO_PRAZO', 'CONCLUIDO_COM_ATRASO', 'ATRASADO', 'EM_RISCO'].includes(r.status)) {
         // EM_RISCO conta como total devido pois está no ciclo atual
@@ -244,7 +290,8 @@ function handleGestoresAtraso(colabs, records, gestores, today) {
     team.forEach(colab => {
       ALL_RITUAL_TYPES.forEach(ritualType => {
         const r = calcStatus(colab, ritualType, records, today);
-        if (['ISENTO_LEGACY', 'SEM_ANCHOR', 'PENDENTE'].includes(r.status)) return;
+        // EM_ANDAMENTO: ritual vencido mas com avaliação em curso — não conta como atrasado
+        if (['ISENTO_LEGACY', 'SEM_ANCHOR', 'PENDENTE', 'EM_ANDAMENTO'].includes(r.status)) return;
         totalExpected++;
         if (r.status === 'CONCLUIDO_NO_PRAZO') totalOnTime++;
         else if (r.status === 'ATRASADO') totalDelayed++;
@@ -352,8 +399,8 @@ Deno.serve(async (req) => {
     const payload = await req.json().catch(() => ({}));
     const { route } = payload;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Usar timezone de Cuiabá para evitar adiantar 1 dia (UTC vs UTC-4)
+    const today = getTodayCuiaba();
 
     const [colabs, records, gestores] = await Promise.all([
       base44.asServiceRole.entities.Colaborador.list(),

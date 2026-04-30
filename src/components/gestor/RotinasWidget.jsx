@@ -8,11 +8,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, ArrowRight, CheckCircle } from "lucide-react";
 
 const ALERT_DAYS = 5;
+const TIMEZONE = 'America/Cuiaba';
+
+// Statuses que indicam avaliação em andamento — ritual não deve aparecer como VENCIDO
+const IN_PROGRESS_STATUSES = new Set([
+  'DISPONIVEL_PARA_GESTOR',
+  'EM_REVISAO_ADMIN',
+  'CONCLUIDO_PARA_ENVIO',
+  'APROVADO',
+  'CONVERSA_AGENDADA',
+  'CONVERSA_REALIZADA',
+  'PUBLICADO',
+  'ASSINADO_COLABORADOR'
+]);
+
+function getTodayCuiaba() {
+  const now = new Date();
+  const cuiabaStr = now.toLocaleDateString('en-CA', { timeZone: TIMEZONE });
+  return new Date(cuiabaStr + 'T00:00:00');
+}
 
 function diffDays(dateStr) {
   if (!dateStr) return null;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = getTodayCuiaba();
   const target = new Date(dateStr);
   target.setHours(0, 0, 0, 0);
   return Math.floor((target - today) / (1000 * 60 * 60 * 24));
@@ -40,6 +58,10 @@ function getLastRecurringDate(startDate, intervalDays, feedbacks, type) {
   return relevant.length > 0 ? (relevant[0].feedback_date || relevant[0].created_date?.split("T")[0]) : startDate;
 }
 
+function hasInProgress(myFeedbacks, ritualType) {
+  return myFeedbacks.some(f => f.feedback_type === ritualType && IN_PROGRESS_STATUSES.has(f.workflow_status));
+}
+
 function computeRituais(col, feedbacks) {
   const myFeedbacks = feedbacks.filter(f => f.employee_id === col.id);
 
@@ -47,23 +69,28 @@ function computeRituais(col, feedbacks) {
   const base45 = col.ritual_45d_use_admission !== false ? col.admission_date : col.ritual_45d_custom_start;
   const completed45 = col.ritual_45d_completed_manual ||
     myFeedbacks.some(f => f.feedback_type === "experience_45d" && f.workflow_status === "ASSINADO_COLABORADOR");
-  const avaliacao45 = completed45 ? null : getRitualStatus(calcDate(base45, 45));
+  // Não mostrar como vencido se há avaliação em andamento
+  const inProgress45 = hasInProgress(myFeedbacks, "experience_45d");
+  const avaliacao45 = completed45 || inProgress45 ? null : getRitualStatus(calcDate(base45, 45));
 
   // 90 dias
   const base90 = col.ritual_90d_use_admission !== false ? col.admission_date : col.ritual_90d_custom_start;
   const completed90 = col.ritual_90d_completed_manual ||
     myFeedbacks.some(f => f.feedback_type === "experience_90d" && f.workflow_status === "ASSINADO_COLABORADOR");
-  const avaliacao90 = completed90 ? null : getRitualStatus(calcDate(base90, 90));
+  const inProgress90 = hasInProgress(myFeedbacks, "experience_90d");
+  const avaliacao90 = completed90 || inProgress90 ? null : getRitualStatus(calcDate(base90, 90));
 
   // Trimestral (90 dias de ciclo)
   const startTrim = col.ritual_trimestral_use_admission !== false ? col.admission_date : col.ritual_trimestral_custom_start;
   const lastTrim = getLastRecurringDate(startTrim, 90, myFeedbacks, "evaluation");
-  const trimestral = getRitualStatus(calcDate(lastTrim, 90));
+  const inProgressTrim = hasInProgress(myFeedbacks, "evaluation");
+  const trimestral = inProgressTrim ? null : getRitualStatus(calcDate(lastTrim, 90));
 
   // 1:1 (60 dias de ciclo)
   const start11 = col.ritual_1on1_use_admission !== false ? col.admission_date : col.ritual_1on1_custom_start;
   const last11 = getLastRecurringDate(start11, 60, myFeedbacks, "one_on_one");
-  const oneOnOne = getRitualStatus(calcDate(last11, 60));
+  const inProgress1on1 = hasInProgress(myFeedbacks, "one_on_one");
+  const oneOnOne = inProgress1on1 ? null : getRitualStatus(calcDate(last11, 60));
 
   return { avaliacao45, avaliacao90, trimestral, oneOnOne };
 }

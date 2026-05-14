@@ -189,6 +189,50 @@ function calcStatus(colab, ritualType, records, today) {
   return { status: 'PENDENTE', dueDate, conclusionDate: null, daysUntilDue };
 }
 
+const RITUAL_LABELS = {
+  experience_45d: 'Avaliação 45 Dias',
+  experience_90d: 'Avaliação 90 Dias',
+  evaluation: 'Trimestral',
+  one_on_one: '1:1 Bimestral'
+};
+
+// Map para o notifyGestorRitual
+const RITUAL_NOTIFY_TYPE = {
+  experience_45d: 'AVALIACAO_45',
+  experience_90d: 'AVALIACAO_90',
+  evaluation: 'TRIMESTRAL',
+  one_on_one: 'ONE_ON_ONE'
+};
+
+function handleRituaisAtrasados(colabs, records, gestores, today) {
+  const gestorMap = Object.fromEntries(gestores.map(g => [g.id, g]));
+  const result = [];
+
+  colabs.filter(c => c.status === 'active').forEach(colab => {
+    ALL_RITUAL_TYPES.forEach(ritualType => {
+      const r = calcStatus(colab, ritualType, records, today);
+      if (r.status !== 'ATRASADO') return;
+      const gestor = gestorMap[colab.manager_id];
+      result.push({
+        colaborador_id: colab.id,
+        colaborador_nome: colab.full_name,
+        colaborador_email: colab.email,
+        gestor_id: colab.manager_id,
+        gestor_nome: gestor?.full_name || '—',
+        gestor_email: gestor?.email || null,
+        ritual_tipo: ritualType,
+        ritual_label: RITUAL_LABELS[ritualType],
+        ritual_notify_type: RITUAL_NOTIFY_TYPE[ritualType],
+        data_prevista: r.dueDate ? r.dueDate.toISOString().split('T')[0] : null,
+        dias_atraso: r.daysUntilDue !== null ? Math.abs(r.daysUntilDue) : 0
+      });
+    });
+  });
+
+  result.sort((a, b) => b.dias_atraso - a.dias_atraso);
+  return { total: result.length, atrasados: result };
+}
+
 // ---------- route handlers ----------
 
 function handleMetrics(colabs, records, today) {
@@ -424,6 +468,9 @@ Deno.serve(async (req) => {
         break;
       case 'atividade-recente':
         data = handleAtividadeRecente(colabs, records, gestores);
+        break;
+      case 'rituais-atrasados':
+        data = handleRituaisAtrasados(colabs, records, gestores, today);
         break;
       default:
         // Retorna tudo de uma vez para o dashboard inicial

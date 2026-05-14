@@ -14,6 +14,7 @@ import DetalhesPrestador from './pages/DetalhesPrestador';
 import MeuTime from './pages/MeuTime';
 import GestorRespostas from './pages/GestorRespostas';
 import GestorTime from './pages/GestorTime';
+import Atrasados from './pages/Atrasados';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -91,6 +92,14 @@ const AuthenticatedApp = () => {
         element={
           <LayoutWrapper currentPageName="GestorTime">
             <GestorTime />
+          </LayoutWrapper>
+        } 
+      />
+      <Route 
+        path="/Atrasados" 
+        element={
+          <LayoutWrapper currentPageName="Atrasados">
+            <Atrasados />
           </LayoutWrapper>
         } 
       />

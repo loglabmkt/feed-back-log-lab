@@ -2,36 +2,43 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MessageSquare, CheckCircle, AlertCircle, FileCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function MetricCards({ metrics, loading }) {
+  const navigate = useNavigate();
+
   const cards = [
     {
       label: "Feedbacks Recebidos",
       value: metrics?.feedbacksRecebidos ?? 0,
       icon: MessageSquare,
       iconBg: "bg-blue-100",
-      iconColor: "text-blue-600"
+      iconColor: "text-blue-600",
+      onClick: () => navigate("/Respostas")
     },
     {
       label: "No Prazo",
       value: metrics?.noPrazo ?? 0,
       icon: CheckCircle,
       iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600"
+      iconColor: "text-emerald-600",
+      onClick: () => navigate("/Respostas", { state: { filtroPreSelecionado: "no_prazo" } })
     },
     {
       label: "Atrasados",
       value: metrics?.atrasados ?? 0,
       icon: AlertCircle,
       iconBg: "bg-red-100",
-      iconColor: "text-red-600"
+      iconColor: "text-red-600",
+      onClick: () => navigate("/Atrasados")
     },
     {
       label: "Assinados",
       value: metrics?.assinados ?? 0,
       icon: FileCheck,
       iconBg: "bg-amber-100",
-      iconColor: "text-amber-600"
+      iconColor: "text-amber-600",
+      onClick: () => navigate("/Respostas", { state: { filtroPreSelecionado: "assinados" } })
     }
   ];
 
@@ -55,7 +62,11 @@ export default function MetricCards({ metrics, loading }) {
       {cards.map((card, i) => {
         const Icon = card.icon;
         return (
-          <Card key={i} className="border-0 shadow-sm card-glow">
+          <Card
+            key={i}
+            className="border-0 shadow-sm card-glow cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5"
+            onClick={card.onClick}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>

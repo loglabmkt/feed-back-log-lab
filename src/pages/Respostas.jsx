@@ -1,21 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { CheckCircle2, Eye, Search, Clock, ThumbsUp, BadgeCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 export default function Respostas() {
   const [feedbackRecords, setFeedbackRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const location = useLocation();
+  const filtroPreSelecionado = location.state?.filtroPreSelecionado ?? null;
+  const colRefs = { revisao: useRef(null), aprovado: useRef(null), concluido: useRef(null) };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Scroll para a coluna destacada quando vier com filtro pré-selecionado
+  useEffect(() => {
+    if (!filtroPreSelecionado || loading) return;
+    const keyMap = { no_prazo: "concluido", assinados: "concluido" };
+    const target = keyMap[filtroPreSelecionado] || filtroPreSelecionado;
+    const el = colRefs[target]?.current;
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }), 300);
+    }
+  }, [filtroPreSelecionado, loading]);
 
   const loadData = async () => {
     try {
@@ -127,8 +141,17 @@ export default function Respostas() {
             {colDefs.map((col) => {
               const ColIcon = col.icon;
               const colRecords = filteredRecords.filter(r => col.statuses.includes(r.workflow_status));
+              // Destacar coluna quando vier de navegação com filtro
+              const isHighlighted = filtroPreSelecionado && (
+                (filtroPreSelecionado === "assinados" && col.key === "concluido") ||
+                (filtroPreSelecionado === "no_prazo" && col.key === "concluido")
+              );
               return (
-                <div key={col.key} className={`rounded-xl border-2 border-t-4 ${col.borderAccent} border-slate-200 bg-slate-50 flex flex-col`}>
+                <div
+                  key={col.key}
+                  ref={colRefs[col.key]}
+                  className={`rounded-xl border-2 border-t-4 ${col.borderAccent} bg-slate-50 flex flex-col transition-all duration-300 ${isHighlighted ? "border-emerald-400 ring-2 ring-emerald-300 ring-offset-1 shadow-lg" : "border-slate-200"}`}
+                >
                   {/* Column header */}
                   <div className={`flex items-center justify-between px-4 py-3 rounded-t-xl border-b ${col.headerBg}`}>
                     <div className="flex items-center gap-2">

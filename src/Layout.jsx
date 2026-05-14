@@ -12,7 +12,8 @@ import {
   X,
   LogOut,
   ChevronDown,
-  Shield
+  Shield,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -168,6 +169,13 @@ export default function Layout({ children, currentPageName }) {
       show: isAdmin 
     },
     { 
+      name: "Atrasados", 
+      href: "/Atrasados", 
+      icon: AlertCircle,
+      iconColor: "text-red-400",
+      show: isAdmin 
+    },
+    { 
       name: "Relatórios", 
       href: createPageUrl("Relatorios"), 
       icon: BarChart3,
@@ -245,7 +253,7 @@ export default function Layout({ children, currentPageName }) {
                   } : {}}
                   title={sidebarCollapsed ? item.name : ''}
                 >
-                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#F9B136]' : ''}`} />
+                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-[#F9B136]' : (item.iconColor || '')}`} />
                   {!sidebarCollapsed && (
                     <>
                       <span className="flex-1">{item.name}</span>
@@ -343,6 +351,7 @@ export default function Layout({ children, currentPageName }) {
               {currentPageName === 'ValidarFeedback' && 'Validar Feedback'}
               {currentPageName === 'AvaliacaoQualidadeServico90' && 'Avaliação de Qualidade de Serviço 90 Dias'}
               {currentPageName === 'Registro11' && 'Registro de 1:1'}
+              {currentPageName === 'Atrasados' && 'Rituais Atrasados'}
             </h2>
           </div>
         </header>

@@ -1,7 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import { Resend } from 'npm:resend@4.0.1';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 Deno.serve(async (req) => {
   try {
@@ -23,9 +25,20 @@ Deno.serve(async (req) => {
 
     const fb = feedbacks[0];
 
-    // Evitar dupla confirmação
+    // CORREÇÃO 5: Token uso único — bloquear se já assinado
     if (fb.workflow_status === 'ASSINADO_COLABORADOR') {
       return Response.json({ success: true, alreadyConfirmed: true, feedback: fb });
+    }
+
+    // CORREÇÃO 5: Expiração de 30 dias
+    if (fb.public_link_generated_date) {
+      const linkAge = Date.now() - new Date(fb.public_link_generated_date).getTime();
+      if (linkAge > THIRTY_DAYS_MS) {
+        return Response.json({ 
+          error: 'Link expirado. Solicite novo envio ao administrador.',
+          expired: true
+        }, { status: 410 });
+      }
     }
 
     // Atualizar status para confirmado

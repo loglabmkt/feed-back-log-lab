@@ -1152,7 +1152,20 @@ export default function RevisarFeedback() {
               Calibragem
             </Button>
             <Button
-              onClick={() => base44.functions.invoke("sendFeedbackToPrestador", { feedbackId: feedback.id }).then(() => setFeedback({...feedback, workflow_status: "PUBLICADO"})).catch(err => console.error(err))}
+              onClick={async () => {
+                setPublishing(true);
+                try {
+                  await base44.functions.invoke("sendFeedbackToPrestador", {
+                    feedbackId: feedback.id,
+                    baseUrl: window.location.origin
+                  });
+                  setFeedback({ ...feedback, workflow_status: "PUBLICADO" });
+                } catch (err) {
+                  setError(err?.response?.data?.error || err.message || "Erro ao enviar feedback");
+                } finally {
+                  setPublishing(false);
+                }
+              }}
               disabled={publishing || feedback.workflow_status === "ASSINADO_COLABORADOR"}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >

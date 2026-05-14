@@ -1,0 +1,326 @@
+{
+  "name": "FeedbackRecord",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "description": "ID do template usado"
+    },
+    "template_title": {
+      "type": "string",
+      "description": "T\u00edtulo do template"
+    },
+    "manager_id": {
+      "type": "string",
+      "description": "ID do gestor respons\u00e1vel"
+    },
+    "manager_name": {
+      "type": "string",
+      "description": "Nome do gestor"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "ID do colaborador avaliado"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Nome do colaborador"
+    },
+    "employee_email": {
+      "type": "string",
+      "description": "Email do colaborador"
+    },
+    "feedback_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de realiza\u00e7\u00e3o do feedback"
+    },
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "feedback",
+        "one_on_one",
+        "evaluation",
+        "experience_45d",
+        "experience_90d"
+      ],
+      "description": "Tipo do ritual"
+    },
+    "strengths": {
+      "type": "string",
+      "description": "Pontos fortes identificados"
+    },
+    "improvements": {
+      "type": "string",
+      "description": "Pontos de melhoria"
+    },
+    "action_plan": {
+      "type": "string",
+      "description": "Plano de a\u00e7\u00e3o acordado"
+    },
+    "additional_notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais"
+    },
+    "one_on_one_notes": {
+      "type": "string",
+      "description": "Registro da Conversa 1:1 \u2014 Uso Interno (LGPD: bloqueado para Prestador)"
+    },
+    "has_critical_impediment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag: Impedimento cr\u00edtico \u00e0 execu\u00e7\u00e3o sinalizado pelo gestor no 1:1"
+    },
+    "workflow_status": {
+      "type": "string",
+      "enum": [
+        "DISPONIVEL_PARA_GESTOR",
+        "EM_REVISAO_ADMIN",
+        "APROVADO",
+        "CONVERSA_AGENDADA",
+        "CONVERSA_REALIZADA",
+        "PUBLICADO",
+        "ASSINADO_COLABORADOR"
+      ],
+      "default": "DISPONIVEL_PARA_GESTOR",
+      "description": "Status no workflow triangular"
+    },
+    "checklist_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Perguntas do checklist"
+    },
+    "admin_approved_by": {
+      "type": "string",
+      "description": "ID do Admin que aprovou"
+    },
+    "admin_approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admin_director_notes": {
+      "type": "string"
+    },
+    "manager_conversation_notes": {
+      "type": "string",
+      "description": "Coment\u00e1rio do gestor sobre a conversa realizada com o colaborador"
+    },
+    "conversation_scheduled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conversation_completed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "public_access_token": {
+      "type": "string"
+    },
+    "public_link_generated_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "employee_validation_answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_id": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "employee_comments": {
+      "type": "string"
+    },
+    "employee_validation_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "email_enviado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp do envio do email ao colaborador"
+    },
+    "email_enviado_para": {
+      "type": "string",
+      "description": "Email destinat\u00e1rio do envio"
+    },
+    "email_resend_id": {
+      "type": "string",
+      "description": "ID retornado pelo Resend ap\u00f3s envio"
+    },
+    "email_status": {
+      "type": "string",
+      "enum": [
+        "enviado",
+        "falhou",
+        "nao_enviado"
+      ],
+      "description": "Status do envio de email ao colaborador"
+    },
+    "email_erro": {
+      "type": "string",
+      "description": "Mensagem de erro do envio, se falhou"
+    },
+    "quarter_reference": {
+      "type": "string",
+      "enum": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4"
+      ]
+    },
+    "h1_score": {
+      "type": "integer"
+    },
+    "h1_evidence": {
+      "type": "string"
+    },
+    "h2_score": {
+      "type": "integer"
+    },
+    "h2_evidence": {
+      "type": "string"
+    },
+    "h3_score": {
+      "type": "integer"
+    },
+    "h3_evidence": {
+      "type": "string"
+    },
+    "h4_score": {
+      "type": "integer"
+    },
+    "h4_evidence": {
+      "type": "string"
+    },
+    "h5_score": {
+      "type": "integer"
+    },
+    "h5_evidence": {
+      "type": "string"
+    },
+    "s1_score": {
+      "type": "integer"
+    },
+    "s1_evidence": {
+      "type": "string"
+    },
+    "s2_score": {
+      "type": "integer"
+    },
+    "s2_evidence": {
+      "type": "string"
+    },
+    "s3_score": {
+      "type": "integer"
+    },
+    "s3_evidence": {
+      "type": "string"
+    },
+    "s4_score": {
+      "type": "integer"
+    },
+    "s4_evidence": {
+      "type": "string"
+    },
+    "s5_score": {
+      "type": "integer"
+    },
+    "s5_evidence": {
+      "type": "string"
+    },
+    "total_score": {
+      "type": "integer"
+    },
+    "performance_band": {
+      "type": "string",
+      "enum": [
+        "immediate_action",
+        "attention",
+        "adequate",
+        "reference"
+      ]
+    },
+    "recommended_action": {
+      "type": "string"
+    },
+    "eval_action_1": {
+      "type": "string"
+    },
+    "eval_action_2": {
+      "type": "string"
+    },
+    "eval_action_3": {
+      "type": "string"
+    },
+    "exp45_scores": {
+      "type": "object"
+    },
+    "exp45_average": {
+      "type": "number"
+    },
+    "exp45_strengths": {
+      "type": "string"
+    },
+    "exp45_developments": {
+      "type": "string"
+    },
+    "exp45_action_plan": {
+      "type": "string"
+    },
+    "qs90_scores": {
+      "type": "object"
+    },
+    "qs90_average": {
+      "type": "number"
+    },
+    "qs90_strengths": {
+      "type": "string"
+    },
+    "qs90_improvements": {
+      "type": "string"
+    },
+    "qs90_decision": {
+      "type": "string",
+      "enum": [
+        "continuidade",
+        "continuidade_melhoria",
+        "encerramento"
+      ]
+    },
+    "qs90_decision_justification": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "manager_id",
+    "employee_id",
+    "feedback_type",
+    "workflow_status"
+  ]
+}

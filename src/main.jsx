@@ -3,6 +3,13 @@ import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
 
+// Unregister any stale service workers to prevent cached stale JS (e.g. duplicate React copies)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(reg => reg.unregister());
+  });
+}
+
 // ─── Security: Console Warning ───────────────────────────────────────────────
 console.log(
   '%c⚠️ ATENÇÃO — AÇÃO NÃO PERMITIDA',

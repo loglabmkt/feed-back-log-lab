@@ -1,0 +1,111 @@
+{
+  "name": "FeedbackTemplate",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do Feedback"
+    },
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "feedback",
+        "one_on_one",
+        "evaluation",
+        "experience_45d",
+        "experience_90d"
+      ],
+      "description": "Tipo do ritual"
+    },
+    "checklist_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Perguntas do checklist de valida\u00e7\u00e3o"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se est\u00e1 ativo e dispon\u00edvel para gestores"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Data limite para preenchimento pelo gestor"
+    },
+    "created_by_admin": {
+      "type": "string",
+      "description": "ID do Admin que criou"
+    },
+    "hard_skills_config": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Configura\u00e7\u00e3o dos crit\u00e9rios Hard Skills (avalia\u00e7\u00e3o trimestral)"
+    },
+    "soft_skills_config": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Configura\u00e7\u00e3o dos crit\u00e9rios Soft Skills (avalia\u00e7\u00e3o trimestral)"
+    },
+    "exp45_items_config": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Configura\u00e7\u00e3o dos 13 itens da Avalia\u00e7\u00e3o de Experi\u00eancia 45 Dias"
+    }
+  },
+  "required": [
+    "title",
+    "feedback_type"
+  ]
+}

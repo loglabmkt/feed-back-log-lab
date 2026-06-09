@@ -1,0 +1,13 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "manager_id": {
+      "type": "string",
+      "description": "ID do gestor (apenas para gestores)"
+    }
+  },
+  "required": [
+    "manager_id"
+  ]
+}

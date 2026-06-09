@@ -26,6 +26,20 @@ export function toDateBRT(value) {
  * @param {string} fmt - formato: 'date' = dd/MM/yyyy | 'datetime' = dd/MM/yyyy HH:mm | 'long' = dd 'de' MMM 'de' yyyy
  * @returns {string}
  */
+/**
+ * Formata uma string date-only (YYYY-MM-DD) sem conversão de timezone.
+ * Use para campos como feedback_date, conversation_scheduled_date que são gravados como string pura.
+ * @param {string} isoString - "YYYY-MM-DD" ou "YYYY-MM-DDTHH:mm..."
+ * @returns {string} "DD/MM/YYYY"
+ */
+export function formatDateOnly(isoString) {
+  if (!isoString) return '—';
+  const datePart = String(isoString).split('T')[0];
+  const [ano, mes, dia] = datePart.split('-');
+  if (!ano || !mes || !dia) return '—';
+  return `${dia}/${mes}/${ano}`;
+}
+
 export function formatBRT(value, fmt = 'date') {
   const d = toDateBRT(value);
   if (!d) return '—';

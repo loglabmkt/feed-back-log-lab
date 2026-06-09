@@ -33,6 +33,7 @@ export default function Registro11() {
   const [templateId, setTemplateId] = useState(null);
   const [showGuia, setShowGuia] = useState(false);
   const [guiaRead, setGuiaRead] = useState(false);
+  const [dataAvaliacao, setDataAvaliacao] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -56,6 +57,7 @@ export default function Registro11() {
     setSubmitAttempted(true);
     setError("");
     if (!selectedEmployee) { setError("Selecione o colaborador para o 1:1."); return; }
+    if (!dataAvaliacao) { setError("Informe a data em que o 1:1 foi realizado."); return; }
     if (!notes.trim() || notes.trim().length < 20) {
       setError("O Registro da Conversa é obrigatório (mínimo 20 caracteres).");
       return;
@@ -73,7 +75,7 @@ export default function Registro11() {
         employee_id: selectedEmployee.id,
         employee_name: selectedEmployee.full_name,
         employee_email: selectedEmployee.email,
-        feedback_date: format(new Date(), "yyyy-MM-dd"),
+        feedback_date: dataAvaliacao,
         one_on_one_notes: notes,
 
       });
@@ -187,14 +189,17 @@ export default function Registro11() {
               </div>
             </div>
 
-            {/* Data */}
+            {/* Data Manual */}
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data do 1:1 (Auto)</label>
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="font-bold text-slate-900 text-sm">
-                  {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                </p>
-              </div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data do 1:1 *</label>
+              <p className="text-xs text-slate-400">Informe a data em que a conversa foi realizada</p>
+              <input
+                type="date"
+                value={dataAvaliacao}
+                onChange={(e) => setDataAvaliacao(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#F8B137] focus:border-[#F8B137]"
+              />
             </div>
 
             {/* Colaborador */}

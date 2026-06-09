@@ -1,0 +1,68 @@
+{
+  "name": "Gestor",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Nome completo do gestor"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email do gestor"
+    },
+    "password_hash": {
+      "type": "string",
+      "description": "Hash da senha do gestor"
+    },
+    "has_password": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se j\u00e1 cadastrou senha"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa"
+    },
+    "department": {
+      "type": "string",
+      "description": "Departamento/Setor"
+    },
+    "position": {
+      "type": "string",
+      "description": "Cargo"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active",
+      "description": "Status do gestor"
+    },
+    "is_admin": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se \u00e9 administrador do sistema"
+    },
+    "verification_code": {
+      "type": "string",
+      "description": "C\u00f3digo tempor\u00e1rio de verifica\u00e7\u00e3o de email"
+    },
+    "verification_code_expires": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Expira\u00e7\u00e3o do c\u00f3digo de verifica\u00e7\u00e3o"
+    },
+    "ultimo_convite_enviado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data/hora do \u00faltimo convite de cadastro enviado"
+    }
+  },
+  "required": [
+    "full_name",
+    "email"
+  ]
+}

@@ -18,19 +18,19 @@ const GUIA_READ_KEY_90 = "guia_90dias_lido";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-// ── Itens com texto exato do instrumento (cópia fiel) ────────────────────────
+// ── Itens v2 — critérios oficiais Log Lab Digital (a partir de jun/2026) ──────
 const QS90_ITEMS = [
   { id: "q1",  label: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
-  { id: "q2",  label: "2",  description: "Atua de forma colaborativa com outras empresas e pares, contribuindo sem necessidade de solicitação expressa." },
+  { id: "q2",  label: "2",  description: "Atua de forma colaborativa com a equipe, contribuindo sem necessidade de solicitação expressa." },
   { id: "q3",  label: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
   { id: "q4",  label: "4",  description: "Apresenta elevado nível de qualidade na execução e nos resultados das entregas." },
-  { id: "q5",  label: "5",  description: "Articula-se com facilidade com membros de sua equipe, demais áreas e parceiros externos para gerar resultados." },
-  { id: "q6",  label: "6",  description: "Supera obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
-  { id: "q7",  label: "7",  description: "Conduz atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
-  { id: "q8",  label: "8",  description: "A atuação agrega valor ao projeto e às entregas da equipe." },
-  { id: "q9",  label: "9",  description: "A empresa demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
-  { id: "q10", label: "10", description: "O responsável técnico é ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
-  { id: "q11", label: "11", description: "A empresa organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
+  { id: "q5",  label: "5",  description: "Articula-se com facilidade com membros da equipe, demais áreas e parceiros externos para gerar resultados." },
+  { id: "q6",  label: "6",  description: "Supera os obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
+  { id: "q7",  label: "7",  description: "Conduz suas atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
+  { id: "q8",  label: "8",  description: "Sua atuação agrega valor ao projeto e às entregas da equipe." },
+  { id: "q9",  label: "9",  description: "Demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
+  { id: "q10", label: "10", description: "É ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
+  { id: "q11", label: "11", description: "Organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
   { id: "q12", label: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
   { id: "q13", label: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
 ];
@@ -117,6 +117,7 @@ export default function AvaliacaoQualidadeServico90() {
   const [templateId, setTemplateId] = useState(null);
   const [showGuia, setShowGuia] = useState(false);
   const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
+  const [dataAvaliacao, setDataAvaliacao] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -157,6 +158,7 @@ export default function AvaliacaoQualidadeServico90() {
     setSubmitAttempted(true);
     setError("");
     if (!selectedEmployee) { setError("Selecione o prestador de serviços avaliado."); return; }
+    if (!dataAvaliacao) { setError("Informe a data em que a avaliação foi realizada."); return; }
     if (totalFilled < 13) { setError(`Preencha todos os 13 itens. Faltam ${13 - totalFilled}.`); return; }
     if (!strengths.trim()) { setError("Bloco 14 – Pontos Fortes é obrigatório."); return; }
     if (!improvements.trim()) { setError("Bloco 14 – Pontos de Melhoria é obrigatório."); return; }
@@ -175,7 +177,8 @@ export default function AvaliacaoQualidadeServico90() {
         employee_id: selectedEmployee.id,
         employee_name: selectedEmployee.full_name,
         employee_email: selectedEmployee.email,
-        feedback_date: format(new Date(), "yyyy-MM-dd"),
+        feedback_date: dataAvaliacao,
+        criteria_version: "v2",
         qs90_scores: scores,
         qs90_average: parseFloat(average),
         qs90_strengths: strengths,
@@ -300,14 +303,17 @@ export default function AvaliacaoQualidadeServico90() {
               </div>
             </div>
 
-            {/* Data */}
+            {/* Data Manual */}
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data de Preenchimento</label>
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="font-bold text-slate-900 text-sm">
-                  {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                </p>
-              </div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data da Avaliação *</label>
+              <p className="text-xs text-slate-400">Informe a data em que a conversa/avaliação foi realizada</p>
+              <input
+                type="date"
+                value={dataAvaliacao}
+                onChange={(e) => setDataAvaliacao(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#F8B137] focus:border-[#F8B137]"
+              />
             </div>
 
             {/* Prestador */}

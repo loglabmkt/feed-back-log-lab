@@ -71,6 +71,7 @@ export default function AvaliacaoTrimestral() {
   const [loading, setLoading] = useState(true);
   const [showGuia, setShowGuia] = useState(false);
   const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
+  const [dataAvaliacao, setDataAvaliacao] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -133,6 +134,7 @@ export default function AvaliacaoTrimestral() {
     setSubmitAttempted(true);
     setError("");
     if (!selectedEmployee) { setError("Selecione o colaborador avaliado."); return; }
+    if (!dataAvaliacao) { setError("Informe a data em que a avaliação foi realizada."); return; }
     if (!quarterRef) { setError("Selecione o trimestre de referência."); return; }
     if (filledCount < 10) { setError(`Preencha todos os 10 critérios. Faltam ${10 - filledCount}.`); return; }
     if (missingEvidences.length > 0) {
@@ -155,7 +157,7 @@ export default function AvaliacaoTrimestral() {
         employee_id: selectedEmployee.id,
         employee_name: selectedEmployee.full_name,
         employee_email: selectedEmployee.email,
-        feedback_date: format(new Date(), "yyyy-MM-dd"),
+        feedback_date: dataAvaliacao,
         quarter_reference: quarterRef,
         h1_score: scores.h1, h1_evidence: evidences.h1 || "",
         h2_score: scores.h2, h2_evidence: evidences.h2 || "",
@@ -312,18 +314,21 @@ export default function AvaliacaoTrimestral() {
               </div>
             </div>
 
-            {/* Date (auto) */}
+            {/* Date manual */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> Data da Avaliação (Auto)
-                </label>
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                  <p className="font-bold text-slate-900 text-sm">
-                    {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> Data da Avaliação *
+              </label>
+              <p className="text-xs text-slate-400">Informe a data em que a avaliação foi realizada</p>
+              <input
+                type="date"
+                value={dataAvaliacao}
+                onChange={(e) => setDataAvaliacao(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#F8B137] focus:border-[#F8B137]"
+              />
+            </div>
               {selectedEmployee && (
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Cargo (Auto)</label>

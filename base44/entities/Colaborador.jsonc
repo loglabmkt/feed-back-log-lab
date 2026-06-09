@@ -1,0 +1,123 @@
+{
+  "name": "Colaborador",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Nome completo do colaborador"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email do colaborador"
+    },
+    "password_hash": {
+      "type": "string",
+      "description": "Hash da senha do colaborador"
+    },
+    "has_password": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se j\u00e1 cadastrou senha"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa"
+    },
+    "manager_id": {
+      "type": "string",
+      "description": "ID do gestor respons\u00e1vel"
+    },
+    "department": {
+      "type": "string",
+      "description": "Departamento/Setor"
+    },
+    "position": {
+      "type": "string",
+      "description": "Cargo"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active",
+      "description": "Status do colaborador"
+    },
+    "last_feedback_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do \u00faltimo feedback"
+    },
+    "admission_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de admiss\u00e3o/in\u00edcio do contrato de presta\u00e7\u00e3o de servi\u00e7os"
+    },
+    "ritual_45d_use_admission": {
+      "type": "boolean",
+      "default": true,
+      "description": "Ritual 45d: usar data de admiss\u00e3o como base"
+    },
+    "ritual_45d_custom_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual 45d: data de in\u00edcio customizada"
+    },
+    "ritual_45d_completed_manual": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ritual 45d: marcado como conclu\u00eddo manualmente (retroativo)"
+    },
+    "ritual_45d_completion_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual 45d: data de conclus\u00e3o manual registrada"
+    },
+    "ritual_90d_use_admission": {
+      "type": "boolean",
+      "default": true,
+      "description": "Ritual 90d: usar data de admiss\u00e3o como base"
+    },
+    "ritual_90d_custom_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual 90d: data de in\u00edcio customizada"
+    },
+    "ritual_90d_completed_manual": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ritual 90d: marcado como conclu\u00eddo manualmente (retroativo)"
+    },
+    "ritual_90d_completion_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual 90d: data de conclus\u00e3o manual registrada"
+    },
+    "ritual_trimestral_use_admission": {
+      "type": "boolean",
+      "default": true,
+      "description": "Ritual Trimestral: usar data de admiss\u00e3o como base"
+    },
+    "ritual_trimestral_custom_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual Trimestral: data de in\u00edcio customizada"
+    },
+    "ritual_1on1_use_admission": {
+      "type": "boolean",
+      "default": true,
+      "description": "Ritual 1:1: usar data de admiss\u00e3o como base"
+    },
+    "ritual_1on1_custom_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Ritual 1:1: data de in\u00edcio customizada"
+    }
+  },
+  "required": [
+    "full_name",
+    "email"
+  ]
+}

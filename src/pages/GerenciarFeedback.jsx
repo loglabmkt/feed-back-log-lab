@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { formatBRT } from "@/lib/dateUtils";
+import { formatBRT, formatDateOnly } from "@/lib/dateUtils";
 import GestorLayout from "@/components/GestorLayout";
 import FeedbackContentSummary from "@/components/feedback/FeedbackContentSummary";
 
@@ -76,7 +76,8 @@ export default function GerenciarFeedback() {
       setFeedback(fb);
       
       if (fb.conversation_scheduled_date) {
-        setScheduledDate(new Date(fb.conversation_scheduled_date).toISOString().split('T')[0]);
+        // Tratar como date-only: pegar apenas a parte YYYY-MM-DD para evitar bug de timezone
+        setScheduledDate(String(fb.conversation_scheduled_date).split('T')[0]);
       }
       if (fb.manager_conversation_notes) {
         setConversationNotes(fb.manager_conversation_notes);
@@ -101,7 +102,8 @@ export default function GerenciarFeedback() {
     try {
       await base44.entities.FeedbackRecord.update(feedback.id, {
         workflow_status: "CONVERSA_AGENDADA",
-        conversation_scheduled_date: new Date(scheduledDate).toISOString()
+        // Salvar como date-only string para evitar conversão UTC que causa bug de timezone
+        conversation_scheduled_date: scheduledDate
       });
 
       // Enviar email para o colaborador
@@ -265,7 +267,7 @@ export default function GerenciarFeedback() {
                 <p className="text-lg font-semibold text-slate-900">{feedback.employee_name}</p>
                 <p className="text-sm text-slate-500">{feedback.employee_email}</p>
                 <p className="text-xs text-slate-400 mt-1">
-                  Template: {feedback.template_title} • Data: {feedback.feedback_date && formatBRT(feedback.feedback_date, 'long')}
+                  Template: {feedback.template_title} • Data: {feedback.feedback_date && formatDateOnly(feedback.feedback_date)}
                 </p>
               </div>
             </div>
@@ -358,7 +360,11 @@ export default function GerenciarFeedback() {
                   )}
                   {(feedback.workflow_status === 'CONVERSA_AGENDADA' || feedback.workflow_status === 'CONVERSA_REALIZADA') && (
                     <Badge className="bg-purple-100 text-purple-700">
-                      ✓ Agendado para {feedback.conversation_scheduled_date && formatBRT(feedback.conversation_scheduled_date, 'date')}
+                      ✓ Agendado para {feedback.conversation_scheduled_date && (() => {
+                        const datePart = String(feedback.conversation_scheduled_date).split('T')[0];
+                        const [ano, mes, dia] = datePart.split('-');
+                        return `${dia}/${mes}/${ano}`;
+                      })()}
                     </Badge>
                   )}
                 </div>

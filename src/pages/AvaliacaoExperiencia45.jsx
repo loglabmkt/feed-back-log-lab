@@ -20,7 +20,8 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 
-const DEFAULT_ITEMS = [
+// v1 — critérios anteriores (mantidos para retrocompatibilidade com feedbacks históricos)
+const LEGACY_ITEMS_V1 = [
   { id: "e1",  label: "1",  description: "Assimilação do escopo das atividades contratadas com facilidade e rapidez." },
   { id: "e2",  label: "2",  description: "Atuação colaborativa com a equipe, sem necessidade de solicitação expressa." },
   { id: "e3",  label: "3",  description: "Empenho, envolvimento e comprometimento na execução dos serviços." },
@@ -34,6 +35,23 @@ const DEFAULT_ITEMS = [
   { id: "e11", label: "11", description: "Organização das atividades e gestão de documentos/informações." },
   { id: "e12", label: "12", description: "Iniciativa e motivação para entregar acima do mínimo esperado." },
   { id: "e13", label: "13", description: "Cumprimento de prazos acordados e compromissos assumidos." },
+];
+
+// v2 — critérios oficiais Log Lab Digital (a partir de jun/2026)
+const DEFAULT_ITEMS = [
+  { id: "e1",  label: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
+  { id: "e2",  label: "2",  description: "Atua de forma colaborativa com a equipe, contribuindo sem necessidade de solicitação expressa." },
+  { id: "e3",  label: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
+  { id: "e4",  label: "4",  description: "Apresenta elevado nível de qualidade na execução e nos resultados das entregas." },
+  { id: "e5",  label: "5",  description: "Articula-se com facilidade com membros da equipe, demais áreas e parceiros externos para gerar resultados." },
+  { id: "e6",  label: "6",  description: "Supera os obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
+  { id: "e7",  label: "7",  description: "Conduz suas atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
+  { id: "e8",  label: "8",  description: "Sua atuação agrega valor ao projeto e às entregas da equipe." },
+  { id: "e9",  label: "9",  description: "Demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
+  { id: "e10", label: "10", description: "É ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
+  { id: "e11", label: "11", description: "Organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
+  { id: "e12", label: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
+  { id: "e13", label: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
 ];
 
 const SCALE = [
@@ -109,6 +127,7 @@ export default function AvaliacaoExperiencia45() {
   const [items, setItems] = useState(DEFAULT_ITEMS);
   const [showGuia, setShowGuia] = useState(false);
   const [isFirstTimeGuia, setIsFirstTimeGuia] = useState(false);
+  const [dataAvaliacao, setDataAvaliacao] = useState(format(new Date(), "yyyy-MM-dd"));
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -168,6 +187,7 @@ export default function AvaliacaoExperiencia45() {
     setSubmitAttempted(true);
     setError("");
     if (!selectedEmployee) { setError("Selecione o colaborador avaliado."); return; }
+    if (!dataAvaliacao) { setError("Informe a data em que a avaliação foi realizada."); return; }
     if (totalFilled < 13) { setError(`Preencha todos os 13 itens. Faltam ${13 - totalFilled}.`); return; }
     if (!strengths.trim()) { setError("Pontos Fortes é obrigatório."); return; }
     if (!developments.trim()) { setError("Pontos de Desenvolvimento é obrigatório."); return; }
@@ -185,7 +205,8 @@ export default function AvaliacaoExperiencia45() {
         employee_id: selectedEmployee.id,
         employee_name: selectedEmployee.full_name,
         employee_email: selectedEmployee.email,
-        feedback_date: format(new Date(), "yyyy-MM-dd"),
+        feedback_date: dataAvaliacao,
+        criteria_version: "v2",
         exp45_scores: scores,
         exp45_average: parseFloat(average),
         exp45_strengths: strengths,
@@ -305,14 +326,17 @@ export default function AvaliacaoExperiencia45() {
               </div>
             </div>
 
-            {/* Data */}
+            {/* Data Manual */}
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data da Avaliação (Auto)</label>
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <p className="font-bold text-slate-900 text-sm">
-                  {format(new Date(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                </p>
-              </div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Data da Avaliação *</label>
+              <p className="text-xs text-slate-400">Informe a data em que a conversa/avaliação foi realizada</p>
+              <input
+                type="date"
+                value={dataAvaliacao}
+                onChange={(e) => setDataAvaliacao(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#F8B137] focus:border-[#F8B137]"
+              />
             </div>
 
             {/* Colaborador */}

@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { formatBRT } from "@/lib/dateUtils";
+import { formatBRT, formatDateOnly } from "@/lib/dateUtils";
 
 // ── Avaliação Trimestral helpers ──────────────────────────────────────────────
 const HARD_SKILLS = [
@@ -413,12 +413,13 @@ export default function RevisarFeedback() {
       y += 1;
       addText(feedback.employee_name, margin, 13, "bold", [20, 20, 30]);
       addText(feedback.employee_email, margin, 9, "normal", [80, 80, 100]);
-      addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? formatBRT(feedback.feedback_date, 'date') : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
+      addText(`Gestor: ${feedback.manager_name}   |   Data: ${feedback.feedback_date ? formatDateOnly(feedback.feedback_date) : "—"}${feedback.quarter_reference ? `   |   Trimestre: ${feedback.quarter_reference}` : ""}`, margin, 9, "normal", [80, 80, 100]);
       y += 4;
 
       if (feedback.feedback_type === 'experience_45d') {
         // ── Avaliação 45 Dias ──────────────────────────────────────────────────
-        const EXP45 = [
+        // Critérios: v2 se criteria_version === "v2", caso contrário v1 (retrocompatibilidade)
+        const EXP45_V1 = [
           { id: "e1",  num: "1",  description: "Assimilação do escopo das atividades contratadas com facilidade e rapidez." },
           { id: "e2",  num: "2",  description: "Atuação colaborativa com a equipe, sem necessidade de solicitação expressa." },
           { id: "e3",  num: "3",  description: "Empenho, envolvimento e comprometimento na execução dos serviços." },
@@ -433,6 +434,22 @@ export default function RevisarFeedback() {
           { id: "e12", num: "12", description: "Iniciativa e motivação para entregar acima do mínimo esperado." },
           { id: "e13", num: "13", description: "Cumprimento de prazos acordados e compromissos assumidos." },
         ];
+        const EXP45_V2 = [
+          { id: "e1",  num: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
+          { id: "e2",  num: "2",  description: "Atua de forma colaborativa com a equipe, contribuindo sem necessidade de solicitação expressa." },
+          { id: "e3",  num: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
+          { id: "e4",  num: "4",  description: "Apresenta elevado nível de qualidade na execução e nos resultados das entregas." },
+          { id: "e5",  num: "5",  description: "Articula-se com facilidade com membros da equipe, demais áreas e parceiros externos para gerar resultados." },
+          { id: "e6",  num: "6",  description: "Supera os obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
+          { id: "e7",  num: "7",  description: "Conduz suas atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
+          { id: "e8",  num: "8",  description: "Sua atuação agrega valor ao projeto e às entregas da equipe." },
+          { id: "e9",  num: "9",  description: "Demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
+          { id: "e10", num: "10", description: "É ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
+          { id: "e11", num: "11", description: "Organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
+          { id: "e12", num: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
+          { id: "e13", num: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
+        ];
+        const EXP45 = feedback.criteria_version === "v2" ? EXP45_V2 : EXP45_V1;
         const EXP45_SL = { 4: "Referência / Supera", 3: "Entrega o esperado", 2: "Em desenvolvimento", 1: "Crítico", "NO": "Não Observado" };
         const scores45 = feedback.exp45_scores || {};
         const avg45 = feedback.exp45_average;
@@ -538,7 +555,7 @@ export default function RevisarFeedback() {
       } else if (feedback.feedback_type === 'experience_90d') {
         // ── Avaliação QS 90 Dias ───────────────────────────────────────────────
         const QS90_SL = { 4: "Referência / Supera", 3: "Entrega o esperado", 2: "Em desenvolvimento", 1: "Crítico", "NO": "Não Observado" };
-        const QS90_ITEMS = [
+        const QS90_ITEMS_V1 = [
           { id: "q1",  num: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
           { id: "q2",  num: "2",  description: "Atua de forma colaborativa com outras empresas e pares, contribuindo sem necessidade de solicitação expressa." },
           { id: "q3",  num: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
@@ -553,6 +570,22 @@ export default function RevisarFeedback() {
           { id: "q12", num: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
           { id: "q13", num: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
         ];
+        const QS90_ITEMS_V2 = [
+          { id: "q1",  num: "1",  description: "Assimilou o escopo das atividades contratadas com facilidade e rapidez." },
+          { id: "q2",  num: "2",  description: "Atua de forma colaborativa com a equipe, contribuindo sem necessidade de solicitação expressa." },
+          { id: "q3",  num: "3",  description: "Demonstra empenho, envolvimento e comprometimento na execução dos serviços contratados." },
+          { id: "q4",  num: "4",  description: "Apresenta elevado nível de qualidade na execução e nos resultados das entregas." },
+          { id: "q5",  num: "5",  description: "Articula-se com facilidade com membros da equipe, demais áreas e parceiros externos para gerar resultados." },
+          { id: "q6",  num: "6",  description: "Supera os obstáculos que surgem na execução dos serviços, identificando e implementando alternativas de solução." },
+          { id: "q7",  num: "7",  description: "Conduz suas atividades até a conclusão, sendo conclusivo na entrega dos resultados acordados." },
+          { id: "q8",  num: "8",  description: "Sua atuação agrega valor ao projeto e às entregas da equipe." },
+          { id: "q9",  num: "9",  description: "Demonstra conhecimento técnico adequado ao escopo contratado, compartilhando-o e buscando atualização quando necessário." },
+          { id: "q10", num: "10", description: "É ágil na identificação e geração de soluções para problemas relacionados ao escopo dos serviços." },
+          { id: "q11", num: "11", description: "Organiza adequadamente suas atividades e a gestão de documentos e informações vinculadas ao projeto." },
+          { id: "q12", num: "12", description: "Demonstra iniciativa e motivação para entregar resultados acima do mínimo esperado." },
+          { id: "q13", num: "13", description: "Cumpre os prazos acordados e os compromissos assumidos no âmbito da prestação de serviços." },
+        ];
+        const QS90_ITEMS = feedback.criteria_version === "v2" ? QS90_ITEMS_V2 : QS90_ITEMS_V1;
         const QS90_DECISION_LABELS = {
           continuidade: "Continuidade contratual recomendada.",
           continuidade_melhoria: "Continuidade contratual recomendada com plano de melhoria de serviço acordado.",
@@ -952,7 +985,7 @@ export default function RevisarFeedback() {
               <p className="text-lg font-semibold text-slate-900">{feedback.employee_name}</p>
               <p className="text-sm text-slate-500">{feedback.employee_email}</p>
               <p className="text-xs text-slate-400 mt-1">
-                Gestor: {feedback.manager_name} • Data: {feedback.feedback_date && formatBRT(feedback.feedback_date, 'long')}
+                Gestor: {feedback.manager_name} • Data: {feedback.feedback_date && formatDateOnly(feedback.feedback_date)}
               </p>
             </div>
           </div>

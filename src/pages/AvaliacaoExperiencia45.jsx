@@ -65,12 +65,16 @@ const SCALE = [
 function ItemRow({ item, score, onScoreChange, hasError }) {
   const isNotFilled = hasError && score === undefined;
   return (
-    <div className={`rounded-xl border-2 transition-all overflow-hidden ${isNotFilled ? "border-red-300 bg-red-50" : score !== undefined ? "border-slate-200 bg-white" : "border-slate-100 bg-white"}`}>
+    <div className={`rounded-xl border-2 transition-all overflow-hidden ${
+      isNotFilled ? "border-red-300 bg-red-50" : score !== undefined ? "border-slate-200 bg-white" : "border-slate-100 bg-white"
+    }`}>
       <div className="px-5 py-4">
         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-slate-900 text-sm">{item.label}</h4>
-            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{item.description}</p>
+            <p className="text-sm text-slate-800 leading-relaxed">
+              <span className="font-bold text-slate-900">{item.label}. </span>
+              {item.description}
+            </p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0 flex-wrap">
             {SCALE.map((opt) => (
@@ -90,13 +94,6 @@ function ItemRow({ item, score, onScoreChange, hasError }) {
             ))}
           </div>
         </div>
-        {!score && score !== 0 && (
-          <div className="flex gap-3 mt-2 flex-wrap">
-            {SCALE.map(opt => (
-              <span key={opt.value} className="text-xs text-slate-400">{opt.label} = {opt.description}</span>
-            ))}
-          </div>
-        )}
         {isNotFilled && (
           <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
             <AlertCircle className="w-3 h-3" /> Selecione uma opção para este item.
@@ -404,12 +401,12 @@ export default function AvaliacaoExperiencia45() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm" style={{background: "#F8B137", color: "#14141E"}}>13</div>
-              <div>
-                <CardTitle className="text-base font-bold text-slate-900">Itens de Avaliação</CardTitle>
-                <p className="text-sm text-slate-500">Escala: 4 = Referência/Supera · 3 = Entrega o esperado · 2 = Em desenvolvimento · 1 = Crítico · NO = Não Observado</p>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0" style={{background: "#F8B137", color: "#14141E"}}>13</div>
+              <div className="flex-1">
+                <CardTitle className="text-base font-bold text-slate-900">Seção 2 – Itens de Avaliação</CardTitle>
+                <p className="text-xs text-slate-500">Escala: 4 = Referência/Supera · 3 = Entrega o esperado · 2 = Em desenvolvimento · 1 = Crítico · NO = Não Observado</p>
               </div>
-              <div className="ml-auto text-right">
+              <div className="ml-auto text-right flex-shrink-0">
                 <p className="text-xs text-slate-400">Preenchidos</p>
                 <p className="text-xl font-bold text-slate-700">{totalFilled}<span className="text-sm font-normal text-slate-400">/13</span></p>
               </div>

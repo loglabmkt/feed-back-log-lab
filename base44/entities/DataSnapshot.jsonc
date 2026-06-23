@@ -1,0 +1,35 @@
+{
+  "name": "DataSnapshot",
+  "type": "object",
+  "properties": {
+    "entity_name": {
+      "type": "string",
+      "description": "Nome da entidade snapshotada"
+    },
+    "snapshot_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data/hora do snapshot"
+    },
+    "total_records": {
+      "type": "number",
+      "description": "Total de registros no momento do snapshot"
+    },
+    "triggered_by": {
+      "type": "string",
+      "description": "Quem disparou: 'auto', 'manual' ou email do admin"
+    },
+    "snapshot_data": {
+      "type": "object",
+      "description": "Array completo dos registros serializado como JSON"
+    },
+    "note": {
+      "type": "string",
+      "description": "Observa\u00e7\u00e3o livre opcional"
+    }
+  },
+  "required": [
+    "entity_name",
+    "snapshot_date"
+  ]
+}

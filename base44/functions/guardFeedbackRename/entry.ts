@@ -55,28 +55,23 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Verificar bulk rename APENAS se algum novo valor for nome LOTR
+    // 2. Verificar se algum novo valor é nome LOTR e consultar estado atual do banco
     const LOTR_NAMES = new Set([
       "Legolas","Gimli","Aragorn","Frodo","Gandalf","Galadriel",
       "Samwise Gamgee","Peregrin Took","Elrond","Boromir",
       "Gandalf O Cinzento","Frodo Bolseiro"
     ]);
     const hasLotrName = changedNameFields.some(c => LOTR_NAMES.has(c.new));
-    if (performedBy && hasLotrName) {
-      const since = new Date(Date.now() - 60 * 1000).toISOString();
-      const recentLogs = await base44.asServiceRole.entities.SecurityLog.filter({
-        event_type: 'NOME_ALTERADO_FEEDBACK',
-        performed_by: performedBy
-      });
+    if (hasLotrName) {
+      // Buscar TODOS os FeedbackRecords que atualmente têm nome LOTR no banco
+      const lotrNamesArray = [...LOTR_NAMES];
+      const allRecords = await base44.asServiceRole.entities.FeedbackRecord.list();
+      const contaminated = allRecords.filter(r =>
+        lotrNamesArray.includes(r.employee_name) || lotrNamesArray.includes(r.manager_name)
+      );
+      const allIds = [...new Set([...contaminated.map(r => r.id), recordId])];
 
-      const recentIds = recentLogs
-        .filter(l => l.timestamp >= since)
-        .map(l => l.entity_id)
-        .filter(Boolean);
-
-      const allIds = [...new Set([...recentIds, recordId])];
-
-      if (allIds.length > 3) {
+      if (allIds.length > 0) {
         await base44.asServiceRole.entities.SecurityLog.create({
           event_type: 'BLOQUEIO_BULK_RENAME_FEEDBACK',
           performed_by: performedBy,
@@ -161,7 +156,7 @@ Deno.serve(async (req) => {
         return Response.json({
           success: false,
           blocked: true,
-          reason: 'BLOQUEIO_BULK_RENAME_FEEDBACK: mais de 3 registros FeedbackRecord com nome alterado em 60s',
+          reason: 'BLOQUEIO_BULK_RENAME_FEEDBACK: nome LOTR detectado no banco — restore imediato',
           affected_count: allIds.length,
           restored,
           errors: restoreErrors

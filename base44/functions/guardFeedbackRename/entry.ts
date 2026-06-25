@@ -55,8 +55,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 2. Verificar bulk rename: buscar logs recentes do mesmo usuário nos últimos 60s
-    if (performedBy) {
+    // 2. Verificar bulk rename APENAS se algum novo valor for nome LOTR
+    const LOTR_NAMES = new Set([
+      "Legolas","Gimli","Aragorn","Frodo","Gandalf","Galadriel",
+      "Samwise Gamgee","Peregrin Took","Elrond","Boromir",
+      "Gandalf O Cinzento","Frodo Bolseiro"
+    ]);
+    const hasLotrName = changedNameFields.some(c => LOTR_NAMES.has(c.new));
+    if (performedBy && hasLotrName) {
       const since = new Date(Date.now() - 60 * 1000).toISOString();
       const recentLogs = await base44.asServiceRole.entities.SecurityLog.filter({
         event_type: 'NOME_ALTERADO_FEEDBACK',

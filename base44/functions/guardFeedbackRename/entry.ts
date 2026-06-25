@@ -72,6 +72,16 @@ Deno.serve(async (req) => {
       const allIds = [...new Set([...contaminated.map(r => r.id), recordId])];
 
       if (allIds.length > 0) {
+        // Lock: verificar se já existe um BLOQUEIO nos últimos 5s (outra instância já executou o restore)
+        const lockSince = new Date(Date.now() - 5 * 1000).toISOString();
+        const recentBloqueios = await base44.asServiceRole.entities.SecurityLog.filter({
+          event_type: 'BLOQUEIO_BULK_RENAME_FEEDBACK'
+        });
+        const alreadyBlocked = recentBloqueios.some(l => l.timestamp >= lockSince);
+        if (alreadyBlocked) {
+          return Response.json({ skipped: true, reason: 'Lock ativo — outra instância já executou o restore' });
+        }
+
         await base44.asServiceRole.entities.SecurityLog.create({
           event_type: 'BLOQUEIO_BULK_RENAME_FEEDBACK',
           performed_by: performedBy,

@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
           blocked: true,
           reason: 'BLOQUEIO_BULK_RENAME_FEEDBACK: mais de 3 registros FeedbackRecord com nome alterado em 60s',
           affected_count: allIds.length
-        }, { status: 403 });
+        }, { status: 200 });
       }
     }
 

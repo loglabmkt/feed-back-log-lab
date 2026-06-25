@@ -16,7 +16,25 @@
     },
     "manager_name": {
       "type": "string",
-      "description": "Nome do gestor"
+      "description": "Nome real do gestor. NUNCA alterar com nomes fict\u00edcios, de teste ou LOTR. Campo protegido por automa\u00e7\u00e3o guardFeedbackRename.",
+      "not": {
+        "enum": [
+          "Legolas",
+          "Gimli",
+          "Aragorn",
+          "Frodo",
+          "Gandalf",
+          "Galadriel",
+          "Samwise",
+          "Samwise Gamgee",
+          "Peregrin",
+          "Peregrin Took",
+          "Elrond",
+          "Boromir",
+          "Gandalf O Cinzento",
+          "Frodo Bolseiro"
+        ]
+      }
     },
     "employee_id": {
       "type": "string",
@@ -24,7 +42,25 @@
     },
     "employee_name": {
       "type": "string",
-      "description": "Nome do colaborador"
+      "description": "Nome real do colaborador. NUNCA alterar com nomes fict\u00edcios, de teste ou LOTR. Campo protegido por automa\u00e7\u00e3o guardFeedbackRename.",
+      "not": {
+        "enum": [
+          "Legolas",
+          "Gimli",
+          "Aragorn",
+          "Frodo",
+          "Gandalf",
+          "Galadriel",
+          "Samwise",
+          "Samwise Gamgee",
+          "Peregrin",
+          "Peregrin Took",
+          "Elrond",
+          "Boromir",
+          "Gandalf O Cinzento",
+          "Frodo Bolseiro"
+        ]
+      }
     },
     "employee_email": {
       "type": "string",

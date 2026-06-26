@@ -92,13 +92,21 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    const restored = [];
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    if (user.role !== 'admin') return Response.json({ error: 'Forbidden: admin only' }, { status: 403 });
+
+    let updated = 0;
+    let skipped = 0;
     const errors = [];
 
     for (const [id, expected] of Object.entries(CORRECTIONS)) {
       try {
         const record = await base44.asServiceRole.entities.Colaborador.get(id);
-        if (!record) continue;
+        if (!record) {
+          errors.push({ id, error: `Not found` });
+          continue;
+        }
 
         const currentPosition = record.position ?? "";
         if (
@@ -106,6 +114,7 @@ Deno.serve(async (req) => {
           currentPosition === expected.position &&
           record.status === expected.status
         ) {
+          skipped++;
           continue;
         }
 
@@ -114,28 +123,13 @@ Deno.serve(async (req) => {
           position: expected.position,
           status: expected.status,
         });
-        restored.push(id);
+        updated++;
       } catch (e) {
         errors.push({ id, error: e.message });
       }
     }
 
-    // Sem corrupção: encerrar silenciosamente
-    if (restored.length === 0) {
-      return Response.json({ success: true, updated: 0, message: "No corruption detected" });
-    }
-
-    // Logar apenas quando há restaurações
-    await base44.asServiceRole.entities.SecurityLog.create({
-      event_type: "AUTO_RESTORE_COLABORADOR",
-      page: "system/cron",
-      timestamp: new Date().toISOString(),
-      performed_by: "system_cron",
-      affected_ids: restored,
-      new_value: JSON.stringify({ restored_count: restored.length, ids_restored: restored }),
-    });
-
-    return Response.json({ success: true, updated: restored.length, ids_restored: restored, errors });
+    return Response.json({ updated, skipped, errors, total: Object.keys(CORRECTIONS).length });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

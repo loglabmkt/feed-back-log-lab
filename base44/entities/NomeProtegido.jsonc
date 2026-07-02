@@ -1,0 +1,36 @@
+{
+  "name": "NomeProtegido",
+  "type": "object",
+  "properties": {
+    "entidade": {
+      "type": "string",
+      "description": "Entidade protegida: 'Colaborador' ou 'FeedbackRecord'"
+    },
+    "registro_id": {
+      "type": "string",
+      "description": "ID do registro protegido"
+    },
+    "nome_correto": {
+      "type": "string",
+      "description": "Nome correto do colaborador ou employee_name do FeedbackRecord"
+    },
+    "nome_gestor_correto": {
+      "type": "string",
+      "description": "manager_name correto (apenas FeedbackRecord)"
+    },
+    "cargo_correto": {
+      "type": "string",
+      "description": "Cargo correto (apenas Colaborador \u2014 position)"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se false, o cron ignora este registro"
+    }
+  },
+  "required": [
+    "entidade",
+    "registro_id",
+    "nome_correto"
+  ]
+}

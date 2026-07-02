@@ -86,6 +86,7 @@ const CORRECTIONS = {
   "69e29feb820ab35c848efa2b": { full_name: "Heitor Araujo", position: "Assistente de Projetos", status: "active" },
   "6a0f6553d08d3c960659772f": { full_name: "Brunno Resino", position: "Designer Gráfico", status: "active" },
   "6a22d91a532fd10f8b88188a": { full_name: "Savio Campos", position: "Analista de Qualidade", status: "active" },
+  "6a46615cd59d78a99e3c2a4d": { full_name: "Eliel Elias de Andrade", position: "Analista de Requisitos", status: "active" },
 };
 
 Deno.serve(async (req) => {
